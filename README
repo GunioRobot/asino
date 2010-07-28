@@ -14,6 +14,6 @@ asino is intended to run on a local machine, not a server that is accessible fro
 5. start your local server
 
 
-== Database
+== Prerequisites
 
 By default, asino uses MySQL, so you should have a running instance
