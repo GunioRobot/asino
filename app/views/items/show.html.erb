@@ -1,0 +1,28 @@
+<p>
+  <b>Account:</b>
+  <%=h @item.account_id %>
+</p>
+
+<p>
+  <b>Amount:</b>
+  <%=h @item.amount %>
+</p>
+
+<p>
+  <b>Payee:</b>
+  <%=h @item.payee %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%=h @item.description %>
+</p>
+
+<p>
+  <b>Uid:</b>
+  <%=h @item.uid %>
+</p>
+
+
+<%= link_to 'Edit', edit_item_path(@item) %> |
+<%= link_to 'Back', items_path %>

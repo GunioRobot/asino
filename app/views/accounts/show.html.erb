@@ -1,0 +1,85 @@
+<%= render :partial => 'layouts/sidebar' %>
+
+<div class="column right">
+  <h2>
+	<%= link_to '&lt;', "#{request.path}?month=#{@month - 1}" %> 
+	Übersicht <%= @account.title if @account %>: <%= @startdate.strftime("%B %Y") %>
+	<%= link_to '&gt;', "#{request.path}?month=#{@month + 1}" %> 
+  </h2>
+  <table>
+	  <tr>
+		<td class="al em" colspan="3">
+			Kontostand: <%= number_to_currency @sum, :unit => '', :separator => ",", :delimiter => "." %> 
+		</td>
+	    <td class="ar em" colspan="3">
+	      Einnahmen: + <%= number_to_currency @income, :unit => '', :separator => ",", :delimiter => "." %><br/>
+		  Ausgaben: <%= number_to_currency @expenses, :unit => '', :separator => ",", :delimiter => "." %><br/>
+		  <hr/>
+		  Gesamt <%= number_to_currency (@income + @expenses), :unit => '', :separator => ",", :delimiter => "." %>
+		  <hr/>
+	    </td>
+	    <td></td>
+	  </tr>
+	  <tr>
+		<th class="ar">
+		  <%= link_to 'Datum', "#{request.path}?order=date" %>
+		  <%= link_to '&uarr;', "#{request.path}?order=date desc" %>
+		</th>
+		<th class="al">
+		  <%= link_to 'Empfänger', "#{request.path}?order=payee" %>
+		  <%= link_to '&uarr;', "#{request.path}?order=payee desc" %>
+		</th>
+		<th class="al">
+		  <%= link_to 'Beschreibung', "#{request.path}?order=descr" %>
+		  <%= link_to '&uarr;', "#{request.path}?order=descr desc" %>
+		</th>
+		<th class="al"><%= 'Konto' unless @account %></th>
+		<th class="al">
+		  <%= link_to 'Kategorie', "#{request.path}?order=cat" %>
+		  <%= link_to '&uarr;', "#{request.path}?order=cat desc" %>
+		</th>
+		<th class="ar">
+		  <%= link_to 'Saldo', "#{request.path}?order=saldo" %>
+		  <%= link_to '&uarr;', "#{request.path}?order=saldo desc" %>
+		</th>
+		<th></th>
+	  </tr>
+    <% @items.each do |item| %>
+      <tr id="item_<%= item.id %>" class="<%= cycle('odd', 'even') %><%= ' transfer' if item.transfer %>">
+	    <td class="ar"><%= item.created_at.strftime("%d.%m.%y") %></td>
+	    <td><%= 'Transfer: ' if item.transfer %><%= item.payee %></td>
+        <td><%= 'Transfer: ' if item.transfer %><%= item.description %></td>
+        <td><%= "#{item.account.title}" unless @account %></td>
+        <% if item.category.blank? %>
+          <td id="item_<%= item.id %>_category"><%= render :partial => 'items/add_category', :locals => {:item => item} %></td>
+        <% else %>
+          <td id="item_<%= item.id %>_category"><%= render :partial => 'items/add_category', :locals => {:item => item} %></td>
+        <% end %>
+        <td class="ar<%= get_saldo_class(item.amount) %>">
+          <%= number_to_currency(item.amount) %>
+        </td>
+        <td class="ar">
+	      <%= link_to image_tag('icons/edit.png'), edit_item_path(item) %>
+	      <%= link_to_remote image_tag('icons/delete.png'), {:url => item_path(item), :method => :delete, :confirm => 'Bist Du sicher? Der Vorgang wird unwideruflich gelöscht!'} %>
+	    </td>
+      <tr>
+    <% end %>
+    <% if @items.empty? %>
+      <tr>
+	    <td colspan="6">
+		  Für dieses Konto wurden noch keine Zahlungen eingegeben.
+		  <% if @account %>
+		    <div class="m20">
+		      <%= link_to 'Neue Zahlung eingeben', new_item_path(:account_id => @account.id), :class => 'button' %>
+		      <% unless @account.feed.blank? %>
+		        oder <%= link_to 'Zahlungen von Saldomat übernehmen', "/items/get_from_rss", :class => 'button' %>
+		      <% end %>
+		    </div>
+		  <% end %>
+	    </td>
+	  </tr>
+    <% end %>
+  </table>
+</div>
+
+<div class="clr"> </div>

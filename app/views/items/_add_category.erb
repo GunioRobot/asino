@@ -1,0 +1,4 @@
+<% remote_form_for(item) do |f| %>
+  <%= f.collection_select(:category_id, Category.all(:order => 'name'), :id, :name, {:include_blank => true},  
+{:onchange => "new Ajax.Request('/items/add_category/#{item.id}', {asynchronous:true, evalScripts:true, parameters:Form.serialize(this.form)}); return false;"}) %>
+<% end -%>

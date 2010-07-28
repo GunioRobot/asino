@@ -1,0 +1,53 @@
+<div class="column left" style="width:10%;">
+  <h3><%= link_to 'Konten', '/accounts' %></h3>
+  <% @accounts.each do |account| %>
+    <%= link_to account.title, overview_account_path(account), :style => "#{'font-weight:bold;' if account == @account}" %><br/>
+  <% end %>
+
+  <h3>Neue Zahlung</h3>
+    <%= link_to 'Neue Zahlung', new_account_item_path(@account) if @account %>
+
+  <h3>Kategorien</h3>
+  <%= link_to 'Alle Kategorien', categories_path %><br/>
+  <%= link_to 'Neue Kategorie', new_category_path(:account_id => @account.id) if @account %>
+</div>
+
+<div class="column right" style="width:80%;">
+  <h2>
+	<%= link_to '&lt;', "#{request.path}?month=#{@month - 1}" %> 
+	Übersicht <%= @account.title if @account %>: <%= @startdate.strftime("%B %Y") %>
+	<%= link_to '&gt;', "#{request.path}?month=#{@month + 1}" %> 
+  </h2>
+
+  <%= image_tag @piechart %>
+  
+  <div class="m20"> </div>
+  <table>
+    <tr>
+	    <td class="ar em" colspan="5">
+	      Einnahmen: + <%= number_to_currency @income, :unit => '', :separator => ",", :delimiter => "." %><br/>
+		  Ausgaben: <%= @expenses %><br/>
+		  <hr/>
+		  Gesamt: <%= @income + @expenses %>
+		  <hr/>
+	    </td>
+	  <td class="ar"></td>
+	</tr>
+  <% @items_by_category.each do |category, items| %>
+    <% next unless category %>
+    <tr class=""<%= cycle('odd', 'even') %>">
+	  <td width="300">
+        <%= link_to_function category.name, "Element.toggle('category_#{category.id}')" %>
+        <div id="category_<%= category.id %>" style="display:none;">
+        <% items.each do |item| %>
+          <%= item.payee %> <%= number_to_currency item.amount, :unit => '', :separator => ",", :delimiter => "." %><br/>
+        <% end %>
+        </div>
+      </td>
+      <td class="ar"><%= category.sum %></td>
+    </tr>
+  <% end %>
+  </table>
+</div>
+
+<div class="clr"></div>

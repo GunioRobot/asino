@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  account_id: 1
+  amount: 9.99
+  payee: MyString
+  description: MyString
+  uid: MyString
+
+two:
+  account_id: 1
+  amount: 9.99
+  payee: MyString
+  description: MyString
+  uid: MyString

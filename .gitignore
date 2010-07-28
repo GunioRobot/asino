@@ -1,0 +1,6 @@
+log/*
+tmp/*
+.DS_Store
+db/schema.rb
+config/database.yml
+config/locales/log

@@ -1,0 +1,233 @@
+/* @group General */
+
+
+* {
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+	font-size: 10px;
+}
+
+body {
+	margin: 0px;
+}
+
+h1,
+h1 a {
+	font-size: 20px;
+}
+
+h2,
+h2 a {
+	font-size: 16px;
+}
+
+h3,
+h3 a {
+	font-size: 14px;
+}
+
+a {
+	color: #555;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: unerline;
+}
+
+.clr {
+	clear: both;
+}
+
+.m20 {
+	margin: 20px 0;
+}
+
+.em {
+	font-weight: bold;
+}
+
+.ar {
+	text-align: right;
+}
+
+.al {
+	text-align: left;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table tr th {
+	padding: 5px 10px;
+	background: #aaa;
+	color: white;	
+}
+
+
+table tr th a {
+	color: #eee;
+}
+
+table tr th a:hover {
+	color: #fff;
+}
+
+table tr td {
+	padding: 5px 10px;
+	vertical-align: top;
+}
+
+table tr.transfer td {
+	color: #999;
+}
+
+table tr.odd {
+	background: #eee;
+}
+
+table tr.even {
+	background: #ddd;
+}
+
+table tr:hover {
+	background: #ffa319;
+	color: #fff;
+}
+
+.negative {
+	color: red;
+}
+
+.positive {
+	color: green;
+}
+
+
+
+/* @group Buttons */
+
+input[type=submit],
+a.button {
+background: #ffa319 url(/images/alert-overlay.png) repeat-x;
+display: inline-block;
+padding: 5px 10px 6px;
+border-top: 1px solid  rgba(255,255,255,0.25);
+border-right: 1px solid  rgba(0,0,0,0.25);
+border-bottom: 1px solid  rgba(0,0,0,0.25);
+border-left: 1px solid  rgba(255,255,255,0.25);
+color: #fff;
+text-decoration: none;
+font-weight: bold;
+line-height: 1;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+position: relative;
+cursor: pointer;
+-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+}
+
+input[type=submit]:hover,
+a.button:hover {
+	background-color: #ff9900;
+}
+
+/* @end */
+
+
+
+/* @group Flash */
+
+#flash {
+	background: #777;
+	margin: 10px 200px 20px 250px;
+	font-weight: bold;
+	color: #fff;
+}
+
+#flash a {
+	color: #fff;
+}
+
+.notice, .success {
+	background: #777 url(/images/icons/yes_24.png) no-repeat 10px center;
+	padding: 10px 10px 10px 45px;
+}
+
+.warning, .alert {
+	background: #777 url(/images/icons/no_24.png) no-repeat 10px center;
+	padding: 10px 10px 10px 45px;
+}
+
+/* @end */
+
+/* @group Forms */
+
+input[type=text] {
+	padding: 5px;
+	font-weight: bold;
+	width: 300px;
+}
+
+/* @end */
+
+/* @end */
+
+/* @group Layout */
+
+/* @group Navigation */
+
+navigation ul {
+	border: 0;
+	margin: 0 0 0 225px;
+}
+
+navigation ul li {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+}
+
+navigation ul li a {
+	font-size: 14px;
+	font-weight: bold;
+	display: block;
+	padding: 3px 12px 5px 12px;
+	background: #eee;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	-moz-border-radius-bottomright:5px;
+	-moz-border-radius-bottomleft:5px;
+	-webkit-box-shadow: 0px 1px 5px rgba(0,0,0, 0.5);
+}
+
+navigation ul li a:hover {
+	color:  #fff;
+	background: #2b62d1;
+}
+
+/* @end */
+
+
+
+div.column {
+
+}
+
+div.left {
+	float: left;
+	padding: 20px;
+	margin-right: 10px;
+	width: 200px;
+}
+
+div.right {
+	float: left;
+	margin-left: 10px;
+}
+
+/* @end */
+

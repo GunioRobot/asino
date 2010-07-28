@@ -1,0 +1,47 @@
+<div class="column left">
+  <h3><%= link_to 'Konten', '/accounts' %></h3>
+  <% @accounts.each do |account| %>
+    <%= link_to account.title, account, :style => "#{'font-weight:bold;' if account == @account}" %><br/>
+  <% end %>
+
+  <h3>Neue Zahlung</h3>
+    <%= link_to 'Neue Zahlung', new_account_item_path(@account) if @account %>
+
+  <h3>Kategorien</h3>
+  <%= link_to 'Alle Kategorien', categories_path %><br/>
+  <%= link_to 'Neue Kategorie', new_category_path(:account_id => @account.id) if @account %>
+</div>
+
+<div class="column right">
+<h1>Zahlung bearbeiten</h1>
+
+<% form_for(@item) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :amount %><br />
+    <%= f.text_field :amount, :size => 60 %>
+  </p>
+  <p>
+    <%= f.label :payee %><br />
+    <%= f.text_field :payee, :size => 60 %>
+  </p>
+  <p>
+    <%= f.label :description %><br />
+    <%= f.text_field :description, :size => 60 %>
+  </p>
+  <p>
+    <%= f.label :category_id %><br />
+    <%= f.collection_select(:category_id, Category.all(:order => 'name'), :id, :name, {:include_blank => true}) %>
+  </p>
+  <p>
+    <%= f.label :transfer %><br />
+    <%= f.check_box :transfer %>
+  </p>
+  <p>
+    <%= f.submit 'Update' %>
+  </p>
+<% end %>
+</div>
+
+<div class="clr"></div>
