@@ -7,7 +7,7 @@ asino is intended to run on a local machine, not a server that is accessible fro
 
 == Getting Started
 
-1. clone the app code from github: git clone git@github.com:agehret/asino.git
+1. clone the app code from github: git clone git://github.com/agehret/asino.git
 2. run rake gems:install
 3. run rake db:setup
 4. run rake db:migrate

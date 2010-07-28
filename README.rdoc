@@ -1,0 +1,29 @@
+= Private fincance management with Saldomat
+
+asino is a small rails project that helps users of {Saldomat}[http://limoia.com/saldomat] to manage their private finances, targeted towards customers of German banks.
+It receives account transactions from Saldomats RSS feeds, so these need to be enabled in Saldomat.
+asino is intended to run on a local machine, not a server that is accessible from the internet.
+
+
+== Getting Started
+
+(1) clone the app code from github: git clone git://github.com/agehret/asino.git
+(2) run rake gems:install
+(3) run rake db:setup
+(4) run rake db:migrate
+(5) start your local server
+
+
+== Prerequisites
+
+By default, asino uses MySQL, so you should have a running instance
+
+==Author
+
+{Andreas Gehret}[http://github.com/agehret]
+
+
+== Copyright
+
+Copyright (c) 2010 {agehret}[http://github.com/agehret] -
+{Andreas Gehret}[http://github.com/agehret], released under the MIT license
