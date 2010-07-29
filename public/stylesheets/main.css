@@ -179,34 +179,37 @@ input[type=text] {
 
 /* @group Navigation */
 
-navigation ul {
+#navigation {
+	background: #ffbf5e url(/images/logo.png) bottom right no-repeat;
+	color: #fff;
+}
+
+#navigation ul {
 	border: 0;
 	margin: 0 0 0 225px;
 }
 
-navigation ul li {
+#navigation ul li {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 	display: inline-block;
 }
 
-navigation ul li a {
+#navigation ul li a {
+	color: white;
 	font-size: 14px;
 	font-weight: bold;
 	display: block;
+	margin: 15px 0 5px 0;
 	padding: 3px 12px 5px 12px;
-	background: #eee;
-	-webkit-border-bottom-left-radius: 5px;
-	-webkit-border-bottom-right-radius: 5px;
-	-moz-border-radius-bottomright:5px;
-	-moz-border-radius-bottomleft:5px;
-	-webkit-box-shadow: 0px 1px 5px rgba(0,0,0, 0.5);
+	-webkit-border-radius: 5px;
+	-moz-border-radius:5px;
 }
 
-navigation ul li a:hover {
+#navigation ul li a:hover {
 	color:  #fff;
-	background: #2b62d1;
+	background: #ffd89d;
 }
 
 /* @end */
@@ -222,6 +225,7 @@ div.left {
 	padding: 20px;
 	margin-right: 10px;
 	width: 200px;
+	min-height: 100%;
 }
 
 div.right {

@@ -9,7 +9,7 @@
   <%= javascript_include_tag :defaults, :cache => true %>
 </head>
 <body>
-  <navigation>
+  <div id="navigation">
     <ul>
 	  <li><%= link_to 'Home', '/' %></li>
 	  <li><%= link_to 'Alle Konten', '/accounts' %></li>
@@ -24,7 +24,7 @@
 	  <% end %>
 	  <li><%= link_to 'Aktualisieren', "/items/get_from_rss" %></li>
 	</ul>
-  </navigation>
+  </div>
 
   <%= render 'layouts/flash' %>
 
