@@ -13,13 +13,13 @@ class AccountsController < ApplicationController
     
     @month = params[:month].to_i || 0
     
-    @items = Item.find(:all, :conditions => ["created_at > ? and created_at < ?",  @startdate, @enddate ], :order => 'created_at desc')
+    @items = Item.find(:all, :conditions => ["created_at between ? and ?",  @startdate.to_date.to_s(:db), @enddate.to_date.to_s(:db) ], :order => 'created_at desc')
     #@sum = @items.sum(&:amount)
     @sum = Item.sum(:amount, :conditions => ["transfer = 0"])
-    @income = Item.sum(:amount, :conditions => ['created_at >= ? and created_at <= ? and transfer = 0 and amount > 0',
-                                      @startdate, @enddate])
-    @expenses = Item.sum(:amount, :conditions => ['created_at >= ? and created_at <= ? and transfer = 0 and amount < 0',
-                                      @startdate, @enddate])
+    @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount > 0',
+                                      @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
+    @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount < 0',
+                                      @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
 
     respond_to do |format|
       format.html { render :action => 'show'}
@@ -38,12 +38,12 @@ class AccountsController < ApplicationController
     
     @month = params[:month].to_i || 0
     
-    @items = Item.find(:all, :conditions => ["account_id = ? and created_at > ? and created_at < ?", @account.id, @startdate, @enddate ], :order => 'created_at desc')
+    @items = Item.find(:all, :conditions => ["account_id = ? and created_at between ? and ?", @account.id, (@startdate), (@enddate) ], :order => 'created_at desc')
     @sum = @account.items.sum(:amount)
-    @income = Item.sum(:amount, :conditions => ['created_at >= ? and created_at <= ? and transfer = 0 and account_id = ? and amount > 0',
-                                      @startdate, @enddate, @account.id])
-    @expenses = Item.sum(:amount, :conditions => ['created_at >= ? and created_at <= ? and transfer = 0 and account_id = ? and amount < 0',
-                                      @startdate, @enddate, @account.id])
+    @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount > 0',
+                                      (@startdate).to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
+    @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount < 0',
+                                      (@startdate).to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
     
     @items = @items.sort_by(&:created_at) if params[:order] == 'date'
     @items = @items.sort_by(&:created_at).reverse if params[:order] == 'date desc'
@@ -75,17 +75,17 @@ class AccountsController < ApplicationController
     #@categories_expenses = 0
     
     if @account 
-      @items = Item.find(:all, :conditions => ["account_id = ? and created_at > ? and created_at < ? and transfer = 0", @account.id, @startdate, @enddate ])
-      @income = Item.sum(:amount, :conditions => ['created_at >= ? and created_at <= ? and transfer = 0 and account_id = ? and amount > 0',
-                                        @startdate, @enddate, @account.id])
-      @expenses = Item.sum(:amount, :conditions => ['created_at >= ? and created_at <= ? and transfer = 0 and account_id = ? and amount < 0',
-                                        @startdate, @enddate, @account.id])
+      @items = Item.find(:all, :conditions => ["account_id = ? and created_at between ? and ? and transfer = 0", @account.id, @startdate, @enddate ])
+      @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount > 0',
+                                        @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
+      @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount < 0',
+                                        @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
     else
-      @items = Item.find(:all, :conditions => ["(account_id = ? or account_id = ?) and created_at > ? and created_at < ? and transfer = 0", 1, 2, @startdate, @enddate ])
-      @income = Item.sum(:amount, :conditions => ['created_at >= ? and created_at <= ? and amount > 0 and transfer = 0',
-                                        @startdate, @enddate])
-      @expenses = Item.sum(:amount, :conditions => ['created_at >= ? and created_at <= ? and amount < 0 and transfer = 0',
-                                        @startdate, @enddate])
+      @items = Item.find(:all, :conditions => ["(account_id = ? or account_id = ?) and created_at between ? and ? and transfer = 0", 1, 2, @startdate, @enddate ])
+      @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and amount > 0 and transfer = 0',
+                                        @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
+      @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and amount < 0 and transfer = 0',
+                                        @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
     end
     @items_by_category = @items.group_by { |i| i.category }
     @items_by_category.each do |category, items|
@@ -111,14 +111,14 @@ class AccountsController < ApplicationController
     
     monthreports = Monthreport.find(:all, :conditions => ["account_id = ? and date > ?", params[:id], '1980-01-01'], :order => 'date')
 
-    bc = GoogleChart::BarChart.new('600x400', "Verlauf", :vertical, false)
-    bc.data "Ausgaben", monthreports.collect {|m| m.expenses * -1}, 'ff9900' 
-    bc.data "Einnahmen", monthreports.collect {|m| m.income}, 'ffd799'   
-    bc.data "Kontostand", monthreports.collect {|m| m.saldo},'ffebcc'
-    bc.data "", monthreports.collect {|m| 0}, 'ffffff'
-    bc.axis :x, :labels => monthreports.collect {|m| m.date.strftime("%B %y")}, 
+    lc = GoogleChart::LineChart.new('600x400', "Verlauf", false)
+    lc.data "Ausgaben", monthreports.collect {|m| m.expenses * -1}, 'ff9900' 
+    lc.data "Einnahmen", monthreports.collect {|m| m.income}, 'ffd799'   
+    lc.data "Kontostand", monthreports.collect {|m| m.saldo},'888888'
+    lc.data "", monthreports.collect {|m| 0}, 'ffffff'
+    lc.axis :x, :labels => monthreports.collect {|m| m.date.strftime("%B %y")}, 
                 :color => '000000'
-    @barchart = bc.to_url
+    @chart = "http://chart.apis.google.com/chart?chxl=0:|#{monthreports.collect {|m| m.date.strftime("%B %y")}.join('|')}&chxp=0,0,50,100&chxs=0,676767,11.5,0,lt,676767&chxt=x&chs=600x350&cht=lxy&chco=3072F3,FF0000,FF9900&chds=0,20000,0,20000,0,20000&chd=t:-1|#{monthreports.collect {|m| m.expenses * -1}.join(',')}|-1|#{monthreports.collect {|m| m.income * -1}.join(',')}|-1|#{monthreports.collect {|m| m.saldo * -1}.join(',')}|-1&chdl=Ausgaben|Einnahmen|Kontostand&chdlp=b&chg=10,10&chls=2,4,1|1|1&chma=5,5,5,25&chtt=Verlauf"
 
   end
   

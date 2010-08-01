@@ -9,7 +9,9 @@ namespace :money do
   end
 
   task :monthreports => :environment do
+    Monthreport.destroy_all
     items = Item.find(:all)
+    puts "updating #{items.size} items"
     items.each do |item|
       puts item.id
       item.save

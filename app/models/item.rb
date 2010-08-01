@@ -20,26 +20,26 @@ class Item < ActiveRecord::Base
   def add_to_monthreport
     return if self.transfer
     
-    monthreport = Monthreport.find_or_create(self.account, self.created_at.to_date)
-    if self.amount < 0
+    monthreport = Monthreport.find_or_create(self.account, self.created_at)
+    if self.amount <= 0
       monthreport.expenses += self.amount
     else
       monthreport.income += self.amount
     end
-    monthreport.saldo = self.account.items.sum(:amount, :conditions => ["created_at <= ?", self.created_at.at_end_of_month])
+    monthreport.saldo = self.account.items.sum(:amount, :conditions => ["created_at <= ?", self.created_at.at_end_of_month.to_date.to_s(:db)])
     monthreport.save
   end
   
   def remove_from_monthreport
     return if self.transfer
     
-    monthreport = Monthreport.find_or_create(self.account, self.created_at.to_date)
+    monthreport = Monthreport.find_or_create(self.account, self.created_at)
     if self.amount < 0
-      monthreport.expenses -= self.amount
+      monthreport.expenses = monthreport.expenses - self.amount
     else
-      monthreport.income -= self.amount
+      monthreport.income = monthreport.expenses - self.amount
     end
-    monthreport.saldo = self.account.items.sum(:amount, :conditions => ["created_at <= ?", self.created_at.at_end_of_month])
+    monthreport.saldo = self.account.items.sum(:amount, :conditions => ["created_at <= ?", self.created_at.at_end_of_month.to_date.to_s(:db)])
     monthreport.save
   end
   

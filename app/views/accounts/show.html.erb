@@ -9,13 +9,13 @@
   <table>
 	  <tr>
 		<td class="al em" colspan="3">
-			Kontostand: <%= number_to_currency @sum, :unit => '', :separator => ",", :delimiter => "." %> 
+			Kontostand: <%= number_to_currency @sum, :unit => ' &euro;', :separator => ",", :delimiter => "." %> 
 		</td>
 	    <td class="ar em" colspan="3">
-	      Einnahmen: + <%= number_to_currency @income, :unit => '', :separator => ",", :delimiter => "." %><br/>
-		  Ausgaben: <%= number_to_currency @expenses, :unit => '', :separator => ",", :delimiter => "." %><br/>
+	      Einnahmen: + <%= number_to_currency @income.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
+		  Ausgaben: <%= number_to_currency @expenses, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
 		  <hr/>
-		  Gesamt <%= number_to_currency (@income + @expenses), :unit => '', :separator => ",", :delimiter => "." %>
+		  Gesamt <%= number_to_currency (@income + @expenses).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>
 		  <hr/>
 	    </td>
 	    <td></td>
