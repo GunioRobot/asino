@@ -45,24 +45,7 @@
 		<th></th>
 	  </tr>
     <% @items.each do |item| %>
-      <tr id="item_<%= item.id %>" class="<%= cycle('odd', 'even') %><%= ' transfer' if item.transfer %>">
-	    <td class="ar"><%= item.created_at.strftime("%d.%m.%y") %></td>
-	    <td><%= 'Transfer: ' if item.transfer %><%= item.payee %></td>
-        <td><%= 'Transfer: ' if item.transfer %><%= item.description %></td>
-        <td><%= "#{item.account.title}" unless @account %></td>
-        <% if item.category.blank? %>
-          <td id="item_<%= item.id %>_category"><%= render :partial => 'items/add_category', :locals => {:item => item} %></td>
-        <% else %>
-          <td id="item_<%= item.id %>_category"><%= render :partial => 'items/add_category', :locals => {:item => item} %></td>
-        <% end %>
-        <td class="ar<%= get_saldo_class(item.amount) %>">
-          <%= number_to_currency(item.amount) %>
-        </td>
-        <td class="ar">
-	      <%= link_to image_tag('icons/edit.png'), edit_item_path(item) %>
-	      <%= link_to_remote image_tag('icons/delete.png'), {:url => item_path(item), :method => :delete, :confirm => 'Bist Du sicher? Der Vorgang wird unwideruflich gelöscht!'} %>
-	    </td>
-      <tr>
+      <%= render :partial => 'items/item_row' , :locals => {:item => item }%>
     <% end %>
     <% if @items.empty? %>
       <tr>

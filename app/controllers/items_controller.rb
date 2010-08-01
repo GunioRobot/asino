@@ -89,11 +89,13 @@ class ItemsController < ApplicationController
   
   def add_category
     item = Item.find(params[:id])
-    item.category_id = params[:item][:category_id].to_i
+    category = Category.find(params[:item][:category_id].to_i)
+    item.category_id = category.id
     item.update_attribute(:category_id, params[:item][:category_id])
+    item.update_attribute(:transfer, (category.transfer ? true : false))
     item.reload
     render :update do |page|
-      page.replace_html "item_#{item.id}_category", :partial => 'add_category', :locals => {:item => item}
+      page.replace_html "item_#{item.id}", :partial => 'items/item_row_cells', :locals => {:item => item}
     end
   end
   

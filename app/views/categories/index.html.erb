@@ -17,25 +17,25 @@
 <div class="m20">
 <%= link_to 'Neue Kategorie anlegen', new_category_path %>
 </div>
-<table>
+<table width="400">
   <tr>
     <th>Name</th>
     <th colspan="2"></th>
   </tr>
 
 <% @categories.each do |category| %>
-  <tr>
+  <tr class="<%= cycle('odd', 'even') %>">
     <td colspan="2"><%=h category.name %></td>
-    <td>
+    <td class="ar">
       <%= link_to image_tag('icons/edit.png'), edit_category_path(category) %>
       <%= link_to image_tag('icons/delete.png'), category, :confirm => 'Are you sure?', :method => :delete %>
     </td>
   </tr>
   <% category.categories.each do |subcategory| %>
-  <tr>
+  <tr class="<%= cycle('odd', 'even') %>">
 	<td class="ar">-</td>
     <td><%=h subcategory.name %></td>
-    <td>
+    <td class="ar">
       <%= link_to image_tag('icons/edit.png'), edit_category_path(subcategory) %>
       <%= link_to image_tag('icons/delete.png'), category_path(subcategory), :confirm => 'Are you sure?', :method => :delete %>
     </td>

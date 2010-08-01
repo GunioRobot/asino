@@ -1,0 +1,20 @@
+<td class="ar<%= ' transfer' if item.transfer %>"><%= item.created_at.strftime("%d.%m.%y") %></td>
+<td class="<%= 'transfer' if item.transfer %>"><%= 'Transfer: ' if item.transfer %><%= item.payee %></td>
+<td class="<%= 'transfer' if item.transfer %>"><%= 'Transfer: ' if item.transfer %><%= item.description %></td>
+<td class="<%= 'transfer' if item.transfer %>"><%= "#{item.account.title}" unless @account %></td>
+<% if item.category.blank? %>
+  <td id="item_<%= item.id %>_category" class="<%= 'transfer' if item.transfer %>">
+    <%= render :partial => 'items/add_category', :locals => {:item => item} %>
+  </td>
+<% else %>
+  <td id="item_<%= item.id %>_category" class="<%= 'transfer' if item.transfer %>">
+    <%= render :partial => 'items/add_category', :locals => {:item => item} %>
+  </td>
+<% end %>
+<td class="ar<%= get_saldo_class(item.amount) %><%= ' transfer' if item.transfer %>">
+  <%= number_to_currency(item.amount) %>
+</td>
+<td class="ar<%= ' transfer' if item.transfer %>">
+  <%= link_to image_tag('icons/edit.png'), edit_item_path(item) %>
+  <%= link_to_remote image_tag('icons/delete.png'), {:url => item_path(item), :method => :delete, :confirm => 'Bist Du sicher? Der Vorgang wird unwideruflich gelöscht!'} %>
+</td>

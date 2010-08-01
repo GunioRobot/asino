@@ -28,6 +28,10 @@
 										:id, :name, {:include_blank => true}) %>
   </p>
   <p>
+	<%= f.check_box :transfer %>
+    <%= f.label :transfer, 'Zahlungen dieser Kategorie sind Transfers zwischen eigenen Konten' %>
+  </p>
+  <p>
     <%= f.submit 'Create' %>
   </p>
   <%= f.hidden_field :account_id %>

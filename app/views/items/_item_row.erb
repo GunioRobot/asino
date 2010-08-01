@@ -1,0 +1,3 @@
+<tr id="item_<%= item.id %>" class="<%= cycle('odd', 'even') %>">
+  <%= render :partial => 'items/item_row_cells', :locals => {:item => item} %>
+<tr>

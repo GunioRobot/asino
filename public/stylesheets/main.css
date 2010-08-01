@@ -78,7 +78,7 @@ table tr td {
 	vertical-align: top;
 }
 
-table tr.transfer td {
+table td.transfer{
 	color: #999;
 }
 
