@@ -14,7 +14,6 @@ class AccountsController < ApplicationController
     @month = params[:month].to_i || 0
     
     @items = Item.find(:all, :conditions => ["created_at between ? and ?",  @startdate.to_date.to_s(:db), @enddate.to_date.to_s(:db) ], :order => 'created_at desc')
-    #@sum = @items.sum(&:amount)
     @sum = Item.sum(:amount, :conditions => ["transfer = 0"])
     @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount > 0',
                                       @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
@@ -39,7 +38,7 @@ class AccountsController < ApplicationController
     @month = params[:month].to_i || 0
     
     @items = Item.find(:all, :conditions => ["account_id = ? and created_at between ? and ?", @account.id, (@startdate), (@enddate) ], :order => 'created_at desc')
-    @sum = @account.items.sum(:amount)
+    @sum = Item.sum(:amount, :conditions => ["transfer = 0"])
     @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount > 0',
                                       (@startdate).to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
     @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount < 0',
@@ -81,7 +80,7 @@ class AccountsController < ApplicationController
       @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount < 0',
                                         @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
     else
-      @items = Item.find(:all, :conditions => ["(account_id = ? or account_id = ?) and created_at between ? and ? and transfer = 0", 1, 2, @startdate, @enddate ])
+      @items = Item.find(:all, :conditions => ["created_at between ? and ? and transfer = 0", @startdate, @enddate ])
       @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and amount > 0 and transfer = 0',
                                         @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
       @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and amount < 0 and transfer = 0',

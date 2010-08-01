@@ -25,7 +25,7 @@
   <table>
     <tr>
 	    <td class="ar em" colspan="5">
-	      Einnahmen: + <%= number_to_currency @income, :unit => '', :separator => ",", :delimiter => "." %><br/>
+	      Einnahmen: + <%= number_to_currency @income.to_s, :unit => '', :separator => ",", :delimiter => "." %><br/>
 		  Ausgaben: <%= @expenses %><br/>
 		  <hr/>
 		  Gesamt: <%= @income + @expenses %>
