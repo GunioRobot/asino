@@ -8,6 +8,8 @@ ActionController::Routing::Routes.draw do |map|
   map.overview '/overview', :controller => 'accounts', :action => 'overview'
   map.resources :accounts, :has_many => :items, :member => {:overview => :get, :course => :get},
                                                 :collection => {:overview => :get, :course => :get}
+                                                
+  map.help '/help', :controller => 'home', :action => 'help'
                                               
 
   # The priority is based upon order of creation: first created -> highest priority.

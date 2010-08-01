@@ -7,16 +7,20 @@ asino is intended to run on a local machine, not a server that is accessible fro
 
 == Getting Started
 
-(1) clone the app code from github: git clone git://github.com/agehret/asino.git
-(2) run rake gems:install
-(3) run rake db:setup
-(4) run rake db:migrate
-(5) start your local server
+1. clone the app code from github: git clone git://github.com/agehret/asino.git
+2. run rake gems:install
+3. run rake db:setup
+4. run rake db:migrate
+5. start your local server
 
 
 == Prerequisites
 
 By default, asino uses MySQL, so you should have a running instance
+
+== Help/FAQ
+
+{Please check out the FAQ here...}[http://answer8.de/asino]
 
 ==Author
 

@@ -212,6 +212,24 @@ input[type=text] {
 	background: #ffd89d;
 }
 
+
+#footer {
+	margin: 20px;
+	padding: 10px 0 0 200px;
+	border-top: 1px solid #ffbf5e;
+	color: #bbb;
+	letter-spacing: 10px;
+}
+
+#footer a {
+	color: #999;
+	letter-spacing: 0px;
+}
+
+#footer a:hover {
+	color: black;
+	text-decoration: underline;
+}
 /* @end */
 
 
