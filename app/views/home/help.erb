@@ -1,0 +1,23 @@
+<div class="column left">
+  <h3><%= link_to 'Konten', '/accounts' %></h3>
+  <% @accounts.each do |account| %>
+    <%= link_to account.title, account, :style => "#{'font-weight:bold;' if account == @account}" %><br/>
+  <% end %>
+
+  <h3>Neue Zahlung</h3>
+    <%= link_to 'Neue Zahlung', new_account_item_path(@account) if @account %>
+
+  <h3>Kategorien</h3>
+  <%= link_to 'Alle Kategorien', categories_path %><br/>
+  <%= link_to 'Neue Kategorie', new_category_path(:account_id => @account.id) if @account %>
+</div>
+
+<div class="column right">
+<h1>Hilfe/FAQ</h1>
+
+<div id="cnspr_widget" style="width:600px;"><script src="http://www.answer8.de/widgets/asino/simple.js?search=true&limit=5&css=true"></script></div>
+
+
+</div>
+
+<div class="clr"> </div>
