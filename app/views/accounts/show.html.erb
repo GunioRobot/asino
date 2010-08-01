@@ -6,7 +6,7 @@
 	Übersicht <%= @account.title if @account %>: <%= @startdate.strftime("%B %Y") %>
 	<%= link_to '&gt;', "#{request.path}?month=#{@month + 1}" %> 
   </h2>
-  <table>
+  <table style="width:950px;">
 	  <tr>
 		<td class="al em" colspan="3">
 			Kontostand: <%= number_to_currency @sum, :unit => ' &euro;', :separator => ",", :delimiter => "." %> 
@@ -42,7 +42,7 @@
 		  <%= link_to 'Saldo', "#{request.path}?order=saldo" %>
 		  <%= link_to '&uarr;', "#{request.path}?order=saldo desc" %>
 		</th>
-		<th></th>
+		<th style="width:40px;"></th>
 	  </tr>
     <% @items.each do |item| %>
       <%= render :partial => 'items/item_row' , :locals => {:item => item }%>

@@ -97,10 +97,12 @@ table tr:hover {
 
 .negative {
 	color: red;
+	white-space: nowrap;
 }
 
 .positive {
 	color: green;
+	white-space: nowrap;
 }
 
 

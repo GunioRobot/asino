@@ -38,7 +38,8 @@ class AccountsController < ApplicationController
     @month = params[:month].to_i || 0
     
     @items = Item.find(:all, :conditions => ["account_id = ? and created_at between ? and ?", @account.id, (@startdate), (@enddate) ], :order => 'created_at desc')
-    @sum = Item.sum(:amount, :conditions => ["transfer = 0"])
+    @sum = Item.sum(:amount) if !@account
+    @sum = Item.sum(:amount, :conditions => ["account_id = ?", @account.id]) if @account
     @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount > 0',
                                       (@startdate).to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
     @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount < 0',

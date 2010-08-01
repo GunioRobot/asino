@@ -17,4 +17,5 @@ namespace :money do
       item.save
     end
   end
+
 end
