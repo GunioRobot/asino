@@ -103,6 +103,7 @@ class ItemsController < ApplicationController
   def get_from_rss
     accounts = Account.find(:all)
     accounts.each do |account|
+      next if account.feed.blank?
       account.import_from_feed
     end
     redirect_to accounts_path, :notice => "Zahlungen wurden aktualisiert."

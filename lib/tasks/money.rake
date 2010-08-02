@@ -4,6 +4,7 @@ namespace :money do
     accounts = Account.find(:all)
     puts "Found #{accounts.size} accounts"
     accounts.each do |account|
+      next if account.feed.blank?
       account.import_from_feed
     end
   end
