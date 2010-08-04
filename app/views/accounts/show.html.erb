@@ -63,6 +63,9 @@
 	  </tr>
     <% end %>
   </table>
+  <div class="action">
+	<%= link_to 'Konto bearbeiten', edit_account_path(@account.id) if @account %>
+  </div>
 </div>
 
-<div class="clr"> </div>
+<div class="clr"></div>

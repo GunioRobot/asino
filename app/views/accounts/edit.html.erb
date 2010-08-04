@@ -11,14 +11,16 @@
     <%= f.text_field :title %>
   </p>
   <p>
-    <%= f.label :feed, '@accounts = Account.all' %><br />
+    <%= f.label :feed, 'Lokale Saldomat RSS-Feed URL' %><br />
     <%= f.text_field :feed %>
   </p>
   <p>
     <%= f.submit 'Update' %>
   </p>
 <% end %>
-
+<div class="action">
+	<%= link_to 'Konto löschen', account_path(@account.id), :method => :delete, :confirm => 'Das Konto mit allen Umsätzen wir gelöscht. Sind Sie sicher?' %>
+</div>
 </div>
 
 <div class="clr"> </div>

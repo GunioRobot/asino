@@ -190,7 +190,7 @@ class AccountsController < ApplicationController
     @account.destroy
 
     respond_to do |format|
-      format.html { redirect_to(accounts_url) }
+      format.html { redirect_to '/', :notice => 'Das Konto wurde gelöscht.' }
       format.xml  { head :ok }
     end
   end

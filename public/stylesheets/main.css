@@ -253,5 +253,9 @@ div.right {
 	margin-left: 10px;
 }
 
+div.action {
+	text-align: right;
+}
+
 /* @end */
 

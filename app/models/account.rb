@@ -7,7 +7,7 @@ class Account < ActiveRecord::Base
 
   has_many :items, :order => 'created_at desc', :dependent => :destroy
   has_many :rules, :order => 'executionorder', :dependent => :destroy
-  has_many :monthreports, :order => 'executionorder', :dependent => :destroy
+  has_many :monthreports, :dependent => :destroy
 
   def import_from_feed
     RAILS_DEFAULT_LOGGER.debug "importing for #{self.title}/#{self.feed}"
