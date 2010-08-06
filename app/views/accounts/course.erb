@@ -3,7 +3,39 @@
 <div class="column right" style="width:80%;">
   <h2>Verlauf</h2>
 
-<%= image_tag @chart %>
+  <canvas id="courseGraph" width="600" height="250">[No canvas support]</canvas>
+
+<script>
+    window.onload = function ()
+    {
+
+
+        var l = new RGraph.Line('courseGraph', [<%= @expenses.collect {|m| m[1] * -1}.join(',') %>], 
+                                               [<%= @income.collect {|m| m[1]}.join(',') %>],
+                                               [<%= @saldo.collect {|m| m[1]}.join(',') %>]);
+        l.Set('chart.labels', ['<%= @expenses.collect {|d| d[0].strftime("%B")}.join("','") %>']);
+        l.Set('chart.gutter', 50);
+        l.Set('chart.tickmarks', 'circle');
+        l.Set('chart.background.grid.autofit', true)
+        l.Set('chart.background.grid.autofit.numhlines', 10)
+        l.Set('chart.background.grid.autofit.numvlines', <%= @expenses.size - 1 %>)
+        l.Set('chart.xticks', <%= @expenses.size - 1 %>)
+        l.Draw();
+
+        if (!document.all) {
+            l.Set('chart.tooltips', ['id:tooltip_la', 'id:tooltip_plymoth'],['id:tooltip_la', 'id:tooltip_plymoth'],['id:tooltip_la', 'id:tooltip_plymoth']);
+            l.Set('chart.tooltips.effect', 'fade');
+            l.Set('chart.contextmenu', [['Zoom in', RGraph.Zoom], ['Cancel', function () {}]]);
+            l.Set('chart.zoom.delay', 10);
+            l.Set('chart.zoom.frames', 25);
+            l.Set('chart.zoom.vdir', 'center');
+        }
+    }
+</script>
+<div style="display: none"> 
+<div id="tooltip_la"><b>Los Angeles</b><br />Home of sexy time!</div> 
+<div id="tooltip_plymouth"><b>Plymouth</b><br />Plenty of surfers dude</div>
+</div>
 </div>
 
 <div class="clr"></div>
