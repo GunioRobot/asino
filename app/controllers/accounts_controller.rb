@@ -75,30 +75,39 @@ class AccountsController < ApplicationController
     #@categories_expenses = 0
     
     if @account 
-      @items = Item.find(:all, :conditions => ["account_id = ? and created_at between ? and ? and transfer = 0", @account.id, @startdate, @enddate ])
+      @items = Item.find(:all, :conditions => ["account_id = ? and created_at between ? and ? and transfer = 0", @account.id, (@startdate), (@enddate) ], :order => 'created_at desc')
+      @sum = Item.sum(:amount, :conditions => ["account_id = ? and transfer = 0", @account.id]) if @account
       @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount > 0',
                                         @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
       @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount < 0',
-                                        @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
+                                        (@startdate).to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
+
     else
-      @items = Item.find(:all, :conditions => ["created_at between ? and ? and transfer = 0", @startdate, @enddate ])
-      @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and amount > 0 and transfer = 0',
+      
+      @items = Item.find(:all, :conditions => ["created_at between ? and ? and transfer = 0",  @startdate.to_date.to_s(:db), @enddate.to_date.to_s(:db) ], :order => 'created_at desc')
+      @sum = Item.sum(:amount, :conditions => ["transfer = 0"])
+      @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount > 0',
                                         @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
-      @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and amount < 0 and transfer = 0',
+      @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount < 0',
                                         @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
     end
     @items_by_category = @items.group_by { |i| i.category }
+    @categories = []
     @items_by_category.each do |category, items|
       next unless category
       category.sum = 0
       items.each do |item|
-        category.sum += item.amount
+        category.sum += item.amount if item.amount < 0
+        category.items << item
       end
+      @categories << category
       @categories_sum += category.sum
     end 
     
+    @categories = @categories.sort{|l,m| l.sum <=> m.sum}
+    
     pc = GoogleChart::PieChart.new('600x350', "Ausgaben nach Kategorien",false)
-    @items_by_category.each do |category, items|
+    @categories.each do |category|
       next unless category
       pc.data category.name, category.sum * -1 if category.sum < 0
     end
