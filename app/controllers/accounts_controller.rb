@@ -13,12 +13,11 @@ class AccountsController < ApplicationController
     
     @month = params[:month].to_i || 0
     
-    @items = Item.find(:all, :conditions => ["created_at between ? and ?",  @startdate.to_date.to_s(:db), @enddate.to_date.to_s(:db) ], :order => 'created_at desc')
-    @sum = Item.sum(:amount, :conditions => ["transfer = 0"])
-    @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount > 0',
-                                      @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
-    @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount < 0',
-                                      @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
+    @sum = Item.sum(:amount)
+                           
+    @items = Item.for_date(@enddate)
+    @income = Item.income.for_date(@enddate).sum(:amount)
+    @expenses = Item.expenses.for_date(@enddate).sum(:amount)
 
     respond_to do |format|
       format.html { render :action => 'show'}
@@ -34,16 +33,14 @@ class AccountsController < ApplicationController
     @enddate = Time.now.at_end_of_month
     @enddate = (Time.now + params[:month].to_i.months).at_end_of_month if params[:month]
     @startdate = @enddate.at_beginning_of_month
-    
     @month = params[:month].to_i || 0
     
-    @items = Item.find(:all, :conditions => ["account_id = ? and created_at between ? and ?", @account.id, (@startdate), (@enddate) ], :order => 'created_at desc')
-    @sum = Item.sum(:amount) if !@account
-    @sum = Item.sum(:amount, :conditions => ["account_id = ?", @account.id]) if @account
-    @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount > 0',
-                                      (@startdate).to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
-    @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount < 0',
-                                      (@startdate).to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
+    @items = Item.for_account_and_date(@account.id, @enddate)
+    @sum = Item.sum(:amount) if @account
+    #@income = Item.income_for_account_and_date(@account.id, @enddate).sum(:amount)
+    @income = Item.income.for_account(@account.id).for_date(@enddate).sum(:amount)
+    #@expenses = Item.expenses.for_account(@account.id).for_date(@enddate).sum(:amount)
+    @expenses = Item.expenses.for_account(@account.id).for_date(@enddate).sum(:amount)
     
     @items = @items.sort_by(&:created_at) if params[:order] == 'date'
     @items = @items.sort_by(&:created_at).reverse if params[:order] == 'date desc'
@@ -72,25 +69,19 @@ class AccountsController < ApplicationController
     @month = params[:month].to_i || 0
     
     @categories_sum = 0
-    #@categories_expenses = 0
     
     if @account 
-      @items = Item.find(:all, :conditions => ["account_id = ? and created_at between ? and ? and transfer = 0", @account.id, (@startdate), (@enddate) ], :order => 'created_at desc')
-      @sum = Item.sum(:amount, :conditions => ["account_id = ? and transfer = 0", @account.id]) if @account
-      @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount > 0',
-                                        @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
-      @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and account_id = ? and amount < 0',
-                                        (@startdate).to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db), @account.id])
-
+      @items = Item.for_account(@account.id).without_transfers.for_date(@enddate)
+      @sum = Item.for_account(@account.id).sum(:amount)
+      @income = Item.income.for_account(@account.id).for_date(@enddate).without_transfers.sum(:amount)
+      @expenses = Item.expenses.for_account(@account.id).for_date(@enddate).without_transfers.sum(:amount)
     else
-      
-      @items = Item.find(:all, :conditions => ["created_at between ? and ? and transfer = 0",  @startdate.to_date.to_s(:db), @enddate.to_date.to_s(:db) ], :order => 'created_at desc')
-      @sum = Item.sum(:amount, :conditions => ["transfer = 0"])
-      @income = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount > 0',
-                                        @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
-      @expenses = Item.sum(:amount, :conditions => ['created_at between ? and ? and transfer = 0 and amount < 0',
-                                        @startdate.to_date.to_s(:db), (@enddate+1.day).to_date.to_s(:db)])
+      @items = Item.for_date(@enddate).without_transfers
+      @sum = Item.sum(:amount)
+      @income = Item.income.for_date(@enddate).without_transfers.sum(:amount)
+      @expenses = Item.expenses.for_date(@enddate).without_transfers.sum(:amount)
     end
+    
     @items_by_category = @items.group_by { |i| i.category }
     @categories = []
     @items_by_category.each do |category, items|

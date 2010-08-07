@@ -7,6 +7,26 @@ class Item < ActiveRecord::Base
   after_destroy :remove_from_monthreport
   
   
+  named_scope :expenses, :conditions => ['amount < 0 and transfer = 0']
+  named_scope :income, :conditions => ['amount > 0 and transfer = 0']
+  named_scope :without_transfers, :conditions => ['transfer = 0']
+  
+  named_scope :for_account, 
+              (lambda do |account_id| 
+                      {:conditions => ['account_id = ?', account_id],
+                        :order => 'created_at desc'}
+                end)
+
+  # returns all items within a month indicated by date
+  named_scope :for_date, 
+              (lambda do |date| 
+                      {:conditions => ['created_at between ? and ?',
+                                        date.at_beginning_of_month.to_s(:db),
+                                        date.at_end_of_month.to_s(:db)],
+                        :order => 'created_at desc'}
+                end)  
+  
+  
   def apply_rules
     return if self.account.blank?
     
