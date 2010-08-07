@@ -3,7 +3,7 @@
 <div class="column right" style="width:80%;">
   <h2>Verlauf</h2>
 
-  <canvas id="courseGraph" width="600" height="250">[No canvas support]</canvas>
+  <canvas id="courseGraph" width="800" height="350">[No canvas support]</canvas>
 
 <script>
     window.onload = function ()
@@ -16,26 +16,44 @@
         l.Set('chart.labels', ['<%= @expenses.collect {|d| d[0].strftime("%B")}.join("','") %>']);
         l.Set('chart.gutter', 50);
         l.Set('chart.tickmarks', 'circle');
+        l.Set('chart.axis.color', '#777')
         l.Set('chart.background.grid.autofit', true)
+        l.Set('chart.background.grid.color', 'eee')
         l.Set('chart.background.grid.autofit.numhlines', 10)
         l.Set('chart.background.grid.autofit.numvlines', <%= @expenses.size - 1 %>)
         l.Set('chart.xticks', <%= @expenses.size - 1 %>)
-        l.Draw();
+        l.Set('chart.text.size', 8)
+        l.Set('chart.text.color', '#999')
+        l.Set('chart.colors', ['ff9900', '74cb02', '888']);
+
 
         if (!document.all) {
-            l.Set('chart.tooltips', ['id:tooltip_la', 'id:tooltip_plymoth'],['id:tooltip_la', 'id:tooltip_plymoth'],['id:tooltip_la', 'id:tooltip_plymoth']);
+            l.Set('chart.tooltips', ['id:expense_<%= @expenses.collect {|m| m[0].strftime('%m')}.join(', id:expense_') %>'],
+									['id:income_<%= @income.collect {|m| m[0].strftime('%m')}.join(', id:income_') %>'],
+									['id:saldo_<%= @saldo.collect {|m| m[0].strftime('%m')}.join(', id:saldo_') %>']);
             l.Set('chart.tooltips.effect', 'fade');
             l.Set('chart.contextmenu', [['Zoom in', RGraph.Zoom], ['Cancel', function () {}]]);
             l.Set('chart.zoom.delay', 10);
             l.Set('chart.zoom.frames', 25);
             l.Set('chart.zoom.vdir', 'center');
         }
+        l.Draw();
     }
 </script>
+
+<!-- tooltips start -->
 <div style="display: none"> 
-<div id="tooltip_la"><b>Los Angeles</b><br />Home of sexy time!</div> 
-<div id="tooltip_plymouth"><b>Plymouth</b><br />Plenty of surfers dude</div>
+  <% @expenses.each do |expense| %>
+    <div id="expense_<%= expense.first.strftime("%m") %>"><%= expense.second %></div>
+  <% end %>
+  <% @income.each do |income| %>
+    <div id="income_<%= income.first.strftime("%m") %>"><%= income.second %></div>
+  <% end %>
+  <% @saldo.each do |saldo| %>
+    <div id="saldo_<%= saldo.first.strftime("%m") %>"><%= saldo.second %></div>
+  <% end %>
 </div>
+<!-- tooltips end -->
 </div>
 
 <div class="clr"></div>

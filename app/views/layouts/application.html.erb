@@ -7,28 +7,11 @@
   <title>Money</title>
   <%= stylesheet_link_tag 'main' %>
   <%= javascript_include_tag :defaults, :cache => true %>
-  <%= javascript_include_tag 'rgraph/RGraph.common.core.js', :cache => true %>
-
-  <%= javascript_include_tag "rgraph/RGraph.common.adjusting.js", :cache => true %>
-  <%= javascript_include_tag "rgraph/RGraph.common.annotate.js", :cache => true %> 
-  <%= javascript_include_tag "rgraph/RGraph.common.context.js", :cache => true %>   
-  <%= javascript_include_tag "rgraph/RGraph.common.resizing.js", :cache => true %>  
-  <%= javascript_include_tag "rgraph/RGraph.common.tooltips.js", :cache => true %>  
-  <%= javascript_include_tag "rgraph/RGraph.common.zoom.js", :cache => true %>                                            
-  <%= javascript_include_tag "rgraph/RGraph.bar.js", :cache => true %>             
-  <%= javascript_include_tag "rgraph/RGraph.bipolar.js", :cache => true %>        
-  <%= javascript_include_tag "rgraph/RGraph.funnel.js", :cache => true %>           
-  <%= javascript_include_tag "rgraph/RGraph.gantt.js", :cache => true %>           
-  <%= javascript_include_tag "rgraph/RGraph.hbar.js", :cache => true %>             
-  <%= javascript_include_tag "rgraph/RGraph.led.js", :cache => true %>            
-  <%= javascript_include_tag "rgraph/RGraph.line.js", :cache => true %>            
-  <%= javascript_include_tag "rgraph/RGraph.meter.js", :cache => true %>         
-  <%= javascript_include_tag "rgraph/RGraph.odo.js", :cache => true %>              
-  <%= javascript_include_tag "rgraph/RGraph.pie.js", :cache => true %>           
-  <%= javascript_include_tag "rgraph/RGraph.progress.js", :cache => true %>         
-  <%= javascript_include_tag "rgraph/RGraph.rose.js", :cache => true %>           
-  <%= javascript_include_tag "rgraph/RGraph.scatter.js", :cache => true %>         
-  <%= javascript_include_tag "rgraph/RGraph.tradar.js", :cache => true %>         
+  <%= javascript_include_tag ['rgraph/RGraph.common.core.js', 
+	                          'rgraph/RGraph.common.context.js', 
+							  'rgraph/RGraph.common.tooltips.js',
+							  'rgraph/RGraph.common.tooltips.js',
+							  'rgraph/RGraph.line.js'], :cache => true %>                  
 </head>
 <body>
   <div id="navigation">
