@@ -33,13 +33,13 @@
 	    </td>
 	  <td class="ar"></td>
 	</tr>
-  <% @items_by_category.each do |category, items| %>
+  <% @categories.each do |category| %>
     <% next unless category %>
     <tr class=""<%= cycle('odd', 'even') %>">
 	  <td width="300">
         <%= link_to_function category.name, "Element.toggle('category_#{category.id}')" %>
         <div id="category_<%= category.id %>" style="display:none;">
-        <% items.each do |item| %>
+        <% category.items.each do |item| %>
           <%= item.payee %> <%= number_to_currency item.amount, :unit => '', :separator => ",", :delimiter => "." %><br/>
         <% end %>
         </div>
@@ -48,6 +48,7 @@
     </tr>
   <% end %>
   </table>
+::<%= @categories_sum %>
 </div>
 
 <div class="clr"></div>
