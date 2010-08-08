@@ -115,16 +115,6 @@ class AccountsController < ApplicationController
     
     monthreports = Monthreport.find(:all, :conditions => ["account_id = ? and date > ?", params[:id], '1980-01-01'], :order => 'date')
 
-    lc = GoogleChart::LineChart.new('600x400', "Verlauf", false)
-    #lc.data "Ausgaben", monthreports.collect {|m| m.expenses * -1}, 'ff9900' 
-    lc.data "Ausgaben", @expenses.collect {|m| m[1] * -1}, 'ff9900' 
-    lc.data "Einnahmen", @income.collect {|m| m[1]}, 'ffd799'   
-    lc.data "Kontostand", @saldo.collect {|m| m[1]},'888888'
-    lc.data "", monthreports.collect {|m| 0}, 'ffffff'
-    lc.axis :x, :labels => @expenses.collect {|d| d[0].strftime("%B %y")}, :color => '777777', :font_size => 8, :alignment => :center
-    @chart = lc.to_url
-    #@chart = "http://chart.apis.google.com/chart?chxl=0:|#{monthreports.collect {|m| m.date.strftime("%B %y")}.join('|')}&chxp=0,0,50,100&chxs=0,676767,11.5,0,lt,676767&chxt=x&chs=600x350&cht=lxy&chco=3072F3,FF0000,FF9900&chds=0,20000,0,20000,0,20000&chd=t:-1|#{monthreports.collect {|m| m.expenses * -1}.join(',')}|-1|#{monthreports.collect {|m| m.income * -1}.join(',')}|-1|#{monthreports.collect {|m| m.saldo * -1}.join(',')}|-1&chdl=Ausgaben|Einnahmen|Kontostand&chdlp=b&chg=10,10&chls=2,4,1|1|1&chma=5,5,5,25&chtt=Verlauf"
-
   end
   
   
