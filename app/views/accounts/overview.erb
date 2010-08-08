@@ -19,7 +19,30 @@
 	<%= link_to '&gt;', "#{request.path}?month=#{@month + 1}" %> 
   </h2>
 
-  <%= image_tag @piechart %>
+  <canvas id="categoryGraph" width="800" height="450">[Ihr Internetbroswer unterstützt kein Canvas Objekt.]</canvas>
+  <script>
+      window.onload = function ()
+      {
+  
+  
+          var p = new RGraph.Pie('categoryGraph', [<%= @categories.collect {|m| m.sum * -1}.join(',') %>]);
+          p.Set('chart.labels', ['<%= @categories.collect {|d| d.name}.join("','") %>']);
+          p.Set('chart.gutter', 50)
+          p.Set('chart.linewidth', 1);
+          p.Set('chart.strokestyle', '#fff');
+          p.Set('chart.labels.sticks', true);
+          p.Set('chart.text.size', 8);
+          p.Set('chart.text.color', '#888')
+          p.Set('chart.align', 'left')
+          p.Set('chart.colors', ['#ff9900','#ff9f0e','#ffa51d',
+								'#ffab2b','#ffb13a','#ffb649',
+								'#ffbc57','#ffc266','#ffc875',
+								'#ffce83','#ffd492','#ffd9a0',
+								'#ffdfaf','#ffe5be']);
+          
+          p.Draw();
+      }
+  </script>
   
   <div class="m20"> </div>
   <table>

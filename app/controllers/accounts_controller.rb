@@ -96,13 +96,6 @@ class AccountsController < ApplicationController
     end 
     
     @categories = @categories.sort{|l,m| l.sum <=> m.sum}
-    
-    pc = GoogleChart::PieChart.new('600x350', "Ausgaben nach Kategorien",false)
-    @categories.each do |category|
-      next unless category
-      pc.data category.name, category.sum * -1 if category.sum < 0
-    end
-    @piechart = pc.to_url
   end
   
   
