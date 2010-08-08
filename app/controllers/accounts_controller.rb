@@ -7,11 +7,10 @@ class AccountsController < ApplicationController
   def index
     render :action => 'no_accounts' and return if @accounts.empty?
     
-    @enddate = Time.now.at_end_of_month
-    @enddate = (Time.now + params[:month].to_i.months).at_end_of_month if params[:month]
+    @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
     
-    @month = params[:month].to_i || 0
+    #@month = params[:month].to_i || 0
     
     @sum = Item.sum(:amount)
                            
@@ -30,12 +29,11 @@ class AccountsController < ApplicationController
   def show
     @account = Account.find(params[:id])
     
-    @enddate = Time.now.at_end_of_month
-    @enddate = (Time.now + params[:month].to_i.months).at_end_of_month if params[:month]
+    @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
-    @month = params[:month].to_i || 0
+    #@month = params[:month].to_i || 0
     
-    @items = Item.for_account_and_date(@account.id, @enddate)
+    @items = Item.for_account(@account.id).for_date(@enddate)
     @sum = Item.sum(:amount) if @account
     #@income = Item.income_for_account_and_date(@account.id, @enddate).sum(:amount)
     @income = Item.income.for_account(@account.id).for_date(@enddate).sum(:amount)
@@ -62,11 +60,10 @@ class AccountsController < ApplicationController
   def overview
     @account = Account.find(params[:id]) if params[:id]
     
-    @enddate = Time.now.at_end_of_month
-    @enddate = (Time.now + params[:month].to_i.months).at_end_of_month if params[:month]
+    @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
     
-    @month = params[:month].to_i || 0
+    #@month = params[:month].to_i || 0
     
     @categories_sum = 0
     
