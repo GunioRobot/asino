@@ -6,9 +6,9 @@ ActionController::Routing::Routes.draw do |map|
                         :collection => {:get_from_rss => :get}
 
   map.overview '/overview', :controller => 'accounts', :action => 'overview'
-  map.resources :accounts, :has_many => :items, :member => {:overview => :get, :course => :get},
+  map.resources :accounts, :has_many => [:items, :rulesets], :member => {:overview => :get, :course => :get},
                                                 :collection => {:overview => :get, :course => :get}
-                                                
+  map.resources :rulesets
   map.help '/help', :controller => 'home', :action => 'help'
                                               
 

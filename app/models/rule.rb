@@ -1,3 +1,3 @@
 class Rule < ActiveRecord::Base
-  belongs_to :account
+  belongs_to :ruleset
 end

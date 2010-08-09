@@ -12,7 +12,18 @@
 
   <h3>Kategorien</h3>
   <%= link_to 'Alle Kategorien', categories_path %><br/>
-  <%= link_to 'Neue Kategorie', new_category_path(:account_id => @account.id) if @account %>
+  <%= link_to 'Neue Kategorie anlegen', new_category_path(:account_id => @account.id) if @account %>
+
+
+  <h3>Regeln</h3>
+  <% if @account %>
+    <%= link_to 'Alle Regeln', account_rulesets_path(@account) %><br/>
+    <%= link_to 'Neue Regel anlegen', new_ruleset_path %>
+  <% else %>
+    <%= link_to 'Alle Regeln', rulesets_path %><br/>
+    <%= link_to 'Neue Regel anlegen', new_ruleset_path %>
+  <% end %>
+
 </div>
 
 <!-- sidebar end -->

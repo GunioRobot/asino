@@ -34,7 +34,8 @@ class AccountsController < ApplicationController
     #@month = params[:month].to_i || 0
     
     @items = Item.for_account(@account.id).for_date(@enddate)
-    @sum = Item.sum(:amount) if @account
+    @sum = Item.for_account(@account.id).sum(:amount) if @account
+    @sum = Item.sum(:amount) unless @account
     #@income = Item.income_for_account_and_date(@account.id, @enddate).sum(:amount)
     @income = Item.income.for_account(@account.id).for_date(@enddate).sum(:amount)
     #@expenses = Item.expenses.for_account(@account.id).for_date(@enddate).sum(:amount)

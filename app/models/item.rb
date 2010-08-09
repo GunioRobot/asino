@@ -2,7 +2,7 @@ class Item < ActiveRecord::Base
   belongs_to :category
   belongs_to :account
   
-  after_create :apply_rules
+  after_create :apply_rulesets
   after_save :add_to_monthreport
   after_destroy :remove_from_monthreport
   
@@ -27,13 +27,29 @@ class Item < ActiveRecord::Base
                 end)  
   
   
-  def apply_rules
+  def apply_rulesets
     return if self.account.blank?
     
-    account.rules.each do |rule|
-      RAILS_DEFAULT_LOGGER.debug "applying rule: #{rule.title}"
-    end
+    rulesets = Ruleset.find(:all, :conditions => ["account_id is NULL or account_id = ?", self.account_id])
     
+    rulesets.each do |ruleset|
+      next unless ruleset.active
+      
+      ruleset.result = false
+      ruleset.rules.each do |rule|
+        ruleset.result = self.attributes[rule.affected_attribute].downcase == rule.matching_string.downcase if rule.matchtype == 'exact'
+        ruleset.result = self.attributes[rule.affected_attribute].downcase.include? rule.matching_string.downcase if rule.matchtype == 'contains'
+      end
+      next unless ruleset.result 
+      
+      case ruleset.action
+        when 'set_category'
+          category = Category.find(ruleset.action_parameter.to_i)
+          self.update_attribute(:category_id, category.id)
+          self.update_attribute(:transfer, true) if category.transfer
+      end
+      
+    end
     
   end
   

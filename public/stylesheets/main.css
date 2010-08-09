@@ -54,6 +54,10 @@ a:hover {
 	text-align: left;
 }
 
+.ac {
+	text-align: center;
+}
+
 table {
 	border-collapse: collapse;
 }
