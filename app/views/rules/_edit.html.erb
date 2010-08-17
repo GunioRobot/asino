@@ -1,0 +1,14 @@
+<div class="rule">
+<% form_remote_for(rule) do |f| %>
+  <%= f.error_messages %>
+  <p>
+	<%= f.select :affected_attribute, [['Empfänger', 'payee'],['Beschreibung','description']] %>
+	<%= f.select :matchtype, [['ist', 'exact'],['enthält','contains']] %>
+	<%= f.text_field :matching_string %>
+	<%= f.submit 'Speichern' %>  
+	<%= link_to image_tag('icons/delete.png', :style => "margin:0px 10px;", 
+	:title => 'Regel löschen'), rule_path(rule), :method => :delete %>
+  </p>
+
+<% end %>
+</div>

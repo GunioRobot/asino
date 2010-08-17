@@ -1,0 +1,32 @@
+<%= render :partial => 'layouts/sidebar' %>
+
+<div class="column right">
+<h1>Neue Regel</h1>
+
+<% form_for(@ruleset) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %> <%= f.check_box :active %> <%= f.label :active, 'Regel ist aktiv' %>
+  </p>
+  <p>
+    <%= f.label :account_id, 'Gilt für: ' %> 
+    <%= f.collection_select(:account_id, Account.all(:order => 'title'), 
+										:id, :title, {:include_blank => 'Alle Konten'}) %>
+  </p>
+  <p>
+	<%= f.label :action, 'Aktion: ' %>
+	<%= f.select :action, [['Kategorie zuweisen', 'set_category']]%>
+	<span>
+	    <%= f.collection_select(:action_parameter, Category.all(:order => 'name'), 
+											:id, :name) %>
+	</span>
+  </p>
+  <p>
+    <%= f.submit 'Speichern' %>
+  </p>
+<% end %>
+</div>
+
+<div class="clr"> </div>

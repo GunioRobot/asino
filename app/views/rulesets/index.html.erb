@@ -1,0 +1,23 @@
+<%= render :partial => 'layouts/sidebar' %>
+
+<div class="column right">
+<h1>Regeln</h1>
+<table style="width:950px;">
+  <tr>
+    <th class="al">
+      Name
+    </th>
+    <th class="al">Konto</th>
+    <th class="al">Aktion</th>
+    <th class="ac">
+      Aktiv
+    </th>
+    <th style="width:40px;"></th>
+  </tr>
+  <% @rulesets.each do |ruleset| %>
+    <%= render :partial => 'rulesets/ruleset_row' , :locals => {:ruleset => ruleset }%>
+  <% end %>
+</table>
+</div>
+
+<div class="clr"> </div>

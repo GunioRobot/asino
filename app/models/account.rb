@@ -18,9 +18,12 @@ class Account < ActiveRecord::Base
     puts feed.title
     puts feed.link
     puts feed.description
+    puts feed.items.size
 
     for item in feed.items
+      puts item.title.split(' - ')[1]
       next if Item.exists?(:uid => item.id)
+      puts "adding #{item.title.split(' - ')[1]}"
       Item.create({:uid => item.id, 
                    :created_at => item.updated.to_date,
                    :account_id => self.id,

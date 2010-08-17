@@ -263,3 +263,7 @@ div.action {
 
 /* @end */
 
+.rule {
+	background: #ddd;
+	padding: 5px;
+}
