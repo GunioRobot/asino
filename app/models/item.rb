@@ -3,6 +3,7 @@ class Item < ActiveRecord::Base
   belongs_to :account
   
   after_create :apply_rulesets
+  before_save :remove_from_monthreport
   after_save :add_to_monthreport
   after_destroy :remove_from_monthreport
   
@@ -56,26 +57,39 @@ class Item < ActiveRecord::Base
   def add_to_monthreport
     return if self.transfer
     
+    RAILS_DEFAULT_LOGGER.debug "add to monthreport: #{self.amount}"
+    
     monthreport = Monthreport.find_or_create(self.account, self.created_at)
-    if self.amount <= 0
+    if self.amount < 0 # is an expense
       monthreport.expenses += self.amount
-    else
+    else # is an income
       monthreport.income += self.amount
     end
-    monthreport.saldo = self.account.items.sum(:amount, :conditions => ["created_at <= ?", self.created_at.at_end_of_month.to_date.to_s(:db)])
+    monthreport.saldo += self.amount
     monthreport.save
   end
   
   def remove_from_monthreport
     return if self.transfer
+    return if self.new_record?
     
-    monthreport = Monthreport.find_or_create(self.account, self.created_at)
-    if self.amount < 0
-      monthreport.expenses = monthreport.expenses - self.amount
-    else
-      monthreport.income = monthreport.expenses - self.amount
+    begin 
+      olditem = Item.find(self.id)
+    rescue 
+      olditem = self
     end
-    monthreport.saldo = self.account.items.sum(:amount, :conditions => ["created_at <= ?", self.created_at.at_end_of_month.to_date.to_s(:db)])
+    
+    RAILS_DEFAULT_LOGGER.debug "removing from monthreport: #{self.amount}"
+    
+    time = self.created_at.blank? ? Time.now : self.created_at
+    
+    monthreport = Monthreport.find_or_create(self.account, time)
+    if self.amount < 0 # is an expense
+      monthreport.expenses = monthreport.expenses - olditem.amount
+    else #is an income
+      monthreport.income = monthreport.income - olditem.amount
+    end
+    monthreport.saldo -= olditem.amount
     monthreport.save
   end
   

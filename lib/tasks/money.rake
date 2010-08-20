@@ -11,11 +11,11 @@ namespace :money do
 
   task :monthreports => :environment do
     Monthreport.destroy_all
-    items = Item.find(:all)
+    items = Item.find(:all, :order => "created_at")
     puts "updating #{items.size} items"
     items.each do |item|
-      puts item.id
-      item.save
+      #puts item.id
+      item.add_to_monthreport
     end
   end
 
