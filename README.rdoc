@@ -1,4 +1,4 @@
-= Private fincance management with Saldomat
+= Private finance management with Saldomat
 
 asino is a small rails project that helps users of {Saldomat}[http://limoia.com/saldomat] to manage their private finances, targeted towards customers of German banks.
 It receives account transactions from Saldomats RSS feeds, so these need to be enabled in Saldomat.
