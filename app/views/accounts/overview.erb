@@ -62,7 +62,7 @@
 	  <td width="300">
         <%= link_to_function category.name, "Element.toggle('category_#{category.id}')" %>
         <div id="category_<%= category.id %>" style="display:none;">
-        <% category.items.each do |item| %>
+        <% category.items.for_date(Time.now).each do |item| %>
           <%= item.payee %> <%= number_to_currency item.amount, :unit => '', :separator => ",", :delimiter => "." %><br/>
         <% end %>
         </div>

@@ -26,6 +26,14 @@ class Item < ActiveRecord::Base
                                         date.at_end_of_month.to_s(:db)],
                         :order => 'created_at desc'}
                 end)  
+                
+named_scope :for_current_date, 
+            (lambda do |date| 
+                    {:conditions => ['created_at between ? and ?',
+                                      date.at_beginning_of_month.to_s(:db),
+                                      date.end_of_day.to_s(:db)],
+                      :order => 'created_at desc'}
+              end)
   
   
   def apply_rulesets

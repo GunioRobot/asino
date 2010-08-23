@@ -8,14 +8,24 @@
   </h2>
   <table style="width:950px;">
 	  <tr>
-		<td class="al em" colspan="3">
+		<td class="al em" colspan="2">
 			Kontostand: <%= number_to_currency @sum, :unit => ' &euro;', :separator => ",", :delimiter => "." %> 
 		</td>
-	    <td class="ar em" colspan="3">
-	      Einnahmen: + <%= number_to_currency @income.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
+		<td class="ar em">
+		  &nbsp;<br/>
+	      Einnahmen: +<%= number_to_currency @income.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
 		  Ausgaben: <%= number_to_currency @expenses, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
 		  <hr/>
 		  Gesamt <%= number_to_currency (@income + @expenses).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>
+		  <hr/>
+		</td>
+	    <td class="al light" colspan="3">
+		  Vegleich mit Vormonat am <%= (@lastmonth).strftime("%d.%m.") %><br/>
+		  <%= "+" if (@income - @last_month_income) > 0 %>
+	      <%= number_to_currency     (@income - @last_month_income).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
+		  <%= number_to_currency     (@expenses - @last_month_expenses), :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
+		  <hr />
+		  <%= number_to_currency ((@income + @expenses) - (@last_month_income + @last_month_expenses)).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>
 		  <hr/>
 	    </td>
 	    <td></td>

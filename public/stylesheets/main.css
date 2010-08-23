@@ -46,6 +46,16 @@ a:hover {
 	font-weight: bold;
 }
 
+.light {
+	color: #ccc;
+}
+
+.light hr {
+	border: none;
+	background: #eee;
+	height: 1px;
+}
+
 .ar {
 	text-align: right;
 }

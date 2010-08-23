@@ -9,14 +9,16 @@ class AccountsController < ApplicationController
     
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
-    
-    #@month = params[:month].to_i || 0
+    @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
     
     @sum = Item.sum(:amount)
                            
     @items = Item.for_date(@enddate)
     @income = Item.income.for_date(@enddate).sum(:amount)
     @expenses = Item.expenses.for_date(@enddate).sum(:amount)
+    
+    @last_month_income = Item.income.for_current_date(@lastmonth).sum(:amount)    
+    @last_month_expenses = Item.expenses.for_current_date(@lastmonth).sum(:amount)
 
     respond_to do |format|
       format.html { render :action => 'show'}
@@ -31,15 +33,16 @@ class AccountsController < ApplicationController
     
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
-    #@month = params[:month].to_i || 0
+    @lastmonth = Time.now.at_end_of_month == @enddate ? Time.now :  @enddate - 1.month
     
     @items = Item.for_account(@account.id).for_date(@enddate)
     @sum = Item.for_account(@account.id).sum(:amount) if @account
     @sum = Item.sum(:amount) unless @account
-    #@income = Item.income_for_account_and_date(@account.id, @enddate).sum(:amount)
     @income = Item.income.for_account(@account.id).for_date(@enddate).sum(:amount)
-    #@expenses = Item.expenses.for_account(@account.id).for_date(@enddate).sum(:amount)
     @expenses = Item.expenses.for_account(@account.id).for_date(@enddate).sum(:amount)
+    
+    @last_month_income = Item.income.for_account(@account.id).for_current_date(@lastmonth).sum(:amount)    
+    @last_month_expenses = Item.expenses.for_account(@account.id).for_current_date(@lastmonth).sum(:amount)
     
     @items = @items.sort_by(&:created_at) if params[:order] == 'date'
     @items = @items.sort_by(&:created_at).reverse if params[:order] == 'date desc'
