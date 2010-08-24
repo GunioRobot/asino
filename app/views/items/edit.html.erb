@@ -19,27 +19,27 @@
   <%= f.error_messages %>
 
   <p>
-    <%= f.label :amount %><br />
+    <%= f.label :amount, 'Betrag' %><br />
     <%= f.text_field :amount, :size => 60 %>
   </p>
   <p>
-    <%= f.label :payee %><br />
+    <%= f.label :payee, 'Empfänger' %><br />
     <%= f.text_field :payee, :size => 60 %>
   </p>
   <p>
-    <%= f.label :description %><br />
+    <%= f.label :description, 'Beschreibung' %><br />
     <%= f.text_field :description, :size => 60 %>
   </p>
   <p>
-    <%= f.label :category_id %><br />
+    <%= f.label :category_id, 'Kategorie' %><br />
     <%= f.collection_select(:category_id, Category.all(:order => 'name'), :id, :name, {:include_blank => true}) %>
   </p>
   <p>
-    <%= f.label :transfer %><br />
-    <%= f.check_box :transfer %>
+	<%= f.check_box :transfer %>
+    <%= f.label :transfer, 'Zahlung ist Transfer zwischen eigenen Konten' %>
   </p>
   <p>
-    <%= f.submit 'Update' %>
+    <%= f.submit 'Speichern' %>
   </p>
 <% end %>
 </div>
