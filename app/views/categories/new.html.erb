@@ -32,7 +32,7 @@
     <%= f.label :transfer, 'Zahlungen dieser Kategorie sind Transfers zwischen eigenen Konten' %>
   </p>
   <p>
-    <%= f.submit 'Create' %>
+    <%= f.submit 'Speichern' %> oder <%= link_to_function 'abbrechen', 'history.back(-1)' %> %>
   </p>
   <%= f.hidden_field :account_id %>
 <% end %>
