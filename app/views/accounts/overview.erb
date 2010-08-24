@@ -58,13 +58,18 @@
 	</tr>
   <% @categories.each do |category| %>
     <% next unless category %>
-    <tr class=""<%= cycle('odd', 'even') %>">
+    <tr class="<%= cycle('odd', 'even') %> overview_category">
 	  <td width="300">
         <%= link_to_function category.name, "Element.toggle('category_#{category.id}')" %>
-        <div id="category_<%= category.id %>" style="display:none;">
-        <% category.items.for_date(Time.now).each do |item| %>
-          <%= item.payee %> <%= number_to_currency item.amount, :unit => '', :separator => ",", :delimiter => "." %><br/>
-        <% end %>
+        <div id="category_<%= category.id %>" class="category_items" style="display:none;">
+	      <table>
+          <% category.items.for_date(Time.now).each do |item| %>
+            <tr>
+              <td><%= item.payee %></td>
+              <td class="ar"><%= number_to_currency item.amount, :unit => '', :separator => ",", :delimiter => "." %></td>
+            </tr>
+          <% end %>
+          </table>
         </div>
       </td>
       <td class="ar"><%= category.sum %></td>

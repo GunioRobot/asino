@@ -277,3 +277,15 @@ div.action {
 	background: #ddd;
 	padding: 5px;
 }
+
+.overview_category {
+	border-bottom: 1px solid #ddd;
+}
+
+.category_items {
+	padding:  0 0 0 20px;
+}
+
+.category_items table {
+	width: 100%;
+}
