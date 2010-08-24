@@ -104,9 +104,9 @@ table tr.even {
 	background: #ddd;
 }
 
-table tr:hover {
+table tr.hover:hover {
 	background: #ffa319;
-	color: #fff;
+	color: #fff !important;
 }
 
 .negative {

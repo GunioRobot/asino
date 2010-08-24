@@ -24,7 +24,7 @@
   </tr>
 
 <% @categories.each do |category| %>
-  <tr class="<%= cycle('odd', 'even') %>">
+  <tr class="<%= cycle('odd', 'even') %> hover">
     <td colspan="2"><%=h category.name %></td>
     <td class="ar">
       <%= link_to image_tag('icons/edit.png'), edit_category_path(category) %>
@@ -32,7 +32,7 @@
     </td>
   </tr>
   <% category.categories.each do |subcategory| %>
-  <tr class="<%= cycle('odd', 'even') %>">
+  <tr class="<%= cycle('odd', 'even') %> hover">
 	<td class="ar">-</td>
     <td><%=h subcategory.name %></td>
     <td class="ar">
