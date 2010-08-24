@@ -20,7 +20,7 @@
 		  <hr/>
 		</td>
 	    <td class="al light" colspan="3">
-		  Vegleich mit Vormonat am <%= (@lastmonth).strftime("%d.%m.") %><br/>
+		  Vergleich mit Vormonat am <%= (@lastmonth).strftime("%d.%m.") %><br/>
 		  <%= "+" if (@income - @last_month_income) > 0 %>
 	      <%= number_to_currency     (@income - @last_month_income).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
 		  <%= number_to_currency     (@expenses - @last_month_expenses), :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
