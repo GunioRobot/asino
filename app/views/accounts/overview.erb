@@ -18,6 +18,7 @@
 	Übersicht <%= @account.title if @account %>: <%= @startdate.strftime("%B %Y") %>
 	<%= link_to '&gt;', "#{request.path}?month=#{@month + 1}" %> 
   </h2>
+  <%= note 'Kategorisch!', 'Diese Darstellung betrachtet ausschließlich Ausgaben, die Kategorien zugewiesen sind!' if @categories.empty? %>
 
   <canvas id="categoryGraph" width="800" height="450">[Ihr Internetbroswer unterstützt kein Canvas Objekt.]</canvas>
   <script>
