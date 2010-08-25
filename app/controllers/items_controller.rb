@@ -101,11 +101,20 @@ class ItemsController < ApplicationController
   
   
   def get_from_rss
+    msg = "Zahlungen wurden aktualisiert."
+    failure = false
     accounts = Account.find(:all)
     accounts.each do |account|
       next if account.feed.blank?
-      account.import_from_feed
+      if account.import_from_feed
+      
+      else
+        msg = "#{account.title} konnte nicht aktualisiert werden, der RSS Feed ist nicht gültig!"
+        failure = true 
+        next
+      end
     end
-    redirect_to accounts_path, :notice => "Zahlungen wurden aktualisiert."
+    redirect_to accounts_path, :notice => msg and return unless failure
+    redirect_to accounts_path, :alert => msg and return if failure
   end
 end

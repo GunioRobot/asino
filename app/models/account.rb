@@ -12,8 +12,12 @@ class Account < ActiveRecord::Base
   def import_from_feed
     RAILS_DEFAULT_LOGGER.debug "importing for #{self.title}/#{self.feed}"
 
-    feed = FeedTools::Feed.open(self.feed)
-    RAILS_DEFAULT_LOGGER.debug "feed: #{feed.inspect}"
+    begin
+      feed = FeedTools::Feed.open(self.feed)
+    rescue
+      return false
+    end
+    
 
     puts feed.title
     puts feed.link
