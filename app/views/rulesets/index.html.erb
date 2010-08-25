@@ -2,6 +2,7 @@
 
 <div class="column right">
 <h1>Regeln</h1>
+<% unless @rulesets.empty? %>
 <table style="width:950px;">
   <tr>
     <th class="al">
@@ -18,6 +19,14 @@
     <%= render :partial => 'rulesets/ruleset_row' , :locals => {:ruleset => ruleset }%>
   <% end %>
 </table>
+<% else %>
+<div class="m20">
+  Bisher wurden keine Regeln angelegt.<br/>
+  Mit Hilfe von Regeln können Sie neu eingehende Transaktionen automatisch Kategorien zuordnen.
+</div>
+  <%= link_to 'Neue Regel anlegen', new_ruleset_path, :class => 'button' %>
+
+<% end %>
 </div>
 
 <div class="clr"> </div>

@@ -28,7 +28,7 @@
   </p>
 <% end %>
 
-  <h3>Die Regel wird ausgeführt, wenn</h3>
+  <% unless @ruleset.rules.empty? %><h3>Die Regel wird ausgeführt, wenn</h3><% end %>
   <div class="m20">
 	<% @ruleset.rules.each do |rule| %>
 	  <div id="rule_<%= rule.id %>">
