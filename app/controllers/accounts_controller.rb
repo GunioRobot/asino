@@ -33,7 +33,8 @@ class AccountsController < ApplicationController
     
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
-    @lastmonth = Time.now.at_end_of_month == @enddate ? Time.now :  @enddate - 1.month
+    #@lastmonth = Time.now.at_end_of_month == @enddate ? Time.now :  @enddate - 1.month
+    @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
     
     @items = Item.for_account(@account.id).for_date(@enddate)
     @sum = Item.for_account(@account.id).sum(:amount) if @account

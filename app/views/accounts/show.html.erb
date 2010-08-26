@@ -36,7 +36,7 @@
 		  <%= image_tag 'icons/red_arrow_down.png' if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) < 0 %>
 		  <%= image_tag 'icons/arrow_null.png' if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) == 0 %>
 		  <%= "+" if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) > 0 %>
-		  <%= number_to_currency ((@income + @expenses) - (@last_month_income + @last_month_expenses)).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>(<%= (@last_month_income + @last_month_expenses) %>)
+		  <%= number_to_currency ((@income + @expenses) - (@last_month_income + @last_month_expenses)).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>
 		  <hr/>
 	    </td>
 	    <td></td>
