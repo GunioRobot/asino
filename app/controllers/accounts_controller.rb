@@ -33,7 +33,6 @@ class AccountsController < ApplicationController
     
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
-    #@lastmonth = Time.now.at_end_of_month == @enddate ? Time.now :  @enddate - 1.month
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
     
     @items = Item.for_account(@account.id).for_date(@enddate)
@@ -67,6 +66,7 @@ class AccountsController < ApplicationController
     
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
+    @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
     
     #@month = params[:month].to_i || 0
     
@@ -90,7 +90,9 @@ class AccountsController < ApplicationController
       next unless category
       category.sum = 0
       items.each do |item|
-        category.sum += item.amount if item.amount < 0
+        next if item.amount > 0
+        category.sum += item.amount
+        category.lastmonth_sum = category.items.for_date(@lastmonth).sum(:amount)
         category.items << item
       end
       @categories << category

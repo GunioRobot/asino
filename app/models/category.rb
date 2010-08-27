@@ -3,5 +3,5 @@ class Category < ActiveRecord::Base
   has_many :categories, :order => 'name', :dependent => :destroy
   belongs_to :category
   
-  attr_accessor :account_id, :sum
+  attr_accessor :account_id, :sum, :lastmonth_sum
 end

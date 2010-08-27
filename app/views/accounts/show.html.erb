@@ -8,7 +8,7 @@
   </h2>
   <table style="width:950px;">
 	  <tr>
-		<td class="al em" colspan="2">
+		<td class="al em" colspan="3">
 			Kontostand: <%= number_to_currency @sum, :unit => ' &euro;', :separator => ",", :delimiter => "." %> 
 		</td>
 		<td class="ar em">
@@ -19,24 +19,29 @@
 		  Gesamt <%= number_to_currency (@income + @expenses).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>
 		  <hr/>
 		</td>
-	    <td class="al light" colspan="3">
-		  Vergleich mit Vormonat am <%= (@lastmonth).strftime("%d.%m.") %><br/>
+	    <td class="ar light" colspan="2">
+		  Unterschied zum Vormonat am <%= (@lastmonth).strftime("%d.%m.") %><br/>
+		  <%= "+" if (@income - @last_month_income) > 0 %>
+	      <%= number_to_currency     (@income - @last_month_income).to_s, 
+															:unit => ' &euro;', :separator => ",", :delimiter => "." %>
 		  <%= image_tag 'icons/green_arrow_up.png' if (@income - @last_month_income) > 0 %>
 		  <%= image_tag 'icons/red_arrow_down.png' if (@income - @last_month_income) < 0 %>
 		  <%= image_tag 'icons/arrow_null.png' if (@income - @last_month_income) == 0 %>
-		  <%= "+" if (@income - @last_month_income) > 0 %>
-	      <%= number_to_currency     (@income - @last_month_income).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
+	      <br/>
+		  <%= "+" if (@expenses - @last_month_expenses) > 0 %>
+		  <%= number_to_currency     (@expenses - @last_month_expenses), 
+															:unit => ' &euro;', :separator => ",", :delimiter => "." %>
 	      <%= image_tag 'icons/green_arrow_up.png' if (@expenses - @last_month_expenses) > 0 %>
 		  <%= image_tag 'icons/red_arrow_down.png' if (@expenses - @last_month_expenses) < 0 %>
 		  <%= image_tag 'icons/arrow_null.png' if (@expenses - @last_month_expenses) == 0 %>
-		  <%= "+" if (@expenses - @last_month_expenses) > 0 %>
-		  <%= number_to_currency     (@expenses - @last_month_expenses), :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
+	      <br/>
 		  <hr />
-	      <%= image_tag 'icons/green_arrow_up.png' if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) > 0 %>
+		  <%= "+" if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) > 0 %>
+		  <%= number_to_currency ((@income + @expenses) - (@last_month_income + @last_month_expenses)).to_s, 
+															:unit => ' &euro;', :separator => ",", :delimiter => "." %>
+		  <%= image_tag 'icons/green_arrow_up.png' if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) > 0 %>
 		  <%= image_tag 'icons/red_arrow_down.png' if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) < 0 %>
 		  <%= image_tag 'icons/arrow_null.png' if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) == 0 %>
-		  <%= "+" if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) > 0 %>
-		  <%= number_to_currency ((@income + @expenses) - (@last_month_income + @last_month_expenses)).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>
 		  <hr/>
 	    </td>
 	    <td></td>

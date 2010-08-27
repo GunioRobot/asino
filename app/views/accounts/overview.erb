@@ -48,33 +48,44 @@
   <div class="m20"> </div>
   <table>
     <tr>
-	    <td class="ar em" colspan="5">
-	      Einnahmen: + <%= number_to_currency @income.to_s, :unit => '', :separator => ",", :delimiter => "." %><br/>
-		  Ausgaben: <%= @expenses %><br/>
-		  <hr/>
-		  Gesamt: <%= @income + @expenses %>
-		  <hr/>
-	    </td>
+	  <td class="ar em" colspan="2">
+	    Einnahmen: + <%= number_to_currency @income.to_s, :unit => '', :separator => ",", :delimiter => "." %><br/>
+	    Ausgaben: <%= @expenses %><br/>
+	    <hr/>
+	    Gesamt: <%= @income + @expenses %>
+	    <hr/>
+	  </td>
+	  <td class="ar">Unterschied zum Vormonat</td>
 	  <td class="ar"></td>
 	</tr>
   <% @categories.each do |category| %>
     <% next unless category %>
-    <tr class="<%= cycle('odd', 'even') %> overview_category">
-	  <td width="300">
+    <tr class="<%= cycle('even', 'odd') %> overview_category">
+	  <td style="width:300px;">
         <%= link_to_function category.name, "Element.toggle('category_#{category.id}')" %>
-        <div id="category_<%= category.id %>" class="category_items" style="display:none;">
-	      <table>
-          <% category.items.for_date(Time.now).each do |item| %>
-            <tr>
-              <td><%= item.payee %></td>
-              <td class="ar"><%= number_to_currency item.amount, :unit => '', :separator => ",", :delimiter => "." %></td>
-            </tr>
-          <% end %>
-          </table>
-        </div>
       </td>
-      <td class="ar"><%= category.sum %></td>
+      <td class="ar" style="width:80px;"><%= category.sum %></td>
+      <td class="ar" style="width:80px;">
+        <%= category.sum - category.lastmonth_sum if category.lastmonth_sum  %>
+		  <%= image_tag 'icons/green_arrow_up.png' if category.lastmonth_sum and (category.sum - category.lastmonth_sum) > 0 %>
+		  <%= image_tag 'icons/red_arrow_down.png' if category.lastmonth_sum and (category.sum - category.lastmonth_sum) < 0 %>
+	    <%= image_tag 'icons/arrow_null.png' if category.lastmonth_sum and (category.sum - category.lastmonth_sum) == 0 %>
+	  </td>
     </tr>
+    <tr class="category_sub" id="category_<%= category.id %>" style="display:none;">
+	  <td colspan="3">  
+	    <table class="category_sub">
+          <% category.items.for_date(Time.now).each do |item| %>
+          <tr>
+            <td style="width:320px;"><%= item.payee %></td>
+            <td class="ar" style="width:80px;"><%= number_to_currency item.amount, :unit => '', :separator => ",", :delimiter => "." %></td>
+            <td class="ar"></td>
+            <td></td>
+          </tr>
+          <% end %>
+        </table>
+      </td>
+	</tr>
   <% end %>
   </table>
 </div>

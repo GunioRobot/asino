@@ -339,3 +339,17 @@ div.action {
 .category_items table {
 	width: 100%;
 }
+
+tr.category_sub {
+	border-bottom: 1px solid #fff;
+	background: #f9f9f9;
+}
+
+table.category_sub {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table.category_sub tr td {
+	padding: 3px 0;
+}
