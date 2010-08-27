@@ -15,4 +15,10 @@ module ApplicationHelper
     </div>
     "
   end
+  
+  def trend_img(number)
+     return image_tag 'icons/green_arrow_up.png' if number > 0
+     return image_tag 'icons/red_arrow_down.png' if number < 0
+     return image_tag 'icons/arrow_null.png' # must be 0
+  end
 end

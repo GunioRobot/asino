@@ -90,7 +90,7 @@ class AccountsController < ApplicationController
       next unless category
       category.sum = 0
       items.each do |item|
-        next if item.amount > 0
+        next if item.amount >= 0
         category.sum += item.amount
         category.lastmonth_sum = category.items.for_date(@lastmonth).sum(:amount)
         category.items << item

@@ -59,7 +59,7 @@
 	  <td class="ar"></td>
 	</tr>
   <% @categories.each do |category| %>
-    <% next unless category %>
+    <% next if !category or category.sum == 0 %>
     <tr class="<%= cycle('even', 'odd') %> overview_category">
 	  <td style="width:300px;">
         <%= link_to_function category.name, "Element.toggle('category_#{category.id}')" %>
@@ -67,9 +67,7 @@
       <td class="ar" style="width:80px;"><%= category.sum %></td>
       <td class="ar" style="width:80px;">
         <%= category.sum - category.lastmonth_sum if category.lastmonth_sum  %>
-		  <%= image_tag 'icons/green_arrow_up.png' if category.lastmonth_sum and (category.sum - category.lastmonth_sum) > 0 %>
-		  <%= image_tag 'icons/red_arrow_down.png' if category.lastmonth_sum and (category.sum - category.lastmonth_sum) < 0 %>
-	    <%= image_tag 'icons/arrow_null.png' if category.lastmonth_sum and (category.sum - category.lastmonth_sum) == 0 %>
+          <%= trend_img(category.sum - category.lastmonth_sum) %>
 	  </td>
     </tr>
     <tr class="category_sub" id="category_<%= category.id %>" style="display:none;">
