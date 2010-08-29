@@ -245,8 +245,9 @@ div.note a {
 /* @group Navigation */
 
 #navigation {
-	background: #ffbf5e url(/images/logo.png) bottom right no-repeat;
+	background: #ffbf5e url(/images/logo.png) center right no-repeat;
 	color: #fff;
+	height: 45px;
 }
 
 #navigation ul {
