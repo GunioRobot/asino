@@ -148,7 +148,10 @@ class AccountsController < ApplicationController
         format.html { redirect_to(@account, :notice => 'Konto wurde erfolgreich angelegt.') }
         format.xml  { render :xml => @account, :status => :created, :location => @account }
       else
-        format.html { render :action => "new" }
+        format.html { 
+                      flash[:alert] = 'Konto wurde nicht angelegt!'
+                      render :action => 'new'
+                     }
         format.xml  { render :xml => @account.errors, :status => :unprocessable_entity }
       end
     end

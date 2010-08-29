@@ -1,5 +1,10 @@
 --- 
 de:
+  activerecord:
+    errors:
+      template:
+        header: "Fehler!"
+        body: ""
   date:
     formats:
       default: "%d.%m.%Y"

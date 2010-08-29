@@ -8,6 +8,8 @@ class Account < ActiveRecord::Base
   has_many :items, :order => 'created_at desc', :dependent => :destroy
   has_many :rulesets, :dependent => :destroy
   has_many :monthreports, :dependent => :destroy
+  
+  validates_presence_of :title, :message => "Bitte geben Sie dem Konto einen Namen!"
 
   def import_from_feed
     RAILS_DEFAULT_LOGGER.debug "importing for #{self.title}/#{self.feed}"

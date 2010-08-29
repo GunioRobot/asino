@@ -323,6 +323,30 @@ div.action {
 
 /* @end */
 
+/* @group Error Messages */
+
+.formError {
+	font-weight: bold;
+	color: #c52c0f;
+}
+
+.fieldWithErrors {
+	display: inline;
+}
+
+.fieldWithErrors label {
+	display: none;
+}
+
+.fieldWithErrors input {
+  border:  2px solid #c52c0f;
+  color: white;
+}
+
+/* @end */
+
+
+
 .rule {
 	background: #ddd;
 	padding: 5px;
