@@ -10,6 +10,7 @@ class Account < ActiveRecord::Base
   has_many :monthreports, :dependent => :destroy
   
   validates_presence_of :title, :message => "Bitte geben Sie dem Konto einen Namen!"
+  validates_uniqueness_of :title, :message => "Dieser Kontoname wird bereits verwendet!"
 
   def import_from_feed
     RAILS_DEFAULT_LOGGER.debug "importing for #{self.title}/#{self.feed}"
