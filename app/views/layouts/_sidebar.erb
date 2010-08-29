@@ -1,14 +1,16 @@
 
 <!-- sidebar start -->
 
-<div class="column left">
+<div id="sidebar" class="column left">
   <h3><%= link_to 'Konten', '/accounts' %></h3>
   <% @accounts.each do |account| %>
     <%= link_to account.title, account, :style => "#{'font-weight:bold;' if account == @account}" %><br/>
   <% end %>
 
+  <% unless Account.all.empty? %>
   <h3>Neue Zahlung</h3>
     <%= link_to 'Neue Zahlung', new_account_item_path(@account) if @account %>
+  <% end %>
 
   <h3>Kategorien</h3>
   <%= link_to 'Alle Kategorien', categories_path %><br/>

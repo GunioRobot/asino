@@ -125,7 +125,7 @@ table tr.hover:hover {
 
 input[type=submit],
 a.button {
-	background: #ffa319 url(/images/alert-overlay.png) repeat-x;
+	background: #ffa319;
 	display: inline-block;
 	margin: 20px 5px 0 0;
 	padding: 5px 10px 8px;

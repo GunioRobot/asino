@@ -7,7 +7,7 @@ module ApplicationHelper
   
   def note(title = 'Notiz', text = 'Bitte Text angeben')
     "
-    <div class=\"note\">
+    <div id=\"note\" class=\"note\">
       <a href=\"#\">  
         <h2>#{title}</h2>  
         <p>#{text}</p>  
