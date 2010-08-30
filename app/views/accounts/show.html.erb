@@ -9,7 +9,7 @@
   <table style="width:950px;">
 	  <tr>
 		<td class="al em" colspan="3">
-			Kontostand: <%= number_to_currency @sum, :unit => ' &euro;', :separator => ",", :delimiter => "." %> 
+			Kontostand: <%= number_to_currency @sum.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %> 
 		</td>
 		<td class="ar em">
 		  &nbsp;<br/>
