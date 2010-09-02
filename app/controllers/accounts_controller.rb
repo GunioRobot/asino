@@ -95,7 +95,7 @@ class AccountsController < ApplicationController
         category.lastmonth_sum = category.items.for_date(@lastmonth).sum(:amount)
         category.items << item
       end
-      @categories << category
+      @categories << category unless category.sum == 0
       @categories_sum += category.sum
     end 
     
