@@ -1,14 +1,7 @@
 @account
 Feature: View a account
   In order to see all transactions within an account
-  I want to be able to view a account
-
-  #Background:
-  #Given an account exists with title: "Giro"
-  #
-  #Scenario: Visiting the account page
-  #  When I go to the "Giro" account page
-  #  Then I should see "Konto bearbeiten"
+  I want to be able to create and view an account
 
   Scenario: Create a new account
     When I go to the new account page
@@ -32,7 +25,7 @@ Feature: View a account
     And I should see "Bitte geben Sie dem Konto einen Namen!"
 
   Scenario: Try to create a new account without title that already exists
-    Given an account exists with title: "Giro"
+    Given an account exists with title "Giro"
     When I go to the new account page
     When I fill in "account_title" with "Giro"
     And I press "Speichern"
