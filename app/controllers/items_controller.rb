@@ -43,13 +43,14 @@ class ItemsController < ApplicationController
   # POST /items
   # POST /items.xml
   def create
-    account = Account.find(params[:item][:account_id])
+    @accounts = Account.all
+    @account = Account.find(params[:item][:account_id])
     params[:item][:amount] = params[:item][:amount].gsub(',','.')
     @item = Item.new(params[:item])
 
     respond_to do |format|
       if @item.save
-        format.html { redirect_to(account, :notice => 'Die Zahlung wurde erfolgreich angelegt.') }
+        format.html { redirect_to(@account, :notice => 'Die Zahlung wurde erfolgreich angelegt.') }
         format.xml  { render :xml => @item, :status => :created, :location => @item }
       else
         format.html { render :action => "new" }
