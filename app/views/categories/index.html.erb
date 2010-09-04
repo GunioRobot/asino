@@ -24,20 +24,20 @@
   </tr>
 
 <% @categories.each do |category| %>
-  <tr class="<%= cycle('odd', 'even') %> hover">
+  <tr id="category_<%= category.id %>" class="<%= cycle('odd', 'even') %> hover">
     <td colspan="2"><%=h category.name %></td>
     <td class="ar">
-      <%= link_to image_tag('icons/edit.png'), edit_category_path(category) %>
-      <%= link_to image_tag('icons/delete.png'), category, :confirm => 'Are you sure?', :method => :delete %>
+      <%= link_to image_tag('icons/edit.png', :alt => "Bearbeiten"), edit_category_path(category) %>
+      <%= link_to image_tag('icons/delete.png', :alt => "Löschen"), category, :confirm => 'Are you sure?', :method => :delete %>
     </td>
   </tr>
   <% category.categories.each do |subcategory| %>
-  <tr class="<%= cycle('odd', 'even') %> hover">
+  <tr id="category_<%= category.id %>" class="<%= cycle('odd', 'even') %> hover">
 	<td class="ar">-</td>
     <td><%=h subcategory.name %></td>
     <td class="ar">
-      <%= link_to image_tag('icons/edit.png'), edit_category_path(subcategory) %>
-      <%= link_to image_tag('icons/delete.png'), category_path(subcategory), :confirm => 'Are you sure?', :method => :delete %>
+      <%= link_to image_tag('icons/edit.png', :alt => "Bearbeiten"), edit_category_path(subcategory) %>
+      <%= link_to image_tag('icons/delete.png', :alt => "Löschen"), category_path(subcategory), :confirm => 'Are you sure?', :method => :delete %>
     </td>
   </tr>
   <% end %>

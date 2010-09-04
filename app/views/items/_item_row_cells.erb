@@ -15,6 +15,6 @@
   <%= number_to_currency(item.amount) %>
 </td>
 <td class="ar<%= ' transfer' if item.transfer %>">
-  <%= link_to image_tag('icons/edit.png'), edit_item_path(item) %>
-  <%= link_to_remote image_tag('icons/delete.png'), {:url => item_path(item), :method => :delete, :confirm => 'Bist Du sicher? Der Vorgang wird unwideruflich gelöscht!'} %>
+  <%= link_to image_tag('icons/edit.png', :alt => "Bearbeiten"), edit_item_path(item) %>
+  <%= link_to_remote image_tag('icons/delete.png', :alt => 'Löschen'), {:url => item_path(item), :method => :delete} %>
 </td>

@@ -9,14 +9,18 @@
   <table style="width:950px;">
 	  <tr>
 		<td class="al em" colspan="3">
-			Kontostand: <%= number_to_currency @sum.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %> 
+			Kontostand: 
+			<span id="accountsaldo"><%= number_to_currency @sum.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span>
 		</td>
 		<td class="ar em">
 		  &nbsp;<br/>
-	      Einnahmen: +<%= number_to_currency @income.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
-		  Ausgaben: <%= number_to_currency @expenses, :unit => ' &euro;', :separator => ",", :delimiter => "." %><br/>
+	      Einnahmen: 
+	        <span id="income">+<%= number_to_currency @income.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span><br/>
+		  Ausgaben: 
+		    <span id="expenses"><%= number_to_currency @expenses, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span><br/>
 		  <hr/>
-		  Gesamt <%= number_to_currency (@income + @expenses).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>
+		  Gesamt 
+		    <span id="saldo"><%= number_to_currency (@income + @expenses).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span>
 		  <hr/>
 		</td>
 	    <td class="ar light" colspan="2">
@@ -71,7 +75,7 @@
 		  Für dieses Konto wurden noch keine Zahlungen eingegeben.
 		  <% if @account %>
 		    <div class="m20">
-		      <%= link_to 'Neue Zahlung eingeben', new_item_path(:account_id => @account.id), :class => 'button' %>
+		      <%= link_to 'Neue Zahlung eingeben', new_account_item_path(@account), :class => 'button' %>
 		      <% unless @account.feed.blank? %>
 		        oder <%= link_to 'Zahlungen von Saldomat übernehmen', "/items/get_from_rss", :class => 'button' %>
 		      <% end %>
