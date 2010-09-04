@@ -14,6 +14,12 @@ module NavigationHelpers
       "/accounts/#{(Account.find_by_title($1).id)}"
     when /the new account page/
       new_account_path
+    when /the new item page for "(.*)" account$/i
+      new_account_item_path(Account.find_by_title($1))
+    when /the categories page/
+      categories_path
+    when /the new category page/
+      new_category_path
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
