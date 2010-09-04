@@ -7,6 +7,8 @@ class Item < ActiveRecord::Base
   after_save :add_to_monthreport
   after_destroy :remove_from_monthreport
   
+  validates_presence_of :amount, :message => "Bitte geben Sie einen Betrag an!"
+  
   
   named_scope :expenses, :conditions => ['amount < 0 and transfer = 0']
   named_scope :income, :conditions => ['amount > 0 and transfer = 0']
