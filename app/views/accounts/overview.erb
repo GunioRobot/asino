@@ -64,9 +64,9 @@
 	  <td style="width:300px;">
         <%= link_to_function category.name, "Element.toggle('category_#{category.id}')" %>
       </td>
-      <td class="ar" style="width:80px;"><%= category.sum %></td>
+      <td class="ar" style="width:80px;"><%= number_to_currency (category.sum), :unit => '', :separator => ",", :delimiter => "." %></td>
       <td class="ar" style="width:80px;">
-        <%= category.sum - category.lastmonth_sum if category.lastmonth_sum  %>
+        <%= number_to_currency (category.sum - category.lastmonth_sum), :unit => '', :separator => ",", :delimiter => "." if category.lastmonth_sum  %>
           <%= trend_img(category.sum - category.lastmonth_sum) %>
 	  </td>
     </tr>
