@@ -39,6 +39,10 @@
     <%= f.label :transfer, 'Zahlung ist Transfer zwischen eigenen Konten' %>
   </p>
   <p>
+	<%= f.check_box :fix %>
+    <%= f.label :fix, 'Zahlung gehört zu monatlichen Fixkosten' %>
+  </p>
+  <p>
     <%= f.submit 'Speichern' %>
   </p>
 <% end %>
