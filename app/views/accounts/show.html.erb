@@ -9,19 +9,8 @@
   <table style="width:950px;">
 	  <tr>
 		<td class="al em" colspan="3">
-			Kontostand: 
+			Kontostand:
 			<span id="accountsaldo"><%= number_to_currency @sum.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span>
-		</td>
-		<td class="ar em">
-		  &nbsp;<br/>
-	      Einnahmen: 
-	        <span id="income">+<%= number_to_currency @income.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span><br/>
-		  Ausgaben: 
-		    <span id="expenses"><%= number_to_currency @expenses, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span><br/>
-		  <hr/>
-		  Gesamt 
-		    <span id="saldo"><%= number_to_currency (@income + @expenses).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span>
-		  <hr/>
 		</td>
 	    <td class="ar light" colspan="2">
 		  Unterschied zum Vormonat am <%= (@lastmonth).strftime("%d.%m.") %><br/>
@@ -40,7 +29,18 @@
 		  <%= trend_img ((@income + @expenses) - (@last_month_income + @last_month_expenses))%>
 		  <hr/>
 	    </td>
-	    <td></td>
+		<td class="ar em" colspan="2">
+		  &nbsp;<br/>
+	      Einnahmen: 
+	        <span id="income">+<%= number_to_currency @income.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span><br/>
+		  Ausgaben: 
+		    <span id="expenses"><%= number_to_currency @expenses, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span><br/>
+		  <hr/>
+		  Gesamt 
+		    <span id="saldo"><%= number_to_currency (@income + @expenses).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span>
+		  <hr/>
+		</td>
+		<td></td>
 	  </tr>
 	  <tr>
 		<th class="ar">
