@@ -30,6 +30,7 @@
 	    <% if !params[:id] and controller.controller_name == 'accounts' %>
 	      <li><%= link_to 'Statistik', "/accounts/overview" %></li>
 	    <% end %>
+	    <li><%= link_to 'Verlauf', "/accounts/course" if Account.count > 0 %></li>
 	    <li><%= link_to 'Aktualisieren', "/items/get_from_rss" %></li>
 	    <li><%= link_to 'Sichern', "/system/backup" %></li>
 	    <li><%= link_to 'Abmelden', logout_path %></li>
