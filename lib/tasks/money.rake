@@ -1,4 +1,4 @@
-namespace :money do
+namespace :asino do
   
   task :get => :environment do
     accounts = Account.find(:all)
