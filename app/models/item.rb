@@ -2,6 +2,7 @@ class Item < ActiveRecord::Base
   belongs_to :category
   belongs_to :account
   
+  before_create :check_for_fixed
   after_create :apply_rulesets
   before_save :remove_from_monthreport
   after_save :add_to_monthreport
@@ -64,6 +65,20 @@ named_scope :for_current_date,
     
   end
   
+  
+  # check if the new payment is a recurring one and set its state to fixed if so.
+  def check_for_fixed
+    date = Time.now - 1.month
+    past_items = Item.find(:all, :conditions => ["created_at between ? and ? and payee = ? and amount = ?",
+     date.at_beginning_of_month.to_s(:db),
+     date.at_end_of_month.to_s(:db),
+     self.payee.strip,
+     self.amount * -1])
+     self.fix = ((past_items.empty?) ? 0 : 1)
+  end
+  
+  
+  
   def add_to_monthreport
     return if self.transfer
     
@@ -78,6 +93,8 @@ named_scope :for_current_date,
     monthreport.saldo += self.amount
     monthreport.save
   end
+  
+  
   
   def remove_from_monthreport
     return if self.transfer
