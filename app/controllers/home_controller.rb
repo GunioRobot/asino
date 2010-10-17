@@ -7,5 +7,7 @@ class HomeController < ApplicationController
   def help
     @accounts = Account.all
   end
+  
+
 
 end
