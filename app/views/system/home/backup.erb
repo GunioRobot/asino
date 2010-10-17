@@ -1,10 +1,16 @@
 <div id="sidebar" class="column left"></div>
 
 <div class="column right">
-	
-  <h1>Ihre Daten wurden gesichert.</h1>
-  Sie finden die Sicherungsdatei unter <%= @db_out_path %>
-
+  <div style="width:400px;margin:0 0 150px 0;">
+    <% unless flash[:warning] %>
+      <h1>Ihre Daten wurden gesichert.</h1>
+    <% else %>
+      <%= note 'Uh-oh!', 'Die Sicherung ist fehlgeschlagen.<br/>Vermutlich hat Ihr Serverprozess keine Zugriffsrechte auf mysqldump.' %>
+    <% end %>
+    Sie finden die Sicherungsdatei unter <%= link_to @db_out_path, "file://#{@db_out_path}", :target => '_blank' %>
+    <br/>
+    <%= @msg %>
+  </div>
 </div>
 
 <div class="clr"></div>
