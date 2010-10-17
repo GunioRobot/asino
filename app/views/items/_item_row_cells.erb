@@ -12,7 +12,7 @@
   </td>
 <% end %>
 <td>
-  <%= item.fix ? '&#10004;' : '' %>
+  <%= render :partial => 'items/add_fix', :locals => {:item => item} %>
 </td>
 <td class="ar<%= get_saldo_class(item.amount) %><%= ' transfer' if item.transfer %>">
   <%= number_to_currency(item.amount) %>

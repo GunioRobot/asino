@@ -1,0 +1,1 @@
+<%= link_to (item.fix ? '&#10004;' : ' - '), '#', :onclick => "new Ajax.Request('/items/toggle_fix/#{item.id}', {asynchronous:true, evalScripts:true, }); return false;" %>

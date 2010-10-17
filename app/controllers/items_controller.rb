@@ -77,8 +77,7 @@ class ItemsController < ApplicationController
     end
   end
 
-  # DELETE /items/1
-  # DELETE /items/1.xml
+  # delete a payment item
   def destroy
     @item = Item.find(params[:id])
     @item.destroy
@@ -88,6 +87,8 @@ class ItemsController < ApplicationController
     end
   end
   
+  
+  # change category assignment for an item. Called via ajax.
   def add_category
     item = Item.find(params[:id])
     category = Category.find(params[:item][:category_id].to_i)
@@ -95,6 +96,17 @@ class ItemsController < ApplicationController
     item.update_attribute(:category_id, params[:item][:category_id])
     item.update_attribute(:transfer, (category.transfer ? true : false))
     item.reload
+    render :update do |page|
+      page.replace_html "item_#{item.id}", :partial => 'items/item_row_cells', :locals => {:item => item}
+    end
+  end
+  
+  
+  # Toggle the fix property of an item, indicating that it is a monthly recurring payment. Called via ajax.
+  def toggle_fix
+    item = Item.find(params[:id])
+    item.update_attribute(:fix, (item.fix ? false : true))
+    RAILS_DEFAULT_LOGGER.debug "toggled fix"
     render :update do |page|
       page.replace_html "item_#{item.id}", :partial => 'items/item_row_cells', :locals => {:item => item}
     end
