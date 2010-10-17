@@ -20,6 +20,12 @@ module NavigationHelpers
       categories_path
     when /the new category page/
       new_category_path
+    when /the log\s?in page/
+      login_path
+    when /the log\s?out page/
+      logout_path
+    when /the sign\s?up page/
+      signup_path
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

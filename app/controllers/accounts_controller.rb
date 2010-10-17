@@ -2,7 +2,7 @@ class AccountsController < ApplicationController
   # GET /accounts
   # GET /accounts.xml
   
-  before_filter :get_accounts
+  before_filter :get_accounts, :check_login
   
   def index
     render :action => 'no_accounts' and return if @accounts.empty?

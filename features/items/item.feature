@@ -3,7 +3,8 @@ Feature: Create a transaction
   In order work with transaction a user should be able to ceate, edit and delete items
 
   Background:
-  Given an account exists with title "Giro"
+  Given I am logged in
+  And an account exists with title "Giro"
   And there are some default categories
   
   Scenario: Visit the account page, create a new item and edit it

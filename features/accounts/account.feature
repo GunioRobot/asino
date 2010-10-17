@@ -3,6 +3,9 @@ Feature: View a account
   In order to see all transactions within an account
   I want to be able to create and view an account
 
+  Background:
+  Given I am logged in
+
   Scenario: Create a new account
     When I go to the new account page
     Then I should see "RSS Feed einrichten" within "#note"

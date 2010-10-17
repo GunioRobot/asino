@@ -4,6 +4,8 @@
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
+  
+  include AuthenticatedSystem
 
   before_filter :set_locale, :set_month
   
@@ -23,4 +25,12 @@ class ApplicationController < ActionController::Base
     end
     @month = 0
   end
+  
+  def check_login
+    return if logged_in?
+    
+    redirect_to login_path, :alert => 'Bitte melden Sie sich an.' if User.count > 0;
+    redirect_to signup_path, :notice => 'Bitte legen Sie zuerst einen Benutzer an.' if User.count == 0;
+  end
+
 end

@@ -4,6 +4,9 @@ Feature: Home page
   As a new user
   I want to be able to create a new account
 
+  Background:
+  Given I am logged in
+
   Scenario: Visiting the home page without having an account
     When I go to the home page
     Then I should see "Sie haben noch keine Konten angelegt."

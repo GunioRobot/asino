@@ -3,6 +3,9 @@ Feature: Create a category
   In order to see all transactions within an account
   I want to be able to create and view an account
 
+  Background:
+  Given I am logged in
+
   Scenario: Follow home page link to categories
     When I am on the home page
     And I follow "Alle Kategorien"
