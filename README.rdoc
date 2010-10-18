@@ -18,6 +18,13 @@ asino is intended to run on a local machine, not a server that is accessible fro
 
 By default, asino uses MySQL, so you should have a running instance
 
+== Scheduled Tasks
+
+To enable automatic sync from Saldomat to asion, edit crontab (in Terminal, type "crontab -e") and add
+  <tt>*/15 *  *    *     *    cd [PATH_TO_YOUR_ASINO_INSTALLATION] && /usr/bin/rake RAILS_ENV=production  asino:get</tt>
+e.g.: 
+  <tt>*/15 *  *    *     *    cd /Users/your.name/Railsapps/asino && /usr/bin/rake RAILS_ENV=production  asino:get</tt>
+
 == Help/FAQ
 
 {Please check out the FAQ here...}[http://answer8.de/asino]
