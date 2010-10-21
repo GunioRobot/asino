@@ -14,7 +14,6 @@ namespace :asino do
     items = Item.find(:all, :order => "created_at")
     puts "updating #{items.size} items"
     items.each do |item|
-      #puts item.id
       item.add_to_monthreport
     end
   end

@@ -80,15 +80,15 @@ named_scope :for_current_date,
   
   
   def add_to_monthreport
-    return if self.transfer
+    #return if self.transfer
     
     RAILS_DEFAULT_LOGGER.debug "add to monthreport: #{self.amount}"
     
     monthreport = Monthreport.find_or_create(self.account, self.created_at)
     if self.amount < 0 # is an expense
-      monthreport.expenses += self.amount
+      monthreport.expenses += self.amount unless self.transfer?
     else # is an income
-      monthreport.income += self.amount
+      monthreport.income += self.amount unless self.transfer?
     end
     monthreport.saldo += self.amount
     monthreport.save
