@@ -20,7 +20,7 @@ By default, asino uses MySQL, so you should have a running instance
 
 == Scheduled Tasks
 
-To enable automatic sync from Saldomat to asion, edit crontab (in Terminal, type "crontab -e") and add
+To enable automatic sync from Saldomat to asino, edit crontab (in Terminal, type "crontab -e") and add
   <tt>*/15 *  *    *     *    cd [PATH_TO_YOUR_ASINO_INSTALLATION] && /usr/bin/rake RAILS_ENV=production  asino:get</tt>
 e.g.: 
   <tt>*/15 *  *    *     *    cd /Users/your.name/Railsapps/asino && /usr/bin/rake RAILS_ENV=production  asino:get</tt>
