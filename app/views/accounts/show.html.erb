@@ -44,29 +44,23 @@
 	  </tr>
 	  <tr>
 		<th class="ar">
-		  <%= link_to 'Datum', "#{request.path}?order=date" %>
-		  <%= link_to '&uarr;', "#{request.path}?order=date desc" %>
+          <%= sortlink('Datum', 'date') %>
 		</th>
 		<th class="al">
-		  <%= link_to 'Empfänger', "#{request.path}?order=payee" %>
-		  <%= link_to '&uarr;', "#{request.path}?order=payee desc" %>
+		  <%= sortlink('Empfänger', 'payee') %>
 		</th>
 		<th class="al">
-		  <%= link_to 'Beschreibung', "#{request.path}?order=descr" %>
-		  <%= link_to '&uarr;', "#{request.path}?order=descr desc" %>
+          <%= sortlink('Beschreibung', 'descr') %>
 		</th>
 		<th class="al"><%= 'Konto' unless @account %></th>
 		<th class="al">
-		  <%= link_to 'Kategorie', "#{request.path}?order=cat" %>
-		  <%= link_to '&uarr;', "#{request.path}?order=cat desc" %>
+		  Kategorie
 		</th>
 		<th class="al">
-		  <%= link_to 'Fix', "#{request.path}?order=fix" %>
-		  <%= link_to '&uarr;', "#{request.path}?order=fix desc" %>
+		  Fix
 		</th>
 		<th class="ar">
-		  <%= link_to 'Saldo', "#{request.path}?order=saldo" %>
-		  <%= link_to '&uarr;', "#{request.path}?order=saldo desc" %>
+		  <%= sortlink('Saldo', 'saldo') %>
 		</th>
 		<th style="width:40px;"></th>
 	  </tr>

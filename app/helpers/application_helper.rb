@@ -21,4 +21,15 @@ module ApplicationHelper
      return image_tag 'icons/red_arrow_down.png' if number < 0
      return image_tag 'icons/arrow_null.png' # must be 0
   end
+  
+  # helper to display sortable links and their current sort state in table headers
+  def sortlink(label, param)
+	  if params[:order] == param
+	    link_to "#{label} &darr;", "#{request.path}?order=#{param} desc"
+	  elsif params[:order] == "#{param} desc"
+	    link_to "#{label} &uarr;", "#{request.path}?order=#{param}"
+	  else
+      link_to label, "#{request.path}?order=#{param}"
+    end
+  end
 end

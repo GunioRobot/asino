@@ -4,6 +4,7 @@ class AccountsController < ApplicationController
   
   before_filter :get_accounts, :check_login
   
+  
   def index
     render :action => 'no_accounts' and return if @accounts.empty?
     
@@ -17,6 +18,8 @@ class AccountsController < ApplicationController
     @income = Item.income.for_date(@enddate).sum(:amount)
     @expenses = Item.expenses.for_date(@enddate).sum(:amount)
     
+    sort_items #sort items according to order param
+    
     @last_month_income = Item.income.for_current_date(@lastmonth).sum(:amount)    
     @last_month_expenses = Item.expenses.for_current_date(@lastmonth).sum(:amount)
 
@@ -26,8 +29,7 @@ class AccountsController < ApplicationController
     end
   end
 
-  # GET /accounts/1
-  # GET /accounts/1.xml
+
   def show
     @account = Account.find(params[:id])
     
@@ -44,22 +46,14 @@ class AccountsController < ApplicationController
     @last_month_income = Item.income.for_account(@account.id).for_current_date(@lastmonth).sum(:amount)    
     @last_month_expenses = Item.expenses.for_account(@account.id).for_current_date(@lastmonth).sum(:amount)
     
-    @items = @items.sort_by(&:created_at) if params[:order] == 'date'
-    @items = @items.sort_by(&:created_at).reverse if params[:order] == 'date desc'
-    @items = @items.sort_by(&:payee) if params[:order] == 'payee'
-    @items = @items.sort_by(&:payee).reverse if params[:order] == 'payee desc'
-    @items = @items.sort_by(&:description) if params[:order] == 'descr'
-    @items = @items.sort_by(&:description).reverse if params[:order] == 'descr desc'
-    @items = @items.sort_by(&:amount) if params[:order] == 'saldo'
-    @items = @items.sort_by(&:amount).reverse if params[:order] == 'saldo desc'
-    @items = @items.sort_by(&:category_id) if params[:order] == 'cat'
-    @items = @items.sort_by(&:category_id).reverse if params[:order] == 'cat desc'
+    sort_items #sort items according to order param
 
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @account }
     end
   end
+  
   
   def overview
     @account = Account.find(params[:id]) if params[:id]
@@ -122,8 +116,6 @@ class AccountsController < ApplicationController
   end
   
   
-  # GET /accounts/new
-  # GET /accounts/new.xml
   def new
     @account = Account.new
 
@@ -133,13 +125,12 @@ class AccountsController < ApplicationController
     end
   end
 
-  # GET /accounts/1/edit
+
   def edit
     @account = Account.find(params[:id])
   end
 
-  # POST /accounts
-  # POST /accounts.xml
+
   def create
     @account = Account.new(params[:account])
 
@@ -157,8 +148,7 @@ class AccountsController < ApplicationController
     end
   end
 
-  # PUT /accounts/1
-  # PUT /accounts/1.xml
+
   def update
     @account = Account.find(params[:id])
 
@@ -173,8 +163,7 @@ class AccountsController < ApplicationController
     end
   end
 
-  # DELETE /accounts/1
-  # DELETE /accounts/1.xml
+
   def destroy
     @account = Account.find(params[:id])
     @account.destroy
@@ -185,10 +174,27 @@ class AccountsController < ApplicationController
     end
   end
   
+  
   protected
+  
   
   # retrieve all accounts, they are needed for the sidebar display
   def get_accounts
     @accounts = Account.all
+  end
+  
+  
+  # sort items according to sort params in url
+  def sort_items
+    @items = @items.sort_by(&:created_at) if params[:order] == 'date'
+    @items = @items.sort_by(&:created_at).reverse if params[:order] == 'date desc'
+    @items = @items.sort_by(&:payee) if params[:order] == 'payee'
+    @items = @items.sort_by(&:payee).reverse if params[:order] == 'payee desc'
+    @items = @items.sort_by(&:description) if params[:order] == 'descr'
+    @items = @items.sort_by(&:description).reverse if params[:order] == 'descr desc'
+    @items = @items.sort_by(&:amount) if params[:order] == 'saldo'
+    @items = @items.sort_by(&:amount).reverse if params[:order] == 'saldo desc'
+    @items = @items.sort_by(&:category_id) if params[:order] == 'cat'
+    @items = @items.sort_by(&:category_id).reverse if params[:order] == 'cat desc'
   end
 end
