@@ -25,6 +25,8 @@ To enable automatic sync from Saldomat to asino, edit crontab (in Terminal, type
 e.g.: 
   <tt>*/15 *  *    *     *    cd /Users/your.name/Railsapps/asino && /usr/bin/rake RAILS_ENV=production  asino:get</tt>
 
+This will sync asino from Saldomat every 15 minutes.
+
 == Help/FAQ
 
 {Please check out the FAQ here...}[http://answer8.de/asino]
