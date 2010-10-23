@@ -156,6 +156,11 @@ a.button:hover {
 	background-color: #ff9900;
 }
 
+input[type=submit].small {
+	font-size: 1em;
+	padding: 4px 8px;
+}
+
 /* @end */
 
 
@@ -189,18 +194,17 @@ a.button:hover {
 /* @group Forms */
 
 input[type=text],
+input[type=search],
 input[type=password] {
 	padding: 5px;
 	font-weight: bold;
 	width: 300px;
 }
 
-input[type=text],
-input[type=passwor] {
-	padding: 5px;
-	font-weight: bold;
-	width: 300px;
+input[type=search] {
+	width: 200px;
 }
+
 
 /* @end */
 

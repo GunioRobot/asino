@@ -30,6 +30,7 @@ class AccountsController < ApplicationController
   end
 
 
+
   def show
     @account = Account.find(params[:id])
     
@@ -61,8 +62,6 @@ class AccountsController < ApplicationController
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
-    
-    #@month = params[:month].to_i || 0
     
     @categories_sum = 0
     
@@ -96,7 +95,7 @@ class AccountsController < ApplicationController
     @categories = @categories.sort{|l,m| l.sum <=> m.sum}
   end
   
-  
+  # show graph of monthly saldo, expenses, income development
   def course
     @account = Account.find(params[:id]) if params[:id]
     
@@ -113,6 +112,28 @@ class AccountsController < ApplicationController
     
     monthreports = Monthreport.find(:all, :conditions => ["account_id = ? and date > ?", params[:id], '1980-01-01'], :order => 'date')
 
+  end
+  
+  
+  def search
+    
+    @sum = Item.sum(:amount)
+    
+    unless params[:account_id].blank?
+      @items = Item.for_account(params[:account_id]).find(:all, 
+                  :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"], 
+                  :order => 'created_at desc')
+      @result_saldo = Item.for_account(params[:account_id]).find(:all, 
+                  :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"]).sum(&:amount) #todo not nice!
+    else
+      @items = Item.find(:all, 
+                  :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"], 
+                  :order => 'created_at desc')
+      @result_saldo = Item.find(:all, 
+                  :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"]).sum(&:amount) #todo not nice!
+    end
+    
+    render :template => 'accounts/show'
   end
   
   

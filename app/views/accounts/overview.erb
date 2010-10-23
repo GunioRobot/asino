@@ -28,7 +28,7 @@
   
           var p = new RGraph.Pie('categoryGraph', [<%= @categories.collect {|m| m.sum * -1}.join(',') %>]);
           p.Set('chart.labels', ['<%= @categories.collect {|d| d.name}.join("','") %>']);
-          p.Set('chart.gutter', 50)
+          p.Set('chart.gutter', 80)
           p.Set('chart.linewidth', 1);
           p.Set('chart.strokestyle', '#fff');
           p.Set('chart.labels.sticks', true);

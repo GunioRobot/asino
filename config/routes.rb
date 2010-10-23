@@ -19,7 +19,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.overview '/overview', :controller => 'accounts', :action => 'overview'
   map.resources :accounts, :has_many => [:items, :rulesets], :member => {:overview => :get, :course => :get},
-                                                :collection => {:overview => :get, :course => :get}
+                                                :collection => {:overview => :get, :course => :get, :search => :get}
   map.resources :rulesets
   map.help '/help', :controller => 'home', :action => 'help'
   
