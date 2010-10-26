@@ -44,7 +44,7 @@
   </p>
   <p>
     <%= f.label :category_id, 'Kategorie' %><br />
-    <%= f.collection_select(:category_id, Category.all(:order => 'name'), :id, :name, {:include_blank => true}) %>
+    <%= f.collection_select(:category_id, Category.all(:order => 'name'), :id, :name, {:include_blank => true}, :class => "fancy") %>
   </p>
   <% if @accounts.size > 1 %>
   <p>
