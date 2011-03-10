@@ -7,11 +7,11 @@ asino is intended to run on a local machine, not a server that is accessible fro
 
 == Screenshots
 
-link:https://github.com/agehret/asino/raw/master/public/images/screenshots/items_small.png
+https://github.com/agehret/asino/raw/master/public/images/screenshots/items_small.png
 
-link:https://github.com/agehret/asino/raw/master/public/images/screenshots/overview_small.png
+https://github.com/agehret/asino/raw/master/public/images/screenshots/overview_small.png
 
-link:https://github.com/agehret/asino/raw/master/public/images/screenshots/course_small.png
+https://github.com/agehret/asino/raw/master/public/images/screenshots/course_small.png
 
 
 == Getting Started
