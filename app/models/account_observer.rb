@@ -1,3 +1,4 @@
+# Observes account instances and makes sure there is a monthreport for each account
 class AccountObserver < ActiveRecord::Observer
   
   def after_save(account)

@@ -48,6 +48,7 @@
             'chart.colors.default':         'black',
             'chart.gutter':                 25,
             'chart.title':                  '',
+            'chart.title.hpos':             null,
             'chart.title.vpos':             null,
             'chart.labels':                 null,
             'chart.labels.position':       'center',
@@ -57,11 +58,16 @@
             'chart.text.size':              10,
             'chart.key':                    null,
             'chart.key.shadow':             false,
+            'chart.key.shadow.color':       '#666',
+            'chart.key.shadow.blur':        3,
+            'chart.key.shadow.offsetx':     2,
+            'chart.key.shadow.offsety':     2,
             'chart.key.background':         'white',
             'chart.key.position':           'graph',
             'chart.contextmenu':            null,
             'chart.tooltips.effect':        'fade',
             'chart.tooltips.css.class':     'RGraph_tooltip',
+            'chart.tooltips.highlight':     true,
             'chart.tooltips.hotspot':       3,
             'chart.annotatable':            false,
             'chart.annotate.color':         'black',
@@ -81,8 +87,11 @@
             'chart.resizable':              false,
             'chart.adjustable':             false,
             'chart.ymax':                   null,
+            'chart.ymin':                   0,
             'chart.tickmarks':              'cross',
             'chart.ticksize':               3,
+            'chart.scale.decimals':         null,
+            'chart.scale.round':            false
         }
         
         // Check the common library has been included
@@ -125,6 +134,11 @@
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
 
+        /**
+        * Clear all of this canvases event handlers (the ones installed by RGraph)
+        */
+        RGraph.ClearEventListeners(this.id);
+
         // Calculate the radius
         this.radius  = (Math.min(this.canvas.width, this.canvas.height) / 2) - this.Get('chart.gutter');
         this.centerx = this.canvas.width / 2;
@@ -134,11 +148,29 @@
         /**
         * Work out the scale
         */
-        for (var i=0; i<this.data.length; ++i) {
-            this.max = Math.max(this.max, this.data[i][1]);
+        var max = this.Get('chart.ymax');
+        var min = this.Get('chart.ymin');
+        
+        if (typeof(max) == 'number') {
+            this.max   = max;
+            this.scale = [((max - min) * 0.2) + min,((max - min) * 0.4) + min,((max - min) * 0.6) + min,((max - min) * 0.8) + min,((max - min) * 1.0) + min,];
+            
+        } else {
+            for (var i=0; i<this.data.length; ++i) {
+                this.max = Math.max(this.max, this.data[i][1]);
+            }
+            this.scale = RGraph.getScale(this.max, this);
+            this.max   = this.scale[4];
+
+            // Hmmmmmmmm
+            if (String(this.scale[0]).indexOf('e') == -1) {
+                this.scale[0] = Number(this.scale[0]).toFixed(this.Get('chart.scale.decimals'));
+                this.scale[1] = Number(this.scale[1]).toFixed(this.Get('chart.scale.decimals'));
+                this.scale[2] = Number(this.scale[2]).toFixed(this.Get('chart.scale.decimals'));
+                this.scale[3] = Number(this.scale[3]).toFixed(this.Get('chart.scale.decimals'));
+                this.scale[4] = Number(this.scale[4]).toFixed(this.Get('chart.scale.decimals'));
+            }
         }
-        this.scale = RGraph.getScale(this.max);
-        this.max   = this.scale[4];
 
         /**
         * Change the centerx marginally if the key is defined
@@ -182,7 +214,7 @@
             /**
             * The onmousemove event
             */
-            this.canvas.onmousemove = function (event)
+            var canvas_onmousemove_func = function (event)
             {
                 event = RGraph.FixEventObject(event);
 
@@ -211,11 +243,13 @@
                        ) {
 
                         overHotspot = true;
-                        canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                        canvas.style.cursor = 'pointer';
 
                         if (!RGraph.Registry.Get('chart.tooltip') || RGraph.Registry.Get('chart.tooltip').__text__ != tooltip) {
     
-                            RGraph.Redraw();
+                            if (obj.Get('chart.tooltips.highlight')) {
+                                RGraph.Redraw();
+                            }
     
                             /**
                             * Get the tooltip text
@@ -229,11 +263,15 @@
     
                             RGraph.Tooltip(canvas, text, event.pageX + 5, event.pageY - 5, i);
     
-                            // Draw a circle around the mark that ONLY highlights it
-                            context.beginPath();
-                            context.fillStyle = 'rgba(255,255,255,0.5)';
-                            context.arc(xCoord, yCoord, 3, 0, 6.2830, 0);
-                            context.fill();
+                            /**
+                            * Highlight the tickmark
+                            */
+                            if (obj.Get('chart.tooltips.highlight')) {
+                                context.beginPath();
+                                context.fillStyle = 'rgba(255,255,255,0.5)';
+                                context.arc(xCoord, yCoord, 3, 0, 6.2830, 0);
+                                context.fill();
+                            }
                         }
                     }
                 }
@@ -242,6 +280,8 @@
                     canvas.style.cursor = 'default';
                 }
             }
+            this.canvas.addEventListener('mousemove', canvas_onmousemove_func, false);
+            RGraph.AddEventListener(this.id, 'mousemove', canvas_onmousemove_func);
         }
 
         // Draw the title if any has been set
@@ -299,7 +339,7 @@
         for (var i=15; i<360; i+=15) {
         
             // Radius must be greater than 0 for Opera to work
-            this.context.arc(this.centerx, this.centery, this.radius, i / 57.3, i / 57.3, 0);
+            this.context.arc(this.centerx, this.centery, this.radius, i / 57.3, (i + 0.01) / 57.3, 0);
         
             this.context.lineTo(this.centerx, this.centery);
         }
@@ -359,7 +399,7 @@
             var d1 = data[i][0];
             var d2 = data[i][1];
             var a   = d1 / (180 / Math.PI); // RADIANS
-            var r   = (d2 / this.max) * this.radius;
+            var r   = ( (d2 - this.Get('chart.ymin')) / (this.max - this.Get('chart.ymin')) ) * this.radius;
             var x   = Math.sin(a) * r;
             var y   = Math.cos(a) * r;
             var color = data[i][2] ? data[i][2] : this.Get('chart.colors.default');
@@ -389,7 +429,6 @@
     */
     RGraph.Rscatter.prototype.DrawLabels = function ()
     {
-        
         this.context.lineWidth = 1;
         var key = this.Get('chart.key');
         
@@ -449,11 +488,15 @@
             RGraph.Text(context, font_face, font_size, this.centerx - ((r) * 0.8), this.centery, String(this.scale[3]), 'center', 'center', true, false, color);
             RGraph.Text(context, font_face, font_size, this.centerx - r, this.centery, String(this.scale[4]), 'center', 'center', true, false, color);
         }
+        
+        // Draw the center minimum value (but only if there's at least one axes labels stipulated)
+        if (this.Get('chart.labels.axes').length > 0) {
+            RGraph.Text(context, font_face, font_size, this.centerx,  this.centery, this.Get('chart.ymin') > 0 ? String(this.Get('chart.ymin').toFixed(this.Get('chart.scale.decimals'))) : '0', 'center', 'center', true, false, color);
+        }
 
         /**
         * Draw the key
         */
-        RGraph.Text(context, font_face, font_size, this.centerx,  this.centery, '0', 'center', 'center', true, false, color);
         if (key && key.length) {
             RGraph.DrawKey(this, key, this.Get('chart.colors'));
         }

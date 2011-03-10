@@ -13,7 +13,7 @@ Feature: View a account
     And I press "Speichern"
     Then I should be on the "Giro" account page
     And I should see "Konto wurde erfolgreich angelegt." within "#flash"
-    And I should see "Übersicht Giro"
+    And I should see "Giro:" within "#pagetitle"
     And I should see "Für dieses Konto wurden noch keine Zahlungen eingegeben."
     And I should see "Neue Zahlung" within "#sidebar"
     And I should see "Neue Zahlung eingeben"

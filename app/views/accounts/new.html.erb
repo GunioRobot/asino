@@ -1,13 +1,22 @@
-<%= render :partial => 'layouts/sidebar' %>
+<%= render :partial => 'layouts/sidebar', :locals => {:account => @account, :accounts => @accounts} %>
 
 <div class="column right">
 <h1>Neues Konto anlegen</h1>
 
-<%= note 'RSS Feed einrichten', 'asino greift Ihre Kontotransaktionen vom Saldomat RSS Feed ab. Werfen Sie bitte einen Blick in die Saldomat Einstellungen -> "RSS Server um" diesen zu aktivieren.' %>
+<%= raw note 'RSS Feed einrichten', 'asino greift Ihre Kontotransaktionen vom Saldomat RSS Feed ab. Werfen Sie bitte einen Blick in die Saldomat Einstellungen -> "RSS Server um" diesen zu aktivieren.' %>
 
 <% form_for(@account) do |f| %>
+  <% if @account.errors.any? %>
+    <div id="error_explanation">  
+      <ul>
+      <% @account.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
   <p>
-    <%= error_message_on "account", "title", :prepend_text => "" %> <%= f.label :title, 'Name des Kontos' %> <br />
+    <%= f.label :title, 'Name des Kontos' %> <br />
     <%= f.text_field :title %>
   </p>
   <p>

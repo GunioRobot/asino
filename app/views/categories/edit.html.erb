@@ -1,22 +1,11 @@
-<div class="column left">
-  <h3><%= link_to 'Konten', '/accounts' %></h3>
-  <% @accounts.each do |account| %>
-    <%= link_to account.title, account, :style => "#{'font-weight:bold;' if account == @account}" %><br/>
-  <% end %>
-
-  <h3>Neue Zahlung</h3>
-    <%= link_to 'Neue Zahlung', new_account_item_path(@account) if @account %>
-
-  <h3>Kategorien</h3>
-  <%= link_to 'Alle Kategorien', categories_path %><br/>
-  <%= link_to 'Neue Kategorie', new_category_path(:account_id => @account.id) if @account %>
-</div>
+<%= render :partial => 'layouts/sidebar', :locals => {:account => @account, :accounts => @accounts} %>
 
 <div class="column right">
 <h1>Kategorie bearbeiten</h1>
 
 <% form_for(@category) do |f| %>
-  <%= f.error_messages %>
+
+  <%= error_messages_for @category %>
 
   <p>
     <%= f.label :name %><br />
@@ -24,8 +13,9 @@
   </p>
   <p>
     <%= f.label :category %><br />
-    <%= f.collection_select(:category_id, Category.all(:order => 'name', :conditions => "category_id is NULL"), 
-										:id, :name, {:include_blank => true}) %>
+    <%= f.collection_select(:category_id, 
+                            Category.where('category_id is NULL').order('name'), :id, :name, {:include_blank => true}) %>
+
   </p>
   <p>
 	<%= f.check_box :transfer %>

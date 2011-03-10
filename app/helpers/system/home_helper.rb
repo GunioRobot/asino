@@ -1,2 +1,0 @@
-module System::HomeHelper
-end

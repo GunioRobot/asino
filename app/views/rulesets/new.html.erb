@@ -1,14 +1,14 @@
-<%= render :partial => 'layouts/sidebar' %>
+<%= render :partial => 'layouts/sidebar', :locals => {:account => @account, :accounts => @accounts} %>
 
 <div class="column right">
 <h1>Neue Regel</h1>
 
 <% form_for(@ruleset) do |f| %>
-  <%= f.error_messages %>
+  <%= error_messages_for @ruleset %>
 
   <p>
     <%= f.label :name %><br />
-    <%= f.text_field :name %> <%= f.check_box :active %> <%= f.label :active, 'Regel ist aktiv' %>
+    <%= f.text_field :name %> 
   </p>
   <p>
     <%= f.label :account_id, 'Gilt für: ' %> 
@@ -22,6 +22,9 @@
 	    <%= f.collection_select(:action_parameter, Category.all(:order => 'name'), 
 											:id, :name) %>
 	</span>
+  </p>
+  <p>
+    <%= f.check_box :active %> <%= f.label :active, 'Regel ist aktiv' %>
   </p>
   <p>
     <%= f.submit 'Speichern' %>

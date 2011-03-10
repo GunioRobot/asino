@@ -1,20 +1,18 @@
+# Manages rules that are part of rulesets
 class RulesController < ApplicationController
+
+  before_filter :load_rule, :only => [:show, :edit, :update, :destroy]
 
 
   # GET /rules/new
   # GET /rules/new.xml
   def new
     @rule = Rule.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @rule }
-    end
   end
 
   # GET /rules/1/edit
   def edit
-    @rule = Rule.find(params[:id])
+
   end
 
   # POST /rules
@@ -36,15 +34,12 @@ class RulesController < ApplicationController
   # PUT /rules/1
   # PUT /rules/1.xml
   def update
-    @rule = Rule.find(params[:id])
     respond_to do |format|
       if @rule.update_attributes(params[:rule])
         format.js   
         format.html { redirect_to(@rule, :notice => 'Rule was successfully updated.') }
-        format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
-        format.xml  { render :xml => @rule.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -52,9 +47,15 @@ class RulesController < ApplicationController
   # DELETE /rules/1
   # DELETE /rules/1.xml
   def destroy
-    @rule = Rule.find(params[:id])
     @rule.destroy
+    render :update do |page|
+      page.hide("rule_#{@rule.id}")
+    end
+  end
 
-    redirect_to edit_ruleset_path(@rule.ruleset), :notice => 'Die Bedingung wurde gelöscht.'
+  private
+
+  def load_rule
+    @rule = Rule.find(params[:id]) if params[:id]
   end
 end

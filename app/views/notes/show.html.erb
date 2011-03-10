@@ -1,0 +1,10 @@
+<%= @item.note %>
+
+<hr/>
+<div style="float:left;width:50%;">
+  <%= link_to 'Notiz löschen', item_note_path(@item, :id => 0), :remote => true, :method => :delete %>
+</div>
+<div class="ar" style="float:left;width:50%;">
+<%= link_to_function 'Schließen', 'fb.close()' %>
+</div>
+<div class="clr"></div>

@@ -54,6 +54,7 @@
             'chart.text.size':              10,
             'chart.text.color':             'black',
             'chart.title':                  '',
+            'chart.title.hpos':             null,
             'chart.title.vpos':             null,
             'chart.title.color':            'black',
             'chart.green.start':            ((this.max - this.min) * 0.35) + this.min,
@@ -67,7 +68,6 @@
             'chart.red.color':              '#9E1E1E',
             'chart.units.pre':              '',
             'chart.units.post':             '',
-            'chart.labels.position':        'outside',
             'chart.contextmenu':            null,
             'chart.zoom.factor':            1.5,
             'chart.zoom.fade.in':           true,
@@ -144,6 +144,7 @@
         * Fire the onbeforedraw event
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
+
 
         // Cache the gutter as a object variable because it's used a lot
         this.gutter  = this.Get('chart.gutter');
@@ -247,21 +248,22 @@
         // First, draw the grey tickmarks
         this.context.beginPath();
         this.context.strokeStyle = '#bbb'
-        for (var i=0.17; i<3.14; i+=(0.13/3)) {
-            this.context.arc(this.centerx, this.centery, this.radius, 3.1415927 + i, 3.1415927 + i, 0);
+        for (var i=0; i<3.14; i+=(0.13/3)) {
+            this.context.arc(this.centerx, this.centery, this.radius, 3.14 + i, 3.1415 + i, 0);
             this.context.lineTo(this.centerx, this.centery);
         }
-            this.context.stroke();
+        this.context.stroke();
+
 
         // First, draw the tickmarks
-        for (var i=0.17; i<3.14; i+=0.13) {
+        for (var i=0; i<3.14; i+=0.13) {
             this.context.beginPath();
             this.context.strokeStyle = this.Get('chart.border.color');
-            this.context.arc(this.centerx, this.centery, this.radius, 3.1415927 + i, 3.1415927 + i, 0);
+            this.context.arc(this.centerx, this.centery, this.radius, 3.14 + i, 3.1415 + i, 0);
             this.context.lineTo(this.centerx, this.centery)
             this.context.stroke();
         }
-        
+
         // Draw the white circle that makes the tickmarks
         this.context.beginPath();
         this.context.fillStyle = 'white'
@@ -328,9 +330,18 @@
         this.context.beginPath();
         this.context.strokeStyle = 'black';
         var a = (((this.value - this.min) / (this.max - this.min)) * 3.14) + 3.14;
-        this.context.arc(this.centerx, this.centery, this.radius * 0.7, a, a + (document.all ? 0.001 : 0), false);
+        this.context.arc(this.centerx, this.centery, this.radius * 0.7, a, a + 0.001, false);
         this.context.lineTo(this.centerx, this.centery);
         this.context.stroke();
+        
+        // Draw the triangular needle head
+        this.context.beginPath();
+            this.context.lineWidth = 1;
+            //this.context.moveTo(this.centerx, this.centery);
+            this.context.arc(this.centerx, this.centery, (this.radius * 0.7) + 15, a, a + 0.001, 0);
+            this.context.arc(this.centerx, this.centery, (this.radius * 0.7) - 15, a + 0.087, a + 0.087999, 0);
+            this.context.arc(this.centerx, this.centery, (this.radius * 0.7) - 15, a - 0.087, a - 0.087999, 1);
+        this.context.fill();
 
         // Draw the center circle
         var r = (this.radius * 0.06) > 40 ? 40 : (this.radius * 0.06);
@@ -368,24 +379,18 @@
 
         context.beginPath();
 
-        if (this.Get('chart.labels.position') == 'inside') {
 
-            RGraph.Text(context, text_font, text_size, centerx - radius + (0.075 * radius), centery - 10, units_pre + min + units_post, 'center', 'left', false, 270);
-            RGraph.Text(context,text_font,text_size,centerx - (Math.cos(0.62819) * (radius - (0.085 * radius)) ),centery - (Math.sin(0.682819) * (radius - (0.085 * radius)) ),units_pre + (((max - min) / 5) + min) + units_post,'center','center', false, 306);
-            RGraph.Text(context, text_font, text_size,centerx - (Math.cos(1.2566) * (radius - (0.085 * radius)) ),centery - (Math.sin(1.2566) * (radius - (0.0785 * radius)) ),units_pre + (((max - min) * 0.4) + min) + units_post,'center', 'center', false, 342);
-            RGraph.Text(context,text_font,text_size,centerx - (Math.cos(1.88495562) * (radius - (0.075 * radius)) ),centery - (Math.sin(1.88495562) * (radius - (0.075 * radius)) ),units_pre + (((max - min)* 0.6) + min) + units_post,'center','center', false, 18);
-            RGraph.Text(context,text_font,text_size,centerx - (Math.cos(2.51327416) * (radius - (0.075 * radius)) ),centery - (Math.sin(2.51327416) * (radius - (0.075 * radius)) ), units_pre + (((max - min)* 0.8) + min) + units_post,'center','center', false, 54);
-            RGraph.Text(context, text_font, text_size,centerx + radius - (0.075 * radius),centery - 10,units_pre + (max) + units_post, 'center', 'right', false, 90);
-
-        } else {
-            
-            RGraph.Text(context, text_font, text_size,centerx - radius - (0.075 * radius),centery,units_pre + min + units_post, 'center', 'center', false, 270);
-            RGraph.Text(context,text_font,text_size,centerx - (Math.cos(0.62819) * (radius + (0.085 * radius)) ),centery - (Math.sin(0.682819) * (radius + (0.085 * radius)) ),units_pre + (((max - min) / 5) + min) + units_post,'center','center', false, 306);
-            RGraph.Text(context, text_font, text_size,centerx - (Math.cos(1.2566) * (radius + (0.085 * radius)) ),centery - (Math.sin(1.2566) * (radius + (0.0785 * radius)) ),units_pre + (((max - min) * 0.4) + min) + units_post,'center', 'center', false, 342);
-            RGraph.Text(context,text_font,text_size,centerx - (Math.cos(1.88495562) * (radius + (0.075 * radius)) ),centery - (Math.sin(1.88495562) * (radius + (0.075 * radius)) ),units_pre + (((max - min)* 0.6) + min) + units_post,'center','center', false, 18);
-            RGraph.Text(context,text_font,text_size,centerx - (Math.cos(2.51327416) * (radius + (0.075 * radius)) ),centery - (Math.sin(2.51327416) * (radius + (0.075 * radius)) ),units_pre + (((max - min)* 0.8) + min) + units_post,'center','center', false, 54);
-            RGraph.Text(context, text_font, text_size,centerx + radius + (0.075 * radius),centery,units_pre + (max) + units_post, 'center', 'center', false, 90);
-        }
+        RGraph.Text(context, text_font, text_size, centerx - radius + (0.075 * radius), centery - 10, units_pre + min + units_post, 'center', 'left', false, 270);
+        RGraph.Text(context,text_font,text_size,centerx - (Math.cos(0.62819 / 2) * (radius - (0.085 * radius)) ),centery - (Math.sin(0.682819 / 2) * (radius - (0.085 * radius)) ),units_pre + (((max - min) * (1/10)) + min) + units_post,'center','center', false, 288);
+        RGraph.Text(context,text_font,text_size,centerx - (Math.cos(0.62819) * (radius - (0.085 * radius)) ),centery - (Math.sin(0.682819) * (radius - (0.085 * radius)) ),units_pre + (((max - min) * (2/10)) + min) + units_post,'center','center', false, 306);
+        RGraph.Text(context, text_font, text_size,centerx - (Math.cos(0.95) * (radius - (0.085 * radius)) ),centery - (Math.sin(0.95) * (radius - (0.0785 * radius)) ),units_pre + (((max - min) * (3/10)) + min) + units_post,'center', 'center', false, 320);
+        RGraph.Text(context, text_font, text_size,centerx - (Math.cos(1.2566) * (radius - (0.085 * radius)) ),centery - (Math.sin(1.2566) * (radius - (0.0785 * radius)) ),units_pre + (((max - min) * (4/10)) + min) + units_post,'center', 'center', false, 342);
+        RGraph.Text(context,text_font,text_size,centerx - (Math.cos(1.57) * (radius - (0.075 * radius)) ),centery - (Math.sin(1.57) * (radius - (0.075 * radius)) ),units_pre + (((max - min) * (5/10)) + min) + units_post,'center','center', false, 0);
+        RGraph.Text(context,text_font,text_size,centerx - (Math.cos(1.88495562) * (radius - (0.075 * radius)) ),centery - (Math.sin(1.88495562) * (radius - (0.075 * radius)) ),units_pre + (((max - min)* (6/10)) + min) + units_post,'center','center', false, 18);
+        RGraph.Text(context,text_font,text_size,centerx - (Math.cos(2.1989) * (radius - (0.075 * radius)) ),centery - (Math.sin(2.1989) * (radius - (0.075 * radius)) ),units_pre + (((max - min)* (7/10)) + min) + units_post,'center','center', false, 36);
+        RGraph.Text(context,text_font,text_size,centerx - (Math.cos(2.51327416) * (radius - (0.075 * radius)) ),centery - (Math.sin(2.51327416) * (radius - (0.075 * radius)) ), units_pre + (((max - min) * (8/10)) + min) + units_post,'center','center', false, 54);
+        RGraph.Text(context,text_font,text_size,centerx - (Math.cos(2.82764832) * (radius - (0.075 * radius)) ),centery - (Math.sin(2.82764832) * (radius - (0.075 * radius)) ),units_pre + (((max - min) * (9/10)) + min) + units_post,'center','center', false, 72);
+        RGraph.Text(context, text_font, text_size,centerx + radius - (0.075 * radius),centery - 10,units_pre + (max) + units_post, 'center', 'right', false, 90);
 
         context.fill();
         context.stroke();

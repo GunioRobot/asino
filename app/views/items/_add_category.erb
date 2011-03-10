@@ -1,4 +1,5 @@
-<% remote_form_for(item) do |f| %>
+<%= form_for item do |f| %>
+  <%= hidden_field_tag :current_account, account.id if account %>
   <%= f.collection_select(:category_id, Category.all(:order => 'name'), :id, :name, {:include_blank => true},  
-{:onchange => "new Ajax.Request('/items/add_category/#{item.id}', {asynchronous:true, evalScripts:true, parameters:Form.serialize(this.form)}); return false;"}) %>
-<% end -%>
+{:onchange => "new Ajax.Request('#{add_category_item_path(item)}', {method: 'get', asynchronous:true, evalScripts:true, parameters:Form.serialize(this.form)}); return false;"}) %>
+<% end %>

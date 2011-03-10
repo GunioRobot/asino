@@ -1,0 +1,6 @@
+Neue Notiz
+
+<% form_for(@item, :url => item_notes_path(@item), :remote => true, :html => {:method => :post}) do |f| %>
+  <%= f.text_area :note, :rows => 4, :style => 'width:320px;' %><br/>
+  <%= f.submit "Speichern" %> oder <%= link_to_function 'abbrechen', 'fb.close(); return false;' %>
+<% end %>

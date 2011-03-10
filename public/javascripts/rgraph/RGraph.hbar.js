@@ -65,6 +65,7 @@
             'chart.title.yaxis':            '',
             'chart.title.xaxis.pos':        0.25,
             'chart.title.yaxis.pos':        0.5,
+            'chart.title.hpos':             null,
             'chart.title.vpos':             null,
             'chart.text.size':              10,
             'chart.text.color':             'black',
@@ -78,7 +79,8 @@
             'chart.key.position':           'graph',
             'chart.units.pre':              '',
             'chart.units.post':             '',
-            'chart.strokecolor':            'black',
+            'chart.units.ingraph':          false,
+            'chart.strokestyle':            'black',
             'chart.xmax':                   0,
             'chart.axis.color':             'black',
             'chart.shadow':                 false,
@@ -91,6 +93,7 @@
             'chart.tooltips':               null,
             'chart.tooltips.effect':         'fade',
             'chart.tooltips.css.class':      'RGraph_tooltip',
+            'chart.tooltips.highlight':     true,
             'chart.annotatable':            false,
             'chart.annotate.color':         'black',
             'chart.zoom.factor':            1.5,
@@ -106,7 +109,10 @@
             'chart.zoom.thumbnail.height':  75,
             'chart.zoom.background':        true,
             'chart.zoom.action':            'zoom',
-            'chart.resizable':              false
+            'chart.resizable':              false,
+            'chart.scale.point':            '.',
+            'chart.scale.thousand':         ',',
+            'chart.scale.decimals':         null
         }
 
         // Check for support
@@ -169,6 +175,13 @@
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
 
+
+        /**
+        * Clear all of this canvases event handlers (the ones installed by RGraph)
+        */
+        RGraph.ClearEventListeners(this.id);
+
+
         var gutter = this.Get('chart.gutter');
 
         /**
@@ -220,7 +233,8 @@
             /**
             * If the cursor is over a hotspot, change the cursor to a hand
             */
-            this.canvas.onmousemove = function (e)
+            //this.canvas.onmousemove = function (e)
+            var canvas_onmousemove_func = function (e)
             {
                 e = RGraph.FixEventObject(e);
 
@@ -252,18 +266,22 @@
                             || obj.Get('chart.tooltips')[i]
                            ) ) {
 
-                        canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                        canvas.style.cursor = 'pointer';
                         return;
                     }
 
                     canvas.style.cursor = 'default';
                 }
             }
+            this.canvas.addEventListener('mousemove', canvas_onmousemove_func, false);
+            RGraph.AddEventListener(this.id, 'mousemove', canvas_onmousemove_func);
+
 
             /**
             * Install the onclick event handler for the tooltips
             */
-            this.canvas.onclick = function (e)
+            //this.canvas.onclick = function (e)
+            var canvas_onclick_func = function (e)
             {
                 e = RGraph.FixEventObject(e);
 
@@ -336,18 +354,15 @@
                 * Stop the event bubbling
                 */
                 e.stopPropagation();
-                e.cancelBubble = true;
             }
+            this.canvas.addEventListener('click', canvas_onclick_func, false);
+            RGraph.AddEventListener(this.id, 'click', canvas_onclick_func);
 
             // This resets the bar graph
             if (RGraph.Registry.Get('chart.tooltip')) {
                 RGraph.Registry.Get('chart.tooltip').style.display = 'none';
                 RGraph.Registry.Set('chart.tooltip', null)
             }
-        // This resets the canvas events - getting rid of any installed event handlers
-        } else {
-            this.canvas.onclick     = null;
-            this.canvas.onmousemove = null;
         }
 
         /**
@@ -563,6 +578,16 @@
         var text_size  = this.Get('chart.text.size');
         var font       = this.Get('chart.text.font');
 
+
+        /**
+        * Set the units to blank if they're to be used for ingraph labels only
+        */
+        if (this.Get('chart.units.ingraph')) {
+            units_pre  = '';
+            units_post = '';
+        }
+
+
         /**
         * Draw the X axis labels
         */
@@ -572,25 +597,25 @@
         //var interval = (this.canvas.width - (4 * gutter)) / (t ? 10 : 5);
 
         if (this.Get('chart.yaxispos') == 'center') {
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (10/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[4], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (9/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[3], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (8/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[2], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (7/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[1], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (6/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[0], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (10/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[4], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (9/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[3], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (8/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[2], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (7/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[1], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (6/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[0], units_pre, units_post), 'center', 'center');
             
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (4/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(-1 * this.scale[0], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (3/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(-1 * this.scale[1], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (2/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(-1 * this.scale[2], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (1/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(-1 * this.scale[3], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (0)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(-1 * this.scale[4], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (4/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, -1 * this.scale[0], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (3/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, -1 * this.scale[1], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (2/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, -1 * this.scale[2], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (1/10)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, -1 * this.scale[3], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (0)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, -1 * this.scale[4], units_pre, units_post), 'center', 'center');
 
         } else {
 
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (5/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[4], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (4/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[3], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (3/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[2], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (2/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[1], units_pre, units_post), 'center', 'center');
-            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (1/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this.scale[0], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (5/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[4], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (4/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[3], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (3/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[2], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (2/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[1], units_pre, units_post), 'center', 'center');
+            RGraph.Text(context, font, text_size, (gutter * 3) + (this.graphwidth * (1/5)), gutter + this.halfTextHeight + this.graphheight + 2, RGraph.number_format(this, this.scale[0], units_pre, units_post), 'center', 'center');
         }
         
         this.context.fill();
@@ -634,7 +659,7 @@
     RGraph.HBar.prototype.Drawbars = function ()
     {
         this.context.lineWidth   = 1;
-        this.context.strokeStyle = this.Get('chart.strokecolor');
+        this.context.strokeStyle = this.Get('chart.strokestyle');
         this.context.fillStyle   = this.Get('chart.colors')[0];
         var prevX                = 0;
         var prevY                = 0;
@@ -643,8 +668,14 @@
         * Work out the max value
         */
         if (this.Get('chart.xmax')) {
-            this.scale = RGraph.getScale(this.Get('chart.xmax'));
-            this.max   = this.scale[4];
+            this.scale = [
+                          (this.Get('chart.xmax') * 0.2).toFixed(this.Get('chart.scale.decimals')),
+                          (this.Get('chart.xmax') * 0.4).toFixed(this.Get('chart.scale.decimals')),
+                          (this.Get('chart.xmax') * 0.6).toFixed(this.Get('chart.scale.decimals')),
+                          (this.Get('chart.xmax') * 0.8).toFixed(this.Get('chart.scale.decimals')),
+                          (this.Get('chart.xmax')).toFixed(this.Get('chart.scale.decimals'))
+                         ];
+            this.max = this.scale[4];
         } else {
             var grouping = this.Get('chart.grouping');
 
@@ -658,7 +689,7 @@
                 this.max = Math.max(Math.abs(this.max), Math.abs(value));
             }
 
-            this.scale = RGraph.getScale(this.max);
+            this.scale = RGraph.getScale(this.max, this);
             this.max   = this.scale[4];
         }
 
@@ -682,7 +713,6 @@
             var y       = gutter + (i * height);
             var vmargin = this.Get('chart.vmargin');
             var gutter  = gutter;
-            var redrawCoords = [];
 
             // Account for negative lengths - Some browsers (eg Chrome) don't like a negative value
             if (width < 0) {
@@ -723,38 +753,14 @@
                     this.context.strokeRect(barX, gutter + (i * height) + this.Get('chart.vmargin'), barWidth, barHeight);
                     this.context.fillRect(barX, gutter + (i * height) + this.Get('chart.vmargin'), barWidth, barHeight);
 
-                    /**
-                    * Draw labels "above" the bar
-                    */
-                    if (this.Get('chart.labels.above')) {
-
-                        this.context.fillStyle = this.Get('chart.text.color');
-                        this.context.shadowOffsetX = 0;
-                        this.context.shadowOffsetY = 0;
-                        this.context.shadowBlur    = 0;
-                        this.context.shadowColor   = 'rgba(0,0,0,0)';
-
-                        RGraph.Text(
-                                    this.context,
-                                    this.Get('chart.text.font'),
-                                    this.Get('chart.text.size'),
-                                    barX + barWidth + 7,
-                                    gutter + (i * height) + this.Get('chart.vmargin') + (barHeight / 2),
-                                    RGraph.number_format(this.data[i], this.Get('chart.units.pre'), this.Get('chart.units.post')),
-                                    'center',
-                                    'left'
-                                   );
-                    }
-
-                    this.coords[i] = [x, y + vmargin, width, height - (2 * vmargin)];
+                    this.coords.push([x, y + vmargin, width, height - (2 * vmargin), this.Get('chart.colors')[0], this.data[i]]);
 
                 /**
                 * Stacked bar chart
                 */
                 } else if (typeof(this.data[i]) == 'object' && this.Get('chart.grouping') == 'stacked') {
 
-                    var barHeight     = height - (2 * vmargin);
-                    var redrawCoords = [];// Necessary to draw if the shadow is enabled
+                    var barHeight = height - (2 * vmargin);
 
                     for (j=0; j<this.data[i].length; ++j) {
 
@@ -772,56 +778,9 @@
                         * Store the coords for tooltips
                         */
 
-                        this.coords.push([x, y + vmargin, width, height - (2 * vmargin)]);
-                        
-                        /**
-                        * Store the redraw coords if the shadow is enabled
-                        */
-                        if (this.Get('chart.shadow')) {
-                            redrawCoords.push([x, gutter + this.Get('chart.vmargin') + (this.graphheight / this.data.length) * i, width, height - (2 * vmargin), this.Get('chart.colors')[j]]);
-                        }
+                        this.coords.push([x, y + vmargin, width, height - (2 * vmargin), this.Get('chart.colors')[j], RGraph.array_sum(this.data[i])]);
 
                         x += width;
-                    }
-
-                    /**
-                    * Redraw the bars if the shadow is enabled due to hem being drawn from the bottom up, and the
-                    * shadow spilling over to higher up bars
-                    */
-                    if (this.Get('chart.shadow')) {
-                        this.context.shadowColor = 'rgba(0,0,0,0)';
-                        for (k=0; k<redrawCoords.length; ++k) {
-                            this.context.strokeStyle = this.Get('chart.strokestyle');
-                            this.context.fillStyle = redrawCoords[k][4];
-                            this.context.strokeRect(redrawCoords[k][0], redrawCoords[k][1], redrawCoords[k][2], redrawCoords[k][3]);
-                            this.context.fillRect(redrawCoords[k][0], redrawCoords[k][1], redrawCoords[k][2], redrawCoords[k][3]);
-
-                            this.context.stroke();
-                            this.context.fill();
-                        }
-                        
-                        redrawCoords = [];
-                    }
-
-
-                    /**
-                    * Draw labels "above" the bar
-                    */
-                    if (this.Get('chart.labels.above')) {
-
-                        this.context.fillStyle = this.Get('chart.text.color');
-                        RGraph.NoShadow(this);
-
-                        RGraph.Text(
-                                    this.context,
-                                    this.Get('chart.text.font'),
-                                    this.Get('chart.text.size'),
-                                    (gutter * 3) + totalWidth + 7,
-                                    gutter + (i * height) + this.Get('chart.vmargin') + (barHeight / 2),
-                                    RGraph.number_format(RGraph.array_sum(this.data[i]), this.Get('chart.units.pre'), this.Get('chart.units.post')),
-                                    'center',
-                                    'left'
-                                   );
                     }
 
                 /**
@@ -840,7 +799,7 @@
 
                         // Set the fill/stroke colors
                         this.context.strokeStyle = this.Get('chart.strokestyle');
-                        this.context.fillStyle = this.Get('chart.colors')[j]
+                        this.context.fillStyle = this.Get('chart.colors')[j];
 
                         var width = (this.data[i][j] / this.max) * (this.canvas.width - (4 * gutter) );
                         var individualBarHeight = (height - (2 * vmargin)) / this.data[i].length;
@@ -862,55 +821,15 @@
                         this.context.strokeRect(startX, startY, width, individualBarHeight);
                         this.context.fillRect(startX, startY, width, individualBarHeight);
 
-                        /**
-                        * Draw labels "above" the bar
-                        */
-                        if (this.Get('chart.labels.above')) {
-
-                            this.context.fillStyle = this.Get('chart.text.color');
-                            RGraph.NoShadow(this);
-
-                            var cnt = this.data[i].length;
-
-                            RGraph.Text(this.context, this.Get('chart.text.font'), this.Get('chart.text.size'), startX + width + 7, startY + (individualBarHeight / 2), RGraph.number_format(this.data[i][j], this.Get('chart.units.pre'), this.Get('chart.units.post')), 'center', 'left');
-                        }
-
-                        /**
-                        * Store the redraw coords if the shadow is enabled
-                        */
-                        if (this.Get('chart.shadow')) {
-                            redrawCoords.push([startX, startY, width, individualBarHeight, this.context.fillStyle]);
-                        }
-
-                        this.coords.push([startX, startY, width, individualBarHeight]);
-                    }
-
-                    /**
-                    * Redraw the bars if the shadow is enabled
-                    */
-                    if (this.Get('chart.shadow')) {
-                    
-                        RGraph.NoShadow(this);
-                    
-                        for (k=0; k<redrawCoords.length; ++k) {
-                            //this.context.strokeStyle = this.Get('chart.strokestyle');
-                            this.context.fillStyle = this.Get('chart.colors')[k];
-                            this.context.fillRect(redrawCoords[k][0], redrawCoords[k][1], redrawCoords[k][2], redrawCoords[k][3]);
-                            //this.context.strokeRect(redrawCoords[k][0], redrawCoords[k][1], redrawCoords[k][2], redrawCoords[k][3]);
-                    
-                            //this.context.stroke();
-                            this.context.fill();
-                        }
-                        
-                        redrawCoords = [];
+                        this.coords.push([startX, startY, width, individualBarHeight, this.Get('chart.colors')[j], this.data[i][j]]);
                     }
                 }
 
             this.context.closePath();
         }
 
-        this.context.stroke();
         this.context.fill();
+        this.context.stroke();
 
 
 
@@ -918,4 +837,45 @@
         * Now the bars are stroke()ed, turn off the shadow
         */
         RGraph.NoShadow(this);
+        
+        this.RedrawBars();
+    }
+    
+    
+    /**
+    * This function goes over the bars after they been drawn, so that upwards shadows are underneath the bars
+    */
+    RGraph.HBar.prototype.RedrawBars = function ()
+    {
+        var coords = this.coords;
+
+        RGraph.NoShadow(this);
+        this.context.strokeStyle = this.Get('chart.strokestyle');
+
+        for (var i=0; i<coords.length; ++i) {
+
+            this.context.beginPath();
+                this.context.strokeStyle = this.Get('chart.strokestyle');
+                this.context.fillStyle = coords[i][4];
+                this.context.lineWidth = 1;
+                this.context.strokeRect(coords[i][0], coords[i][1], coords[i][2], coords[i][3]);
+                this.context.fillRect(coords[i][0], coords[i][1], coords[i][2], coords[i][3]);
+            this.context.fill();
+            this.context.stroke();
+
+            /**
+            * Draw labels "above" the bar
+            */
+            if (this.Get('chart.labels.above')) {
+
+                this.context.fillStyle = this.Get('chart.text.color');
+                this.context.strokeStyle = 'black';
+                RGraph.NoShadow(this);
+
+                var border = (coords[i][0] + coords[i][2] + 7 + this.context.measureText(this.Get('chart.units.pre') + this.coords[i][5] + this.Get('chart.units.post')).width) > this.canvas.width ? true : false;
+
+                RGraph.Text(this.context,this.Get('chart.text.font'),this.Get('chart.text.size'),coords[i][0] + coords[i][2] + (border ? -5 : 5),coords[i][1] + (coords[i][3] / 2),RGraph.number_format(this, this.coords[i][5], this.Get('chart.units.pre'), this.Get('chart.units.post')),'center',border ? 'right' : 'left',border,null,border ? 'rgba(255,255,255,0.9)' : null);
+
+            }
+        }
     }

@@ -16,6 +16,7 @@
     ModalDialog.dialog     = null;
     ModalDialog.background = null;
     ModalDialog.offset     = 50;
+    ModalDialog.events     = [];
 
     /**
     * Shows the dialog with the supplied DIV acting as the contents
@@ -37,6 +38,8 @@
         
         // Call them initially
         ModalDialog.Resize();
+        
+        ModalDialog.FireCustomEvent('onmodaldialog');
     }
     
     
@@ -46,22 +49,19 @@
     ModalDialog.ShowBackground = function ()
     {
         // Create the background if neccessary
-        if (!ModalDialog.background) {
-            ModalDialog.background = document.createElement('DIV');
-            ModalDialog.background.className      = 'ModalDialog_background';
-            ModalDialog.background.style.position = 'fixed';
-            ModalDialog.background.style.top      = 0;
-            ModalDialog.background.style.left     = 0;
-            ModalDialog.background.style.width    = (screen.width + 100) + 'px';
-            ModalDialog.background.style.height   = (screen.height + 100) + 'px';
-
-            ModalDialog.background.style.backgroundColor = 'rgb(204,204,204)';
-            ModalDialog.background.style.filter = 'Alpha(opacity=0)';
-            ModalDialog.background.style.opacity = 0;
-            ModalDialog.background.style.zIndex = 3276;
+        ModalDialog.background = document.createElement('DIV');
+        ModalDialog.background.className      = 'ModalDialog_background';
+        ModalDialog.background.style.position = 'fixed';
+        ModalDialog.background.style.top      = 0;
+        ModalDialog.background.style.left     = 0;
+        ModalDialog.background.style.width    = (screen.width + 100) + 'px';
+        ModalDialog.background.style.height   = (screen.height + 100) + 'px';
+        ModalDialog.background.style.backgroundColor = 'rgb(204,204,204)';        
+        ModalDialog.background.style.opacity = 0;
+        ModalDialog.background.style.zIndex = 3276;
+        ModalDialog.background.style.filter = "Alpha(opacity=50)";
             
-            document.body.appendChild(ModalDialog.background);
-        }
+        document.body.appendChild(ModalDialog.background);
 
         ModalDialog.background.style.visibility = 'visible';
     }
@@ -94,18 +94,14 @@
             ModalDialog.dialog.style.width           = parseInt(ModalDialog.width) + 'px';
             ModalDialog.dialog.style.border          = '2px solid #999';
             ModalDialog.dialog.style.zIndex          = 32767;
-            ModalDialog.dialog.style.backgroundColor = 'white';
             ModalDialog.dialog.style.padding         = '5px';
             ModalDialog.dialog.style.paddingTop      = '25px';
-            ModalDialog.dialog.style.overflow      = 'hidden';
             ModalDialog.dialog.style.opacity       = 0;
             
             if (document.all) {
                 ModalDialog.dialog.style.zIndex = 32767;
-                ModalDialog.dialog.style.filter = 'progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=0)';
             }
 
-            ModalDialog.dialog.innerHTML = document.getElementById(ModalDialog.id).innerHTML;
 
 
             // Accomodate various browsers
@@ -120,31 +116,38 @@
             }
 
             document.body.appendChild(ModalDialog.dialog);
-            
+
+
             // Now create the grey bar at the top of the dialog
             var bar = document.createElement('DIV');
-            bar.className = 'ModalDialog_topbar';
-            bar.style.top = 0;
-            bar.style.left = 0;
-            bar.style.width = (ModalDialog.dialog.offsetWidth - 4) + 'px';
-            bar.style.height = '20px';
-            bar.style.backgroundColor = '#bbb';
-            bar.style.borderBottom = '2px solid #999';
-            bar.style.zIndex    = -32765;
-            bar.style.position = 'absolute';
-            
-            var borderRadius = '11px';
-
-            bar.style.WebkitBorderTopLeftRadius = borderRadius;
-            bar.style.WebkitBorderTopRightRadius = borderRadius;
-            bar.style.MozBorderRadiusTopleft = borderRadius;
-            bar.style.MozBorderRadiusTopright = borderRadius;
-            bar.style.borderTopRightRadius = borderRadius;
-            bar.style.borderTopLeftRadius = borderRadius;
-
+                bar.className = 'ModalDialog_topbar';
+                bar.style.top = 0;
+                bar.style.left = 0;
+                bar.style.width = '100%';//(ModalDialog.dialog.offsetWidth - 4) + 'px';
+                bar.style.height = '20px';
+                bar.style.backgroundColor = '#bbb';
+                bar.style.borderBottom = '2px solid #999';
+                //bar.style.zIndex    = 50000;
+                bar.style.position = 'absolute';
+                var borderRadius = '11px';
+                bar.style.WebkitBorderTopLeftRadius = borderRadius;
+                bar.style.WebkitBorderTopRightRadius = borderRadius;
+                bar.style.MozBorderRadiusTopleft = borderRadius;
+                bar.style.MozBorderRadiusTopright = borderRadius;
+                bar.style.borderTopRightRadius = borderRadius;
+                bar.style.borderTopLeftRadius = borderRadius;
             ModalDialog.dialog.appendChild(bar);
             
-            // Now reposition it in the center
+            // Add the content div
+            var content = document.createElement('DIV');
+                //content.style.paddingTop = '20px';
+                content.style.width = '100%';
+                content.style.height = '100%';
+            ModalDialog.dialog.appendChild(content);
+
+        content.innerHTML = document.getElementById(ModalDialog.id).innerHTML;
+
+            // Now reposition the dialog in the center
             ModalDialog.dialog.style.left = (document.body.offsetWidth / 2) - (ModalDialog.dialog.offsetWidth / 2) + 'px';
             ModalDialog.dialog.style.top  = '30%';
         }
@@ -164,18 +167,6 @@
         setTimeout('ModalDialog.background.style.opacity = 0.3', 150);
         setTimeout('ModalDialog.background.style.opacity = 0.4', 200);
         setTimeout('ModalDialog.background.style.opacity = 0.5', 250);
-
-        setTimeout('ModalDialog.dialog.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=20)"', 50);
-        setTimeout('ModalDialog.dialog.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=40)"', 100);
-        setTimeout('ModalDialog.dialog.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=60)"', 150);
-        setTimeout('ModalDialog.dialog.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=80)"', 200);
-        setTimeout('ModalDialog.dialog.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=100)"', 250);
-
-        setTimeout('ModalDialog.background.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=10)"', 50);
-        setTimeout('ModalDialog.background.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=20)"', 100);
-        setTimeout('ModalDialog.background.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=30)"', 150);
-        setTimeout('ModalDialog.background.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=40)"', 200);
-        setTimeout('ModalDialog.background.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=50)"', 250);
     }
 
     
@@ -187,13 +178,11 @@
         if (ModalDialog.dialog) {
             ModalDialog.dialog.style.visibility = 'hidden';
             ModalDialog.dialog.style.opacity = 0;
-            ModalDialog.dialog.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=0)";
         }
 
         if (ModalDialog.background) {
             ModalDialog.background.style.visibility = 'hidden';
             ModalDialog.background.style.opacity = 0;
-            ModalDialog.background.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=0)";
         }        
     }
     
@@ -220,39 +209,36 @@
     * 
     * @return int The page height
     */
-    ModalDialog.getPageHeight = function ()
+    ModalDialog.AddCustomEventListener = function (name, func)
     {
-        // Chrome
-        if (navigator.userAgent.indexOf('Chrome') != -1) {
-            return Math.max(document.body.clientHeight, document.body.scrollHeight);
-
-        // Safari
-        } else if (navigator.userAgent.indexOf('Safari') != -1) {
-            return Math.max(document.body.clientHeight, document.body.scrollHeight) + 40;
-
-        // Opera
-        } else if (navigator.userAgent.indexOf('Opera') != -1) {
-
-            var height = Math.max(document.body.clientHeight, document.body.offsetHeight);
-            height = Math.max(height, document.body.scrollHeight);
-
-            return height + 40;
-
-        // MSIE
-        } else if (navigator.userAgent.indexOf('MSIE') != -1) {
-            var height = Math.max(document.body.scrollHeight, document.body.clientHeight);
-            height = Math.max(height, screen.height);
-
-            return height;
-        
-        // Firefox and other
-        } else {
-            var height = Math.max(document.body.clientHeight, document.body.scrollHeight) + 40;
-            
-            if (window.innerHeight > height) {
-                height = window.innerHeight;
-            }
-
-            return height;
+        if (typeof(ModalDialog.events) == 'undefined') {
+            ModalDialog.events = [];
         }
+
+        ModalDialog.events.push([name, func]);
+    }
+
+
+    /**
+    * Used to fire the ModalDialog custom event
+    * 
+    * @param object obj   The graph object that fires the event
+    * @param string event The name of the event to fire
+    */
+    ModalDialog.FireCustomEvent = function (name)
+    {
+        for (var i=0; i<ModalDialog.events.length; ++i) {
+            if (typeof(ModalDialog.events[i][0]) == 'string' && ModalDialog.events[i][0] == name && typeof(ModalDialog.events[i][1]) == 'function') {
+                ModalDialog.events[i][1]();
+            }
+        }
+    }
+
+
+    /**
+    * Returns true if the browser is IE8
+    */
+    ModalDialog.isIE8 = function ()
+    {
+        return document.all && (navigatot.userAgent.indexOf('MSIE 8') > 0);
     }

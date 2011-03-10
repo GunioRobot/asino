@@ -8,13 +8,16 @@ Feature: Create a category
 
   Scenario: Follow home page link to categories
     When I am on the home page
-    And I follow "Alle Kategorien"
+    And I follow "Kategorien"
     Then I should be on the categories page
 
   Scenario: Follow new category ling from account page
     Given an account exists with title "Giro"
     And I am on the "Giro" account page
-    Then I should see "Neue Kategorie anlegen"
+    Then I should see "Kategorien"
+    When I follow "Kategorien"
+    Then I should see "Kategorien verwalten" within "#pagetitle"
+    And I should see "Neue Kategorie anlegen"
     When I follow "Neue Kategorie anlegen"
     Then I should be on the new category page
 
@@ -36,5 +39,5 @@ Feature: Create a category
     When I fill in "category_name" with "Däs is a a Töst"
     And I press "Speichern"
     Then I should be on the categories page
-    And I should see "Die Änderungen an der Kategorie wurden gespeichert." within "#flash"
+    And I should see "Die &Auml;nderungen an der Kategorie wurden gespeichert." within "#flash"
     And I should see "Däs is a a Töst"

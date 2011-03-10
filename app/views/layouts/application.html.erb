@@ -1,53 +1,72 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="de">
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title>asino - Privates Finanzmanagement</title>
   <%= stylesheet_link_tag 'main' %>
   <%= javascript_include_tag :defaults %>
+  <%= javascript_include_tag 'facebox' %>
   <%= javascript_include_tag ['rgraph/RGraph.common.core.js', 
 	                          'rgraph/RGraph.common.context.js', 
 							  'rgraph/RGraph.common.tooltips.js',
 							  'rgraph/RGraph.common.tooltips.js',
 							  'rgraph/RGraph.line.js',
-							  'rgraph/RGraph.pie.js']%>      
-  <link  href="http://fonts.googleapis.com/css?family=Reenie+Beanie:regular" rel="stylesheet" type="text/css">            
+							  'rgraph/RGraph.pie.js'] if @include_graph_scripts %>      
+  <link  href="http://fonts.googleapis.com/css?family=Reenie+Beanie:regular" rel="stylesheet" type="text/css" />            
 </head>
 <body>
-  <div id="navigation">
-    <ul>
-	  <% if logged_in? %>
-	    <li><%= link_to 'Home', '/' %></li>
-	    <li><%= link_to 'Alle Konten', '/accounts' %></li>
-	    <% if @account and controller.action_name == 'show' %>
-	      <li><%= link_to 'Statistik', "/accounts/#{@account.id}/overview" %></li>
-	    <% end %>
-	    <% if @account and controller.action_name == 'overview' %>
-	      <li><%= link_to 'Tabelle', "/accounts/#{@account.id}" %></li>
-	    <% end %>
-	    <% if !params[:id] and controller.controller_name == 'accounts' %>
-	      <li><%= link_to 'Statistik', "/accounts/overview" %></li>
-	    <% end %>
-	    <li><%= link_to 'Verlauf', "/accounts/course" if Account.count > 0 %></li>
-	    <li><%= link_to 'Aktualisieren', "/items/get_from_rss" %></li>
-	    <li><%= link_to 'Sichern', "/system/backup" %></li>
-	    <li><%= link_to 'Abmelden', logout_path %></li>
-	  <% else %>
-	    <li><%= link_to 'Anmelden', login_path %></li>
-	  <% end %>
-	</ul>
+    
+  <div class="main">
+      
+    <div id="navigation">
+      <ul>
+        <li <%= request.path == '/' ? 'class=active' : ''%>>
+          <%= link_to 'Home', '/' %>
+        </li>
+        <% if user_signed_in? %>
+          <li <%= request.path != '/' && controller.controller_name == 'accounts' && %w(index show).include?(controller.action_name) ? 'class=active' : ''%>>
+            <%= link_to 'Zahlungen', "/accounts/#{@account.id}" if @account %>
+            <%= link_to 'Zahlungen', "/accounts" unless @account %>
+          </li>
+          <%= li_menu('accounts', 'overview') %>
+            <%= link_to 'Ausgaben', "/accounts/#{@account.id}/overview" if @account %>
+            <%= link_to 'Ausgaben', "/accounts/overview" unless @account %>
+          </li>
+          <% if Account.count > 0 %>
+          <%= li_menu('accounts', 'course') %>
+            <%= link_to 'Verlauf', "/accounts/#{@account.id}/course" if @account %>
+            <%= link_to 'Verlauf', "/accounts/course" unless @account %>
+          </li>
+          <% end %>
+          <%= li_menu 'categories' %>
+            <%= link_to 'Kategorien', categories_path %>
+          </li>
+          <%= li_menu 'rulesets' %>
+            <%= link_to 'Regeln', rulesets_path %>
+          </li>
+          <!--<li><%= link_to 'Sichern', "/system/backup" %></li>-->
+          <li>
+            <%= link_to 'Aktualisieren', "/items/get_from_rss" %>
+          </li>
+          <li>
+            <%= link_to 'Abmelden', destroy_user_session_path %>
+          </li>
+        <% else %>
+          <li><%= link_to 'Anmelden', new_user_session_path %></li>
+          <li><%= link_to 'Registrieren', new_user_registration_path %></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <%= render 'layouts/flash' %>
+
+    <%= yield %>
+
   </div>
-
-  <%= render 'layouts/flash' %>
-
-  <%= yield %>
 
   <div id="footer">
-	<%= link_to 'Hilfe', help_path %> |
-	<%= link_to 'asino source on github', 'http://github.com/agehret/asino' %>
+	  <%= link_to 'asino source on github', 'http://github.com/agehret/asino' %>
   </div>
-
+  
 </body>
 </html>

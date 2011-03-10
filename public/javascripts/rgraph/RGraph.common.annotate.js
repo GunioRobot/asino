@@ -12,7 +12,7 @@
     * o------------------------------------------------------------------------------o
     */
 
-    if (typeof(RGraph) == 'undefined') RGraph = {};
+    if (typeof(RGraph) == 'undefined') RGraph = {isRGraph:true,type:'common'};
 
 
     /**
@@ -40,7 +40,8 @@
                         e.target.__object__.Set('chart.mousedown', true);
 
                         // Get the context
-                        var context = e.target.__object__.canvas.getContext('2d');
+                        var obj = e.target.__object__;
+                        var context = obj.canvas.getContext('2d');
 
                         // Don't want any "joining" lines or colour "bleeding"
                         context.beginPath();
@@ -61,6 +62,11 @@
                         context.lineWidth = 1;
                         
                         RGraph.Registry.Set('started.annotating', false);
+                        
+                        /**
+                        * Fire the onannotatestart event
+                        */
+                        RGraph.FireCustomEvent(obj, 'onannotatestart');
                     }
                     
                     return false;
@@ -89,12 +95,22 @@
                         // Store the annotations information in HTML5 browser storage here
                         window.localStorage[id] = annotations;
                     }
-
+                    
                     // Clear the recorded annotations
                     RGraph.Registry.Set('annotate.actions', []);
                 }
                 
-                canvas.onmouseup = window.onmouseup;
+                canvas.onmouseup = function (e)
+                {
+                    
+                    /**
+                    * Fire the annotate event
+                    */
+                    RGraph.FireCustomEvent(e.target.__object__, 'onannotateend');
+
+                    window.onmouseup(e);
+                }
+
                 canvas.onmouseout = window.onmouseup;
 
             /**
@@ -145,6 +161,11 @@
                                 RGraph.Registry.Set('annotate.actions', RGraph.Registry.Get('annotate.actions') + '|' + x + ',' + y);
 
                                 context.stroke();
+
+                                /**
+                                * Fire the annotate event
+                                */
+                                RGraph.FireCustomEvent(obj, 'onannotate');
                             }
 
                         // No drawing in the gutter
@@ -177,10 +198,10 @@
         var canvas  = e.target.parentNode.__canvas__;
         var context = canvas.getContext('2d');
         var obj     = canvas.__object__;
-        var div = document.createElement('DIV');
-        var coords = RGraph.getMouseXY(e);
+        var div     = document.createElement('DIV');
+        var coords  = RGraph.getMouseXY(e);
         
-        div.__object__               = obj;             // The graph object
+        div.__object__               = obj; // The graph object
         div.className                = 'RGraph_palette';
         div.style.position           = 'absolute';
         div.style.backgroundColor    = 'white';
@@ -196,7 +217,7 @@
         div.style.MozBoxShadow       = 'rgba(96,96,96,0.5) 3px 3px 3px';
         div.style.filter             = 'progid:DXImageTransform.Microsoft.Shadow(color=#666666,direction=135)';
         
-        var common_css       = 'padding: 1px; display: inline; display: inline; display: inline-block; width: 15px; height: 15px; margin-right: 3px; cursor: ' + (document.all ? 'hand;' : 'pointer; ') + (isSafari ? 'margin-bottom: 3px' : '');
+        var common_css       = 'padding: 1px; display: inline; display: inline-block; width: 15px; height: 15px; margin-right: 3px; cursor: pointer;' + (isSafari ? 'margin-bottom: 3px' : '');
         var common_mouseover = ' onmouseover="this.style.border = \'1px black solid\'; this.style.padding = 0"';
         var common_mouseout  = ' onmouseout="this.style.border = 0; this.style.padding = \'1px\'" ';
 
@@ -219,8 +240,8 @@
         /**
         * Now the div has been added to the document, move it up and left and set the width and height
         */
-        div.style.width  = (div.offsetWidth - 5) + 'px';
-        div.style.height = (div.offsetHeight - 5) + 'px';
+        div.style.width  = (div.offsetWidth - (RGraph.isIE9up() ? 12 : 5)) + 'px';
+        div.style.height = (div.offsetHeight - (RGraph.isIE9up() ? 13 : 5)) + 'px';
         div.style.left   = Math.max(0, e.pageX - div.offsetWidth - 2) + 'px';
         div.style.top    = (e.pageY - div.offsetHeight - 2) + 'px';
 
@@ -243,8 +264,8 @@
         }
 
         // Should this be here? Yes. This function is being used as an event handler.
-        e.cancelBubble = true;
         e.stopPropagation();
+        return false;
     }
     
     

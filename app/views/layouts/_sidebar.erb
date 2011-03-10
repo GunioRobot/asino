@@ -2,28 +2,28 @@
 <!-- sidebar start -->
 
 <div id="sidebar" class="column left">
-  <h3><%= link_to 'Konten', '/accounts' %></h3>
-  <% @accounts.each do |account| %>
-    <%= link_to account.title, account, :style => "#{'font-weight:bold;' if account == @account}" %><br/>
-  <% end %>
-
+  <ul>
+      
+    <li><%= link_to 'Alle Konten', '/accounts', :class => "#{'active' if !account}" %></li>
+    
+    <% accounts.each do |acc| %>
+      <li><%= link_to acc.title, acc, :class => "#{'active' if acc == account}" %></li>
+    <% end %>
+    <li><%= link_to 'Neues Konto', new_account_path %></li>
+  </ul>
+  
   <% unless Account.all.empty? %>
-  <h3>Neue Zahlung</h3>
-    <%= link_to 'Neue Zahlung', new_account_item_path(@account) if @account %>
-  <% end %>
-
-  <h3>Kategorien</h3>
-  <%= link_to 'Alle Kategorien', categories_path %><br/>
-  <%= link_to 'Neue Kategorie anlegen', new_category_path(:account_id => @account.id) if @account %>
-
-
-  <h3>Regeln</h3>
-  <% if @account %>
-    <%= link_to 'Alle Regeln', account_rulesets_path(@account) %><br/>
-    <%= link_to 'Neue Regel anlegen', new_ruleset_path %>
-  <% else %>
-    <%= link_to 'Alle Regeln', rulesets_path %><br/>
-    <%= link_to 'Neue Regel anlegen', new_ruleset_path %>
+    <ul class="single">
+      <li>
+        <%= link_to 'Neue Zahlung', 
+                    new_account_item_path(account), 
+                    :class => "#{'active' if controller.controller_name == 'items' and controller.action_name == 'new'}" if account and account.id %>
+      </li>
+      <li>
+        <%= link_to 'Neue Zahlung', new_item_path              , 
+                    :class => "#{'active' if controller.controller_name == 'items' and controller.action_name == 'new'}" if !account %>
+      </li>
+    </ul>
   <% end %>
 
 </div>

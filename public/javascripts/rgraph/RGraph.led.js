@@ -149,6 +149,7 @@
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
 
+
         // First clear the canvas, using the background colour
         RGraph.Clear(this.canvas, this.Get('chart.background'));
         

@@ -12,7 +12,7 @@
     * o------------------------------------------------------------------------------o
     */
 
-    if (typeof(RGraph) == 'undefined') RGraph = {};
+    if (typeof(RGraph) == 'undefined') RGraph = {isRGraph:true,type:'common'};
 
     RGraph.AllowAdjusting = function (obj)
     {
@@ -97,6 +97,11 @@
                     obj.Set('chart.ymax', obj.max);
                     canvas.style.cursor = 'ns-resize';
                     RGraph.Redraw();
+
+                    /**
+                    * Fire the onadjust event
+                    */
+                    RGraph.FireCustomEvent(obj, 'onadjust');
     
                     return;
     
@@ -144,8 +149,8 @@
         /**
         * Progress bar
         */
-        } else if (obj.type == 'progress') {
-        
+        } else if (obj.type == 'hprogress') {
+
             
             canvas.onmousedown = function (e)
             {
@@ -167,20 +172,21 @@
                     var canvas  = obj.canvas;
                     var context = obj.context;
                     
-                    if (obj.Get('chart.orientation') == 'horizontal') {
+                    if (obj.type == 'hprogress') {
                     
                         var coords = RGraph.getMouseXY(e);
                             coords[0] = Math.max(0, coords[0] - obj.Get('chart.gutter'));
                         var barWidth  = canvas.width - (2 * obj.Get('chart.gutter'));
                         
                         // Work out the new value
-                        var value = (coords[0] / barWidth) * obj.max;
+                        var value  = (coords[0] / barWidth) * (obj.max - obj.Get('chart.min'));
+                            value += obj.Get('chart.min');
                         
                         obj.value = Math.max(0, value.toFixed());
                         RGraph.Clear(obj.canvas);
                         obj.Draw();
 
-                    } else if (obj.Get('chart.orientation') == 'vertical') {
+                    } else if (obj.type == 'vprogress') {
 
                         var coords = RGraph.getMouseXY(e);
                             coords[1] = Math.max(0, coords[1] - obj.Get('chart.gutter'));
@@ -193,6 +199,11 @@
                         RGraph.Clear(obj.canvas);
                         obj.Draw();
                     }
+
+                    /**
+                    * Fire the onadjust event
+                    */
+                    RGraph.FireCustomEvent(obj, 'onadjust');
                 }
             }
             
@@ -259,6 +270,11 @@
 
                             RGraph.Clear(obj.canvas);
                             obj.Draw();
+
+                            /**
+                            * Fire the onadjust event
+                            */
+                            RGraph.FireCustomEvent(obj, 'onadjust');
                         }
                         
                         if (Hyp <= (obj.angles[i][2] + 5) && Hyp >= (obj.angles[i][2] - 5) ) {
@@ -266,7 +282,7 @@
                             return;
                         
                         } else if (obj.Get('chart.tooltips') && Hyp <= (obj.angles[i][2] - 5) ) {
-                            canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                            canvas.style.cursor = 'pointer';
                             return;
                         }
 
@@ -319,7 +335,6 @@
                         
                         RGraph.Registry.Set('chart.adjusting.rose.' + id, segment);
                         
-                        e.cancelBubble = true;
                         e.stopPropagation();
                     }
                 }
@@ -334,7 +349,6 @@
                 if (RGraph.Registry.Get('chart.adjusting.rose.' + id)) {
 
                     RGraph.Registry.Set('chart.adjusting.rose.' + id, null);
-                    e.cancelBubble = true;
                     e.stopPropagation();
                     
                     return false;
@@ -424,6 +438,10 @@
                             RGraph.Clear(canvas);
                             obj.Draw();
 
+                            /**
+                            * Fire the onadjust event
+                            */
+                            RGraph.FireCustomEvent(obj, 'onadjust');
                         }
 
                         return;
@@ -497,7 +515,7 @@
 
                 if (mouseDown) {
 
-                    canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                    canvas.style.cursor = 'move';
 
                     var dx  = mouseCoords[0] - obj.centerx;
                     var dy  = mouseCoords[1] - obj.centery;
@@ -515,6 +533,11 @@
                         obj.data[mouseDown[0]] = newvalue;
                         RGraph.Clear(canvas);
                         obj.Draw();
+
+                        /**
+                        * Fire the onadjust event
+                        */
+                        RGraph.FireCustomEvent(obj, 'onadjust');
                     }
 
 
@@ -531,7 +554,7 @@
                         var hyp = Math.sqrt((dx * dx) + (dy * dy));
     
                         if (hyp <= 5) {
-                            canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                            canvas.style.cursor = 'move';
                             return;
                         }
                     }
@@ -563,7 +586,7 @@
                     var hyp = Math.sqrt((dx * dx) + (dy * dy));
 
                     if (hyp <= 5) {
-                        canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                        canvas.style.cursor = 'pointer';
                         RGraph.Registry.Set('chart.adjusting.tradar.' + id, [i, obj.coords[i][0] > obj.centerx, obj.coords[i][1] > obj.centery]);
                         return;
                     }

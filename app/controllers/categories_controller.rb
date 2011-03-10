@@ -1,44 +1,30 @@
+# Manages categories that apply to items
 class CategoriesController < ApplicationController
+  
+  before_filter :load_category, :only => [:show, :edit, :update, :destroy]
+  before_filter :load_accounts, :only => [:index, :new, :edit]
+    
   # GET /categories
   # GET /categories.xml
   def index
-    @accounts = Account.all
-    @categories = Category.all(:conditions => ["category_id is NULL"], :order => 'name')
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @categories }
-    end
+    @categories = Category.where('category_id is NULL').order('name').includes(:categories, :items)
   end
 
   # GET /categories/1
   # GET /categories/1.xml
   def show
-    @category = Category.find(params[:id])
 
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @category }
-    end
   end
 
   # GET /categories/new
   # GET /categories/new.xml
   def new
-    @accounts = Account.all
-    #@account = Account.find(params[:account_id])
     @category = Category.new({:account_id => params[:account_id]})
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @category }
-    end
   end
 
   # GET /categories/1/edit
   def edit
-    @accounts = Account.all
-    @category = Category.find(params[:id])
+
   end
 
   # POST /categories
@@ -60,11 +46,9 @@ class CategoriesController < ApplicationController
   # PUT /categories/1
   # PUT /categories/1.xml
   def update
-    @category = Category.find(params[:id])
-
     respond_to do |format|
       if @category.update_attributes(params[:category])
-        format.html { redirect_to(categories_path, :notice => 'Die Änderungen an der Kategorie wurden gespeichert.') }
+        format.html { redirect_to(categories_path, :notice => 'Die &Auml;nderungen an der Kategorie wurden gespeichert.') }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -76,7 +60,6 @@ class CategoriesController < ApplicationController
   # DELETE /categories/1
   # DELETE /categories/1.xml
   def destroy
-    @category = Category.find(params[:id])
     @category.destroy
 
     respond_to do |format|
@@ -84,4 +67,11 @@ class CategoriesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+
+  private
+
+  def load_category
+    @category = Category.find(params[:id]) if params[:id]
+  end
+  
 end

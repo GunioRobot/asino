@@ -49,6 +49,7 @@
             'chart.segments':               [],
             'chart.gutter':                 25,
             'chart.title':                  '',
+            'chart.title.hpos':             null,
             'chart.title.vpos':             null,
             'chart.shadow':                 false,
             'chart.shadow.color':           'rgba(0,0,0,0.5)',
@@ -62,6 +63,7 @@
             'chart.tooltips':               [],
             'chart.tooltips.effect':         'fade',
             'chart.tooltips.css.class':      'RGraph_tooltip',
+            'chart.tooltips.highlight':     true,
             'chart.radius':                 null,
             'chart.highlight.style':        '3d',
             'chart.border':                 false,
@@ -130,6 +132,13 @@
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
 
+
+        /**
+        * Clear all of this canvases event handlers (the ones installed by RGraph)
+        */
+        RGraph.ClearEventListeners(this.id);
+
+
         this.diameter    = Math.min(this.canvas.height, this.canvas.width) - (2 * this.Get('chart.gutter'));
         this.radius      = this.Get('chart.radius') ? this.Get('chart.radius') : this.diameter / 2;
         // this.centerx now defined below
@@ -197,7 +206,7 @@
 
             for (var i=0,len=this.angles.length; i<len; ++i) {
                 this.context.moveTo(this.centerx, this.centery);
-                this.context.arc(this.centerx, this.centery, this.radius, this.angles[i][0] / 57.3, this.angles[i][0] / 57.3, 0);
+                this.context.arc(this.centerx, this.centery, this.radius, this.angles[i][0] / 57.3, (this.angles[i][0] + 0.01) / 57.3, 0);
             }
             
             this.context.stroke();
@@ -275,7 +284,8 @@
             /**
             * The onclick event
             */
-            this.canvas.onclick = function (e)
+            //this.canvas.onclick = function (e)
+            var canvas_onclick_func = function (e)
             {
                 RGraph.HideZoomedCanvas();
 
@@ -408,11 +418,12 @@
                     }
 
                     e.stopPropagation();
-                    e.cancelBubble = true;
 
                     return;
                 }
             }
+            this.canvas.addEventListener('click', canvas_onclick_func, false);
+            RGraph.AddEventListener(this.id, 'click', canvas_onclick_func);
 
 
 
@@ -424,7 +435,8 @@
             /**
             * The onmousemove event for changing the cursor
             */
-            this.canvas.onmousemove = function (e)
+            //this.canvas.onmousemove = function (e)
+            var canvas_onmousemove_func = function (e)
             {
                 RGraph.HideZoomedCanvas();
 
@@ -433,7 +445,7 @@
                 var segment = RGraph.getSegment(e);
 
                 if (segment) {
-                    e.target.style.cursor = document.all ? 'hand' : 'pointer';
+                    e.target.style.cursor = 'pointer';
 
                     return;
                 }
@@ -443,15 +455,8 @@
                 */
                 e.target.style.cursor = 'default';
             }
-
-
-
-
-
-        // This resets the canvas events - getting rid of any installed event handlers
-        } else {
-            this.canvas.onclick     = null;
-            this.canvas.onmousemove = null;
+            this.canvas.addEventListener('mousemove', canvas_onmousemove_func, false);
+            RGraph.AddEventListener(this.id, 'mousemove', canvas_onmousemove_func);
         }
 
 
@@ -660,7 +665,7 @@
                         this.centery,
                         this.radius + 7,
                         midpoint,
-                        midpoint,
+                        midpoint + 0.01,
                         0);
             
             
@@ -668,7 +673,7 @@
                         this.centery,
                         this.radius - offset,
                         midpoint,
-                        midpoint,
+                        midpoint + 0.01,
                         0);
 
             context.stroke();

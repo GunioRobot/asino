@@ -53,9 +53,11 @@
         * The funnel charts properties
         */
         this.properties = {
+            'chart.strokestyle':           'black',
             'chart.gutter':                25,
             'chart.labels':                null,
             'chart.title':                 '',
+            'chart.title.hpos':             null,
             'chart.title.vpos':            null,
             'chart.colors':                ['red', 'green', 'gray', 'blue', 'black', 'gray'],
             'chart.text.size':             10,
@@ -73,9 +75,14 @@
             'chart.key.position':          'graph',
             'chart.key.background':        'white',
             'chart.key.shadow':            false,
+            'chart.key.shadow.color':       '#666',
+            'chart.key.shadow.blur':        3,
+            'chart.key.shadow.offsetx':     2,
+            'chart.key.shadow.offsety':     2,
             'chart.tooltips':              null,
             'chart.tooltips.effect':        'fade',
             'chart.tooltips.css.class':     'RGraph_tooltip',
+            'chart.tooltips.highlight':     true,
             'chart.annotatable':           false,
             'chart.annotate.color':        'black',
             'chart.zoom.factor':           1.5,
@@ -135,6 +142,11 @@
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
 
+        /**
+        * Clear all of this canvases event handlers (the ones installed by RGraph)
+        */
+        RGraph.ClearEventListeners(this.id);
+
         // This stops the coords array from growing
         this.coords = [];
 
@@ -156,7 +168,7 @@
         
             RGraph.Register(this);
 
-            this.canvas.onclick = function (e)
+            var canvas_onclick_func = function (e)
             {
                 RGraph.Redraw();
 
@@ -264,20 +276,22 @@
                         RGraph.Tooltip(canvas, text, e.pageX, e.pageY, i);
         
                         // Stop the event propagating
-                        e.cancelBubble = true;
-                        e.stopPropagation = true;
+                        e.stopPropagation();
                         
                         break;
                     }
                 }
             }
+            this.canvas.addEventListener('click', canvas_onclick_func, false);
+            RGraph.AddEventListener(this.id, 'click', canvas_onclick_func);
             
             /**
             * Onmousemove event handler
             */
-            this.canvas.onmousemove = function (e)
+            var canvas_onmousemove_func = function (e)
             {
                 var e = RGraph.FixEventObject(e);
+
                 var canvas = e.target;
                 var context = canvas.getContext('2d');
                 var obj     = canvas.__object__;
@@ -335,11 +349,10 @@
                         }
 
                         overFunnel = true;
-                        canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                        canvas.style.cursor = 'pointer';
         
                         // Stop the event propagating
-                        e.cancelBubble    = true;
-                        e.stopPropagation = true;
+                        e.stopPropagation();
                         
                         break;
                     }
@@ -350,11 +363,8 @@
                     canvas.style.cursor = 'default';
                 }
             }
-
-        // This resets the canvas events - getting rid of any installed event handlers
-        } else {
-            this.canvas.onclick     = null;
-            this.canvas.onmousemove = null;
+            this.canvas.addEventListener('mousemove', canvas_onmousemove_func, false);
+            RGraph.AddEventListener(this.id, 'mousemove', canvas_onmousemove_func);
         }
 
 
@@ -465,7 +475,8 @@
                 this.DrawIEShadow([x1, y1, x2, y2, x3, y3, x4, y4], i > 0 && this.Get('chart.shadow.offsety') < 0);
             }
 
-            context.fillStyle = this.Get('chart.colors')[i];
+            context.strokeStyle = this.Get('chart.strokestyle');
+            context.fillStyle   = this.Get('chart.colors')[i];
 
             context.beginPath();
                 context.moveTo(x1, y1);
@@ -479,10 +490,38 @@
             */
             this.coords.push([x1, y1, x2, y2, x3, y3, x4, y4]);
 
-            context.stroke();
+            // The redrawing if the shadow is on will do the stroke
+            if (!this.Get('chart.shadow')) {
+                context.stroke();
+            }
+
             context.fill();
 
             accheight += curheight;
+        }
+
+        /**
+        * If the shadow is enabled, redraw every segment, in order to allow for shadows going upwards
+        */
+        if (this.Get('chart.shadow')) {
+        
+            RGraph.NoShadow(this);
+        
+            for (i=0; i<this.coords.length; ++i) {
+            
+                context.strokeStyle = this.Get('chart.strokestyle');
+                context.fillStyle = this.Get('chart.colors')[i];
+        
+                context.beginPath();
+                    context.moveTo(this.coords[i][0], this.coords[i][1]);
+                    context.lineTo(this.coords[i][2], this.coords[i][3]);
+                    context.lineTo(this.coords[i][4], this.coords[i][5]);
+                    context.lineTo(this.coords[i][6], this.coords[i][7]);
+                context.closePath();
+                
+                context.stroke();
+                context.fill();
+            }
         }
         
         /**
@@ -499,7 +538,7 @@
     RGraph.Funnel.prototype.DrawLabels = function ()
     {
         /**
-        * Draws the labels (draws them "as we go")
+        * Draws the labels
         */
         if (this.Get('chart.labels') && this.Get('chart.labels').length > 0) {
 
@@ -509,6 +548,7 @@
                 context.beginPath();
                 
                 // Set the color back to black
+                context.strokeStyle = 'black';
                 context.fillStyle = this.Get('chart.text.color');
                 
                 // Turn off any shadow

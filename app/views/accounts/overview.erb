@@ -1,38 +1,29 @@
-<div class="column left" style="width:10%;">
-  <h3><%= link_to 'Konten', '/accounts' %></h3>
-  <% @accounts.each do |account| %>
-    <%= link_to account.title, overview_account_path(account), :style => "#{'font-weight:bold;' if account == @account}" %><br/>
-  <% end %>
-
-  <h3>Neue Zahlung</h3>
-    <%= link_to 'Neue Zahlung', new_account_item_path(@account) if @account %>
-
-  <h3>Kategorien</h3>
-  <%= link_to 'Alle Kategorien', categories_path %><br/>
-  <%= link_to 'Neue Kategorie', new_category_path(:account_id => @account.id) if @account %>
-</div>
+<%= render :partial => 'layouts/sidebar', :locals => {:account => @account, :accounts => @accounts} %>
 
 <div class="column right" style="width:80%;">
-  <h2>
-	<%= link_to '&lt;', "#{request.path}?month=#{@month - 1}" %> 
-	Übersicht <%= @account.title if @account %>: <%= @startdate.strftime("%B %Y") %>
-	<%= link_to '&gt;', "#{request.path}?month=#{@month + 1}" %> 
-  </h2>
-  <%= note 'Kategorisch!', 'Diese Darstellung betrachtet ausschließlich Ausgaben, die Kategorien zugewiesen sind!' if @categories.empty? %>
+  <h1>
+  	<%= link_to image_tag('icons/left.png'), "#{request.path}?month=#{@month - 1}", 
+  	                    :title => l((@startdate - 1.month), :format => :monthname) %>
+	Ausgaben <%= @account.title if @account %>: <%= l @startdate, :format => :monthname_and_year %>
+  	<%= link_to image_tag('icons/right.png'), "#{request.path}?month=#{@month + 1}", 
+  	                    :title => l((@startdate + 1.month), :format => :monthname) %>
+  </h1>
 
-  <canvas id="categoryGraph" width="800" height="450">[Ihr Internetbroswer unterstützt kein Canvas Objekt.]</canvas>
+  <canvas id="expenseGraph" width="400" height="550">
+      [Ihr Internetbroswer unterstützt kein Canvas Objekt.]
+  </canvas>
   <script>
-      window.onload = function ()
+      function drawExpenses()
       {
-  
-  
-          var p = new RGraph.Pie('categoryGraph', [<%= @categories.collect {|m| m.sum * -1}.join(',') %>]);
-          p.Set('chart.labels', ['<%= @categories.collect {|d| d.name}.join("','") %>']);
-          p.Set('chart.gutter', 80)
+          var p = new RGraph.Pie('expenseGraph', [<%= @expense_categories.collect {|m| m.sum * -1}.join(',') %>]);
+          p.Set('chart.title', 'Ausgaben')
+          p.Set('chart.labels', ['<%= @expense_categories.collect {|d| "#{d.percent}% #{d.name}" if d.percent > 1}.join("','") %>']);
+          p.Set('chart.gutter', 120)
           p.Set('chart.linewidth', 1);
+          p.Set('chart.stroke', '#fff');
           p.Set('chart.strokestyle', '#fff');
           p.Set('chart.labels.sticks', true);
-          p.Set('chart.text.size', 8);
+          p.Set('chart.text.size', 7);
           p.Set('chart.text.color', '#888')
           p.Set('chart.align', 'left')
           p.Set('chart.colors', ['#ff9900','#ff9f0e','#ffa51d',
@@ -45,47 +36,72 @@
       }
   </script>
   
-  <div class="m20"> </div>
-  <table>
+  <canvas id="incomeGraph" width="400" height="550">
+      [Ihr Internetbroswer unterstützt kein Canvas Objekt.]
+  </canvas>
+  
+  <script>
+      function drawIncome()
+      {
+  
+  
+          var i = new RGraph.Pie('incomeGraph', [<%= @income_categories.collect {|m| m.sum * -1}.join(',') %>]);
+          i.Set('chart.title', 'Einnahmen')
+          i.Set('chart.labels', ['<%= @income_categories.collect {|d| "#{d.percent}% #{d.name}" if d.percent > 0.5}.join("','") %>']);
+          i.Set('chart.gutter', 120)
+          i.Set('chart.linewidth', 1);
+          i.Set('chart.stroke', '#fff');
+          i.Set('chart.strokestyle', '#fff');
+          i.Set('chart.labels.sticks', true);
+          i.Set('chart.text.size', 7);
+          i.Set('chart.text.color', '#888')
+          i.Set('chart.align', 'left')
+          i.Set('chart.colors', ['#3a6601','#498001','#579902','#66b302','#74cb02','#83e502']);
+          
+          i.Draw();
+      }
+      
+      window.onload = drawExpenses(), drawIncome()
+  </script>
+  
+  <div class="m20"></div>
+  
+  <table style="float:left;width:400px;display:block;">
     <tr>
-	  <td class="ar em" colspan="2">
-	    Einnahmen: + <%= number_to_currency @income.to_s, :unit => '', :separator => ",", :delimiter => "." %><br/>
-	    Ausgaben: <%= @expenses %><br/>
-	    <hr/>
-	    Gesamt: <%= @income + @expenses %>
+	  <td class="ar em" colspan="3">
+	    Ausgaben: <%= currency @expenses.to_s %><br/>
 	    <hr/>
 	  </td>
-	  <td class="ar">Unterschied zum Vormonat</td>
+	  <td class="ar medium">Unterschied zum Vormonat</td>
 	  <td class="ar"></td>
 	</tr>
-  <% @categories.each do |category| %>
-    <% next if !category or category.sum == 0 %>
-    <tr class="<%= cycle('even', 'odd') %> overview_category">
-	  <td style="width:300px;">
-        <%= link_to_function category.name, "Element.toggle('category_#{category.id}')" %>
-      </td>
-      <td class="ar" style="width:80px;"><%= number_to_currency (category.sum), :unit => '', :separator => ",", :delimiter => "." %></td>
-      <td class="ar" style="width:80px;">
-        <%= number_to_currency (category.sum - category.lastmonth_sum), :unit => '', :separator => ",", :delimiter => "." if category.lastmonth_sum  %>
-          <%= trend_img(category.sum - category.lastmonth_sum) %>
-	  </td>
-    </tr>
-    <tr class="category_sub" id="category_<%= category.id %>" style="display:none;">
-	  <td colspan="3">  
-	    <table class="category_sub">
-          <% category.items.for_date(Time.now).each do |item| %>
-          <tr>
-            <td style="width:320px;"><%= item.payee %></td>
-            <td class="ar" style="width:80px;"><%= number_to_currency item.amount, :unit => '', :separator => ",", :delimiter => "." %></td>
-            <td class="ar"></td>
-            <td></td>
-          </tr>
-          <% end %>
-        </table>
-      </td>
-	</tr>
-  <% end %>
+    <%= render :partial => 'categories/categorized_items', :locals => {:categories => @expense_categories, :container => 'expenses'} %>
   </table>
+
+  <table style="float:left;width:400px;display:block;">
+    <tr>
+	  <td class="ar em" colspan="3">
+	    Einnahmen: + <%= currency @income %><br/>
+	    <hr/>
+	  </td>
+	  <td class="ar medium">Unterschied zum Vormonat</td>
+	  <td class="ar"></td>
+	</tr>
+    <%= render :partial => 'categories/categorized_items', :locals => {:categories => @income_categories, :container => 'income'} %>
+    <tr>
+	  <td class="ar em" colspan="3">
+	    <hr class="nomargin" /><hr class="nomargin" />
+	    Gesamt: + <%= currency @income + @expenses %><br/>
+	  </td>
+	  <td></td>
+	</tr>  
+  </table>
+ 
+  <div class="clr"></div>
+  
+  <div class="m20"></div>
+  
 </div>
 
 <div class="clr"></div>
+

@@ -7,9 +7,11 @@
 	  Kategorie auf &quot;<%= Category.find(ruleset.action_parameter).name %>&quot; setzen
 	<% end %>
   </td>
-  <td class="ac"><%= '&#10004;' if ruleset.active %></td>
+  <td class="ac"><%= raw('&#10004;') if ruleset.active %></td>
   <td class="ar">
 	<%= link_to image_tag('icons/edit.png'), edit_ruleset_path(ruleset.id) %>
-	<%= link_to_remote image_tag('icons/delete.png'), {:url => ruleset_path(ruleset), :method => :delete, :confirm => 'Bist Du sicher? Die Regel wird unwideruflich gelöscht!'} %>
+	<%= link_to image_tag('icons/delete.png'), ruleset, :method => :delete, 
+	                                                    :remote => true,
+	                                                    :confirm => 'Bist Du sicher? Die Regel wird unwiderruflich gelöscht!' %>
   </td>
 <tr>

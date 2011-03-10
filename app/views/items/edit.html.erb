@@ -1,23 +1,12 @@
-<div class="column left">
-  <h3><%= link_to 'Konten', '/accounts' %></h3>
-  <% @accounts.each do |account| %>
-    <%= link_to account.title, account, :style => "#{'font-weight:bold;' if account == @account}" %><br/>
-  <% end %>
-
-  <h3>Neue Zahlung</h3>
-    <%= link_to 'Neue Zahlung', new_account_item_path(@account) if @account %>
-
-  <h3>Kategorien</h3>
-  <%= link_to 'Alle Kategorien', categories_path %><br/>
-  <%= link_to 'Neue Kategorie', new_category_path(:account_id => @account.id) if @account %>
-</div>
+<%= render :partial => 'layouts/sidebar', :locals => {:account => @account, :accounts => @accounts} %>
 
 <div class="column right">
 <h1>Zahlung bearbeiten</h1>
 
 <% form_for(@item) do |f| %>
-  <%= f.error_messages %>
+  <%= error_messages_for @item %>
 
+  <div style="width:400px;float:left;">
   <p>
     <%= f.label :amount, 'Betrag' %><br />
     <%= f.text_field :amount, :size => 60 %>
@@ -34,6 +23,8 @@
     <%= f.label :category_id, 'Kategorie' %><br />
     <%= f.collection_select(:category_id, Category.all(:order => 'name'), :id, :name, {:include_blank => true}) %>
   </p>
+  </div>
+  <div style="width:400px;float:left;">
   <p>
 	<%= f.check_box :transfer %>
     <%= f.label :transfer, 'Zahlung ist Transfer zwischen eigenen Konten' %>
@@ -42,8 +33,10 @@
 	<%= f.check_box :fix %>
     <%= f.label :fix, 'Zahlung gehört zu monatlichen Fixkosten' %>
   </p>
+  </div>
+  <div class="clr"></div>
   <p>
-    <%= f.submit 'Speichern' %>
+    <%= f.submit 'Speichern' %> oder <%= link_to_function 'abbrechen', 'history.back(-1)' %>
   </p>
 <% end %>
 </div>

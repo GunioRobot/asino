@@ -1,10 +1,10 @@
-<%= render :partial => 'layouts/sidebar' %>
+<%= render :partial => 'layouts/sidebar', :locals => {:account => @account, :accounts => @accounts} %>
 
 <div class="column right">
 <h1>Regel bearbeiten</h1>
 
 <% form_for(@ruleset) do |f| %>
-  <%= f.error_messages %>
+  <%= error_messages_for @ruleset %>
 
   <p>
     <%= f.label :name %><br />
@@ -19,8 +19,8 @@
 	<%= f.label :action, 'Aktion: ' %>
 	<%= f.select :action, [['Kategorie zuweisen', 'set_category']]%>
 	<span>
-	    <%= f.collection_select(:action_parameter, Category.all(:order => 'name', :conditions => "category_id is NULL"), 
-											:id, :name) %>
+	    <%= f.collection_select(:action_parameter, 
+	                            Category.where('category_id is NULL').order('name'), :id, :name) %>
 	</span>
   </p>
   <p>
@@ -32,8 +32,8 @@
   <div class="m20">
 	<% @ruleset.rules.each do |rule| %>
 	  <div id="rule_<%= rule.id %>">
+	    <%= raw("<h3>oder</h3>") if @ruleset.rules.size > 1 and rule != @ruleset.rules.first %>
 	    <%= render :partial => 'rules/edit', :locals => {:rule => rule} %>
-	    <%= "<h3>oder</h3>" unless @ruleset.rules.size == 1 or rule == @ruleset.rules.last %>
 	  </div>
 	<% end %>
 	<h3>Neue Bedingung hinzufügen:</h3>

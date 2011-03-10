@@ -1,4 +1,4 @@
-    /**
+/**
     * o------------------------------------------------------------------------------o
     * | This file is part of the RGraph package - you can learn more at:             |
     * |                                                                              |
@@ -55,6 +55,7 @@
             'chart.text.font':             'Verdana',
             'chart.text.color':            'black',
             'chart.title':                 '',
+            'chart.title.hpos':            null,
             'chart.title.vpos':            null,
             'chart.title.color':           'black',
             'chart.linewidth':             1,
@@ -62,6 +63,10 @@
             'chart.key.background':        'white',
             'chart.key.position':          'gutter',
             'chart.key.shadow':            false,
+            'chart.key.shadow.color':       '#666',
+            'chart.key.shadow.blur':        3,
+            'chart.key.shadow.offsetx':     2,
+            'chart.key.shadow.offsety':     2,
             'chart.contextmenu':           null,
             'chart.annotatable':           false,
             'chart.annotate.color':        'black',
@@ -80,6 +85,7 @@
             'chart.zoom.action':            'zoom',
             'chart.tooltips.effect':        'fade',
             'chart.tooltips.css.class':      'RGraph_tooltip',
+            'chart.tooltips.highlight':     true,
             'chart.resizable':              false,
             'chart.labels.axes':            'nsew',
             'chart.ymax':                   null
@@ -138,13 +144,18 @@
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
 
+        /**
+        * Clear all of this canvases event handlers (the ones installed by RGraph)
+        */
+        RGraph.ClearEventListeners(this.id);
+
         this.centerx  = this.canvas.width / 2;
         this.centery  = this.canvas.height / 2;
         this.size     = Math.min(this.canvas.width, this.canvas.height) - (2 * this.Get('chart.gutter'));
     
         // Work out the maximum value and the sum
         if (!this.Get('chart.ymax')) {
-            this.scale = RGraph.getScale(RGraph.array_max(this.data));
+            this.scale = RGraph.getScale(RGraph.array_max(this.data), this);
             this.max = this.scale[4];
         } else {
             var ymax = this.Get('chart.ymax');
@@ -162,7 +173,7 @@
         this.DrawBackground();
         this.DrawAxes();
         this.DrawCircle();
-this.DrawAxisLabels();
+        this.DrawAxisLabels();
         this.DrawChart();
         this.DrawLabels();
         
@@ -236,7 +247,7 @@ this.DrawAxisLabels();
            this.context.strokeStyle = color;
            this.context.beginPath();
 
-           for (var r=5; r<(this.size / 2); r+=10) {
+           for (var r=5; r<(this.size / 2); r+=15) {
 
                 this.context.moveTo(this.centerx, this.centery);
                 this.context.arc(this.centerx, this.centery,r, 0, 6.28, 0);
@@ -250,9 +261,9 @@ this.DrawAxisLabels();
         * Draw diagonals
         */
         this.context.strokeStyle = color;
-        for (var i=0; i<360; i+=10) {
+        for (var i=0; i<360; i+=15) {
             this.context.beginPath();
-            this.context.arc(this.centerx, this.centery, this.size / 2, (i / 360) * (2 * Math.PI), (i / 360) * (2 * Math.PI), 0);
+            this.context.arc(this.centerx, this.centery, this.size / 2, (i / 360) * (2 * Math.PI), ((i+0.01) / 360) * (2 * Math.PI), 0); // The 0.01 avoids a bug in Chrome 6
             this.context.lineTo(this.centerx, this.centery);
             this.context.stroke();
         }
@@ -351,7 +362,7 @@ this.DrawAxisLabels();
             
             RGraph.Register(this);
             
-            this.canvas.onmousemove = function (e)
+            var canvas_onmousemove_func = function (e)
             {
                 e = RGraph.FixEventObject(e);
                 
@@ -397,23 +408,25 @@ this.DrawAxisLabels();
                             if (typeof(text) == 'string' && text.length) {
                        
                                 overHotspot = true;
-                                obj.canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                                obj.canvas.style.cursor = 'pointer';
 
                                 RGraph.Clear(obj.canvas);
                                 obj.Draw();
-    
-                                obj.context.beginPath();
-                                obj.context.strokeStyle = 'gray';
-                                obj.context.fillStyle   = 'white';
-                                obj.context.arc(xCoord, yCoord, 2, 0, 6.28, 0);
-                                obj.context.fill();
-                                obj.context.stroke();
+                                
+                                if (obj.Get('chart.tooltips.highlight')) {
+                                    obj.context.beginPath();
+                                    obj.context.strokeStyle = 'gray';
+                                    obj.context.fillStyle   = 'white';
+                                    obj.context.arc(xCoord, yCoord, 2, 0, 6.28, 0);
+                                    obj.context.fill();
+                                    obj.context.stroke();
+                                }
                                 
                                 RGraph.Tooltip(obj.canvas, text, e.pageX, e.pageY, idx);
                             }
                         } else if (RGraph.Registry.Get('chart.tooltip') && RGraph.Registry.Get('chart.tooltip').__index__ == idx) {
                             overHotspot = true;
-                            obj.canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                            obj.canvas.style.cursor = 'pointer';
                         }
                     }
                 }
@@ -422,6 +435,8 @@ this.DrawAxisLabels();
                     obj.canvas.style.cursor = 'default';
                 }
             }
+            this.canvas.addEventListener('mousemove', canvas_onmousemove_func, false);
+            RGraph.AddEventListener(this.id, 'mousemove', canvas_onmousemove_func);
         }
     }
 

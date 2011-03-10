@@ -16,7 +16,7 @@
 <h1>Neue Kategorie</h1>
 
 <% form_for(@category) do |f| %>
-  <%= f.error_messages %>
+  <%= error_messages_for @category %>
 
   <p>
     <%= f.label :name %><br />
@@ -24,8 +24,8 @@
   </p>
   <p>
     <%= f.label :category, 'In Überkategorie' %><br />
-    <%= f.collection_select(:category_id, Category.all(:order => 'name', :conditions => "category_id is NULL"), 
-										:id, :name, {:include_blank => true}) %>
+    <%= f.collection_select(:category_id, 
+                            Category.where('category_id is NULL').order('name'), :id, :name, {:include_blank => true}) %>
   </p>
   <p>
 	<%= f.check_box :transfer %>

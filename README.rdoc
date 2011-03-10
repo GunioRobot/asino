@@ -5,18 +5,31 @@ It receives account transactions from Saldomats RSS feeds, so these need to be e
 asino is intended to run on a local machine, not a server that is accessible from the internet.
 
 
+== Screenshots
+
+link:https://s3.amazonaws.com/asino/items_small.png
+
+link:https://s3.amazonaws.com/asino/overview_small.png
+
+link:https://s3.amazonaws.com/asino/course_small.png
+
+
 == Getting Started
 
 1. clone the app code from github: git clone git://github.com/agehret/asino.git
-2. run rake gems:install
-3. run rake db:create
-4. run rake db:migrate
-5. start your local server
+2. run gem install bundler
+3. run bundle install
+4. run rake db:create
+5. run rake db:migrate
+6. start your local server
 
 
 == Prerequisites
 
-By default, asino uses MySQL, so you should have a running instance
+- MYSQL
+- Ruby 1.9.2
+- Rails 3.0.5
+- Firefox or Chrome or Safari (IE and Windows has not been tested)
 
 == Scheduled Tasks
 
@@ -29,7 +42,7 @@ This will sync asino from Saldomat every 15 minutes.
 
 == Help/FAQ
 
-{Please check out the FAQ here...}[http://answer8.de/asino]
+{Please check out the FAQ here...}[http://www.helpify.de/asino]
 
 ==Author
 
@@ -38,5 +51,5 @@ This will sync asino from Saldomat every 15 minutes.
 
 == Copyright
 
-Copyright (c) 2010 {agehret}[http://github.com/agehret] -
+Copyright (c) 2011 {agehret}[http://github.com/agehret] -
 {Andreas Gehret}[http://github.com/agehret], released under the MIT license

@@ -1,23 +1,35 @@
 <td class="ar<%= ' transfer' if item.transfer %>"><%= item.created_at.strftime("%d.%m.%y") %></td>
 <td class="<%= 'transfer' if item.transfer %>"><%= 'Transfer: ' if item.transfer %><%= item.payee %></td>
-<td class="<%= 'transfer' if item.transfer %>"><%= 'Transfer: ' if item.transfer %><%= item.description %></td>
-<td class="<%= 'transfer' if item.transfer %>"><%= "#{item.account.title}" unless @account %></td>
+<td class="<%= 'transfer' if item.transfer %>">
+  <%= 'Transfer: ' if item.transfer %>
+  <%= item.description %>
+  <% if item.note.blank? %>
+    <%= link_to '', item_note_path(item.id, :id => 0), 
+                        :rel => 'facebox', :id => "note_#{item.id}" %>
+  <% else %>
+    <%= link_to image_tag('icons/note.png'), item_note_path(item.id, :id => 0), 
+                        :rel => 'facebox', :title => item.note, :id => "note_#{item.id}" %>
+  <% end %>
+</td>
+<td class="<%= 'transfer' if item.transfer %>"><%= "#{item.account.title}" unless account %></td>
+<td class="ar<%= get_saldo_class(item.amount) %><%= ' transfer' if item.transfer %>">
+  <%= currency(item.amount) %>
+</td>
 <% if item.category.blank? %>
   <td id="item_<%= item.id %>_category" class="<%= 'transfer' if item.transfer %>">
-    <%= render :partial => 'items/add_category', :locals => {:item => item} %>
+    <%= render :partial => 'items/add_category', :locals => {:item => item, :account => account} %>
   </td>
 <% else %>
   <td id="item_<%= item.id %>_category" class="<%= 'transfer' if item.transfer %>">
-    <%= render :partial => 'items/add_category', :locals => {:item => item} %>
+    <%= render :partial => 'items/add_category', :locals => {:item => item, :account => account} %>
   </td>
 <% end %>
 <td>
   <%= render :partial => 'items/add_fix', :locals => {:item => item} %>
 </td>
-<td class="ar<%= get_saldo_class(item.amount) %><%= ' transfer' if item.transfer %>">
-  <%= number_to_currency(item.amount) %>
-</td>
 <td class="ar<%= ' transfer' if item.transfer %>">
-  <%= link_to image_tag('icons/edit.png', :alt => "Bearbeiten"), edit_item_path(item) %>
-  <%= link_to_remote image_tag('icons/delete.png', :alt => 'Löschen'), {:url => item_path(item), :method => :delete} %>
+  <%= link_to image_tag('icons/note_add.png'), new_item_note_path(item), :rel => 'facebox', :title => "Notiz hinzufügen" %>
+  <%= link_to image_tag('icons/edit.png'), edit_item_path(item), :title => 'Bearbeiten' %>
+  <%= link_to image_tag('icons/delete.png'), item, :method => :delete, :remote => true, :title => 'Löschen' %>
+
 </td>

@@ -2,10 +2,10 @@
   <% if self.flash[:notice] %>
   <div id="flash_notice" class="flash notice"><%= self.flash[:notice] %></div>
   <% elsif self.flash[:success] %>
-  <div id="flash_success" class="flash success"><%= self.flash[:success] %></div>
+  <div id="flash_success" class="flash success"><%= raw self.flash[:success] %></div>
   <% elsif self.flash[:warning] %>
-  <div id="flash_warning" class="flash warning"><%= self.flash[:warning] %></div>
+  <div id="flash_warning" class="flash warning"><%= raw self.flash[:warning] %></div>
   <% elsif self.flash[:alert] %>
-  <div id="flash_alert" class="flash alert"><%= self.flash[:alert] %></div>
+  <div id="flash_alert" class="flash alert"><%= raw self.flash[:alert] %></div>
   <% end %>
 </div>

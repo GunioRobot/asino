@@ -1,8 +1,13 @@
-# Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
   
   def get_saldo_class(amount)
     return (amount > 0 ? ' positive' : ' negative')
+  end
+  
+  def li_menu(current, action = nil)
+    return raw '<li class="active">' if current.include? controller.controller_name and action.nil?
+    return raw '<li class="active">' if current.include? controller.controller_name and action.include? controller.action_name
+    raw '<li>'
   end
   
   def note(title = 'Notiz', text = 'Bitte Text angeben')
@@ -25,11 +30,16 @@ module ApplicationHelper
   # helper to display sortable links and their current sort state in table headers
   def sortlink(label, param)
 	  if params[:order] == param
-	    link_to "#{label} &darr;", "#{request.path}?order=#{param} desc"
+	    link_to raw("#{label} &darr;"), "#{request.path}?order=#{param} desc"
 	  elsif params[:order] == "#{param} desc"
-	    link_to "#{label} &uarr;", "#{request.path}?order=#{param}"
+	    link_to raw("#{label} &uarr;"), "#{request.path}?order=#{param}"
 	  else
       link_to label, "#{request.path}?order=#{param}"
     end
   end
+  
+  def currency(number)
+     number_to_currency(number, :unit => "&euro;", :separator => ",", :delimiter => ".", :format => "%n %u")
+   end
+
 end

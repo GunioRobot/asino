@@ -12,7 +12,7 @@
     * o------------------------------------------------------------------------------o
     */
 
-    if (typeof(RGraph) == 'undefined') RGraph = {};
+    if (typeof(RGraph) == 'undefined') RGraph = {isRGraph:true,type:'common'};
 
 
     /**
@@ -63,7 +63,7 @@
         div.style.MozBoxShadow    = '3px 3px 3px rgba(96,96,96,0.5)';
         div.style.WebkitBoxShadow = '3px 3px 3px rgba(96,96,96,0.5)';
         div.style.filter          = 'progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135)';
-        div.style.opacity         = 0; // FIXME TODO Not currently supported in MSIE
+        div.style.opacity         = 0;
 
         bg.className             = 'RGraph_contextmenu_background';
         bg.style.position        = 'absolute';
@@ -110,7 +110,7 @@
                         menuitem.addEventListener("mouseover", function (e) {RGraph.HideContextSubmenu(); e.target.style.backgroundColor = 'rgba(0,0,0,0.2)'; e.target.style.cursor = 'pointer';}, false);
                         menuitem.addEventListener("mouseout", function (e) {e.target.style.backgroundColor = 'inherit'; e.target.style.cursor = 'default';}, false);
                     } else  {
-                        menuitem.attachEvent("onmouseover", function () {RGraph.HideContextSubmenu();event.srcElement.style.backgroundColor = '#eee';event.srcElement.style.cursor = 'hand';}
+                        menuitem.attachEvent("onmouseover", function () {RGraph.HideContextSubmenu();event.srcElement.style.backgroundColor = '#eee';event.srcElement.style.cursor = 'pointer';}
                     , false);
                         menuitem.attachEvent("onmouseout", function () {event.srcElement.style.backgroundColor = 'inherit'; event.srcElement.style.cursor = 'default';}, false);
                     }
@@ -146,7 +146,6 @@
             } else if (menuitems[i] && menuitems[i][1] && RGraph.is_array(menuitems[i][1])) {
                 var tmp = menuitems[i][1]; // This is here because of "references vs primitives" and how they're passed around in Javascript
                 menuitem.addEventListener('mouseover', function (e) {RGraph.Contextmenu_submenu(canvas.__object__, tmp, e.target);}, false);
-                // TODO Need to accommodate MSIE here with attachEvent()
             }
         }
         
@@ -155,7 +154,7 @@
         * Shadow now handled by CSS3?
         */
         div.style.width = (div.offsetWidth + 10) + 'px';
-        div.style.height = (div.offsetHeight - 2) + 'px';
+        div.style.height = (div.offsetHeight - (RGraph.isIE9up() ? 10 : 2)) + 'px';
 
         /**
         * Set the background (the left bar) width if it's MSIE
@@ -216,9 +215,8 @@
         window.onresize = function () {RGraph.HideContext();}
 
         e.stopPropagation();
-        e.cancelBubble = true;
-        
-                /**
+
+        /**
         * Fire the (RGraph) oncontextmenu event
         */
         RGraph.FireCustomEvent(canvas.__object__, 'oncontextmenu');
@@ -277,7 +275,7 @@
         RGraph.HidePalette();
 
         if (obj.Get('chart.contextmenu') && obj.Get('chart.contextmenu').length) {
-        
+
             var isOpera      = navigator.userAgent.indexOf('Opera') >= 0;
             var isSafari     = navigator.userAgent.indexOf('Safari') >= 0;
             var isChrome     = navigator.userAgent.indexOf('Chrome') >= 0;
@@ -292,12 +290,13 @@
                     if (e.ctrlKey) return true;
 
                     RGraph.Contextmenu(obj.canvas, obj.Get('chart.contextmenu'), e);
+
                     return false;
                 }
-            
+
             // Accomodate Opera and Safari - use double click event
             } else {
-    
+
                 obj.canvas.addEventListener('dblclick', function (e)
                 {
                     if (e.ctrlKey) return true;
@@ -329,7 +328,7 @@
         subMenu.style.position = 'absolute';
         subMenu.style.width = '100px';
         subMenu.style.top = menu.offsetTop + parentMenuItem.offsetTop + 'px';
-        subMenu.style.left            = (menu.offsetLeft + menu.offsetWidth) + 'px';
+        subMenu.style.left            = (menu.offsetLeft + menu.offsetWidth - (document.all ? 9 : 0)) + 'px';
         subMenu.style.backgroundColor = 'white';
         subMenu.style.border          = '1px solid black';
         subMenu.className             = 'RGraph_contextmenu';
@@ -360,7 +359,7 @@
                         menuitem.addEventListener("mouseover", function (e) {e.target.style.backgroundColor = 'rgba(0,0,0,0.2)'; e.target.style.cursor = 'pointer';}, false);
                         menuitem.addEventListener("mouseout", function (e) {e.target.style.backgroundColor = 'inherit'; e.target.style.cursor = 'default';}, false);
                     } else  {
-                        menuitem.attachEvent("onmouseover", function () {event.srcElement.style.backgroundColor = 'rgba(0,0,0,0.2)'; event.srcElement.style.cursor = 'hand'}, false);
+                        menuitem.attachEvent("onmouseover", function () {event.srcElement.style.backgroundColor = 'rgba(0,0,0,0.2)'; event.srcElement.style.cursor = 'pointer'}, false);
                         menuitem.attachEvent("onmouseout", function () {event.srcElement.style.backgroundColor = 'inherit'; event.srcElement.style.cursor = 'default';}, false);
                     }
                 } else {
@@ -402,4 +401,158 @@
         bg  = subMenu.appendChild(bg);
 
         RGraph.Registry.Set('chart.contextmenu.submenu', subMenu);
+    }
+
+
+    /**
+    * A function designed to be used in conjunction with thed context menu
+    * to allow people to get image versions of canvases.
+    * 
+    * @param      canvas Optionally you can pass in the canvas, which will be used
+    */
+    RGraph.showPNG = function ()
+    {
+        if (RGraph.isIE8()) {
+            alert('[RGRAPH PNG] Sorry, showing a PNG is not supported on MSIE8.');
+            return;
+        }
+
+        if (arguments[0] && arguments[0].id) {
+            var canvas = arguments[0];
+            var event  = arguments[1];
+        
+        } else if (RGraph.Registry.Get('chart.contextmenu')) {
+            var canvas = RGraph.Registry.Get('chart.contextmenu').__canvas__;
+        
+        } else {
+            alert('[RGRAPH SHOWPNG] Could not find canvas!');
+        }
+
+        var obj = canvas.__object__;
+
+        /**
+        * Create the gray background DIV to cover the page
+        */
+        var bg = document.createElement('DIV');
+            bg.id = '__rgraph_image_bg__';
+            bg.style.position = 'fixed';
+            bg.style.top = '-10px';
+            bg.style.left = '-10px';
+            bg.style.width = '5000px';
+            bg.style.height = '5000px';
+            bg.style.backgroundColor = 'rgb(204,204,204)';
+            bg.style.opacity = 0;
+        document.body.appendChild(bg);
+        
+        
+        /**
+        * Create the div that the graph sits in
+        */
+        var div = document.createElement('DIV');
+            div.style.backgroundColor = 'white';
+            div.style.opacity = 0;
+            div.style.border = '1px solid black';
+            div.style.position = 'fixed';
+            div.style.top = '20%';
+            div.style.width = canvas.width + 'px';
+            div.style.height = canvas.height + 35 + 'px';
+            div.style.left = (document.body.clientWidth / 2) - (canvas.width / 2) + 'px';
+            div.style.padding = '5px';
+
+            div.style.borderRadius = '10px';
+            div.style.MozBorderRadius = '10px';
+            div.style.WebkitBorderRadius = '10px';
+
+            div.style.boxShadow    = '0 0 15px rgba(96,96,96,0.5)';
+            div.style.MozBoxShadow = '0 0 15px rgba(96,96,96,0.5)';
+            div.style.WebkitBoxShadow = 'rgba(96,96,96,0.5) 0 0 15px';
+
+            div.__canvas__ = canvas;
+            div.__object__ = obj;
+            div.id = '__rgraph_image_div__';
+        document.body.appendChild(div);
+
+        
+        /**
+        * Add the HTML text inputs
+        */
+        div.innerHTML += '<div style="position: absolute; margin-left: 10px; top: ' + canvas.height + 'px; width: ' + (canvas.width - 50) + 'px; height: 25px"><span style="display: inline; display: inline-block; width: 65px; text-align: right">URL:</span><textarea style="float: right; overflow: hidden; height: 15px; width: ' + (canvas.width - (2 * obj.Get('chart.gutter')) - 80) + 'px" onclick="this.select()" readonly="readonly" id="__rgraph_dataurl__">' + canvas.toDataURL() + '</textarea></div>';
+        div.innerHTML += '<div style="position: absolute; top: ' + (canvas.height + 25) + 'px; left: ' + (obj.Get('chart.gutter') - 65 + (canvas.width / 2)) + 'px; width: ' + (canvas.width - obj.Get('chart.gutter')) + 'px; font-size: 65%">A link using the URL: <a href="' + canvas.toDataURL() + '">View</a></div>'
+
+        
+        
+        /**
+        * Create the image rendition of the graph
+        */
+        var img = document.createElement('IMG');
+        RGraph.Registry.Set('chart.png', img);
+        img.__canvas__ = canvas;
+        img.__object__ = obj;
+        img.id = '__rgraph_image_img__';
+        img.className = 'RGraph_png';
+
+        img.src = canvas.toDataURL();
+
+        div.appendChild(img);
+        
+        setTimeout(function () {document.getElementById("__rgraph_dataurl__").select();}, 50);
+        
+        window.addEventListener('resize', function (e){var img = RGraph.Registry.Get('chart.png');img.style.left = (document.body.clientWidth / 2) - (img.width / 2) + 'px';}, false);
+        
+        bg.onclick = function (e)
+        {
+            var div = document.getElementById("__rgraph_image_div__");
+            var bg = document.getElementById("__rgraph_image_bg__");
+
+            if (div) {
+                div.style.opacity = 0;
+
+                div.parentNode.removeChild(div);
+
+                div.id = '';
+                div.style.display = 'none';
+                div = null;
+            }
+
+            if (bg) {
+                bg.style.opacity = 0;
+
+                bg.id = '';
+                bg.style.display = 'none';
+                bg = null;
+            }
+        }
+        
+        window.addEventListener('resize', function (e) {bg.onclick(e);}, false)
+        
+        /**
+        * This sets the image as a global variable, circumventing repeated calls to document.getElementById()
+        */
+        __rgraph_image_bg__  = bg;
+        __rgraph_image_div__ = div;
+
+
+        setTimeout('__rgraph_image_div__.style.opacity = 0.2', 50);
+        setTimeout('__rgraph_image_div__.style.opacity = 0.4', 100);
+        setTimeout('__rgraph_image_div__.style.opacity = 0.6', 150);
+        setTimeout('__rgraph_image_div__.style.opacity = 0.8', 200);
+        setTimeout('__rgraph_image_div__.style.opacity = 1', 250);
+
+        setTimeout('__rgraph_image_bg__.style.opacity = 0.1', 50);
+        setTimeout('__rgraph_image_bg__.style.opacity = 0.2', 100);
+        setTimeout('__rgraph_image_bg__.style.opacity = 0.3', 150);
+        setTimeout('__rgraph_image_bg__.style.opacity = 0.4', 200);
+        setTimeout('__rgraph_image_bg__.style.opacity = 0.5', 250);
+
+
+        
+        img.onclick = function (e)
+        {
+            if (e.stopPropagation) e.stopPropagation();
+            else event.cancelBubble = true;
+        }
+        
+        if (event && event.stopPropagation) {
+            event.stopPropagation();
+        }
     }

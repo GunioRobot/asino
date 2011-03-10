@@ -1,8 +1,10 @@
+# Mangages account specific actions. An account actually refers to a bank account.
 class AccountsController < ApplicationController
   # GET /accounts
   # GET /accounts.xml
   
   before_filter :get_accounts, :check_login
+  before_filter :load_account, :only => [:show, :edit, :update, :destroy, :overview, :course]
   
   
   def index
@@ -23,17 +25,12 @@ class AccountsController < ApplicationController
     @last_month_income = Item.income.for_current_date(@lastmonth).sum(:amount)    
     @last_month_expenses = Item.expenses.for_current_date(@lastmonth).sum(:amount)
 
-    respond_to do |format|
-      format.html { render :action => 'show'}
-      format.xml  { render :xml => @accounts }
-    end
+    render :action => 'show'
   end
 
 
 
   def show
-    @account = Account.find(params[:id])
-    
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
@@ -48,25 +45,39 @@ class AccountsController < ApplicationController
     @last_month_expenses = Item.expenses.for_account(@account.id).for_current_date(@lastmonth).sum(:amount)
     
     sort_items #sort items according to order param
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @account }
+  end
+  
+  
+  # show graph of monthly saldo, expenses, income development
+  def course
+    @include_graph_scripts = true
+    Account.all.each do |account|
+      Monthreport.find_or_create(account, Time.now)
+    end
+    
+    if !@account
+      @items = Item.without_transfers
+      @expenses = Monthreport.grouped_by_date.collect{|m| [m.date, Monthreport.for_date(m.date).sum(:expenses)] }
+      @income =   Monthreport.grouped_by_date.collect{|m| [m.date, Monthreport.for_date(m.date).sum(:income  )] }
+      @saldo =    Monthreport.grouped_by_date.collect{|m| [m.date, Monthreport.for_date(m.date).sum(:saldo   )] }
+    else
+      @items = Item.for_account(@account.id).without_transfers
+      @expenses = Monthreport.grouped_by_date.collect{|m| [m.date, Monthreport.for_account(@account.id).for_date(m.date).sum(:expenses)] }
+      @income =   Monthreport.grouped_by_date.collect{|m| [m.date, Monthreport.for_account(@account.id).for_date(m.date).sum(:income )] }
+      @saldo =    Monthreport.grouped_by_date.collect{|m| [m.date, Monthreport.for_account(@account.id).for_date(m.date).sum(:saldo  )] }
     end
   end
   
   
   def overview
-    @account = Account.find(params[:id]) if params[:id]
-    
+    @include_graph_scripts = true
+
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
-    
-    @categories_sum = 0
-    
+
     if @account 
-      @items = Item.for_account(@account.id).without_transfers.for_date(@enddate)
+      @items = Item.for_account(@account.id).for_date(@enddate).without_transfers
       @sum = Item.for_account(@account.id).sum(:amount)
       @income = Item.income.for_account(@account.id).for_date(@enddate).without_transfers.sum(:amount)
       @expenses = Item.expenses.for_account(@account.id).for_date(@enddate).without_transfers.sum(:amount)
@@ -76,47 +87,12 @@ class AccountsController < ApplicationController
       @income = Item.income.for_date(@enddate).without_transfers.sum(:amount)
       @expenses = Item.expenses.for_date(@enddate).without_transfers.sum(:amount)
     end
-    
-    @items_by_category = @items.group_by { |i| i.category }
-    @categories = []
-    @items_by_category.each do |category, items|
-      next unless category
-      category.sum = 0
-      items.each do |item|
-        next if item.amount >= 0
-        category.sum += item.amount
-        category.lastmonth_sum = category.items.for_date(@lastmonth).sum(:amount)
-        category.items << item
-      end
-      @categories << category unless category.sum == 0
-      @categories_sum += category.sum
-    end 
-    
-    @categories = @categories.sort{|l,m| l.sum <=> m.sum}
-  end
-  
-  # show graph of monthly saldo, expenses, income development
-  def course
-    @account = Account.find(params[:id]) if params[:id]
-    
-    if !@account
-      @expenses = Monthreport.all(:group => "date").collect{|m| [m.date, Monthreport.sum("expenses", :conditions => "date='#{m.date}'")] }
-      @income =   Monthreport.all(:group => "date").collect{|m| [m.date, Monthreport.sum("income",   :conditions => "date='#{m.date}'")] }
-      @saldo =    Monthreport.all(:group => "date").collect{|m| [m.date, Monthreport.sum("saldo",    :conditions => "date='#{m.date}'")] }
-    else
-      @expenses = Monthreport.all(:group => "date").collect{|m| [m.date, Monthreport.sum("expenses", :conditions => "date='#{m.date}' and account_id = #{@account.id}")] }
-      @income =   Monthreport.all(:group => "date").collect{|m| [m.date, Monthreport.sum("income",   :conditions => "date='#{m.date}' and account_id = #{@account.id}")] }
-      @saldo =    Monthreport.all(:group => "date").collect{|m| [m.date, Monthreport.sum("saldo",    :conditions => "date='#{m.date}' and account_id = #{@account.id}")] }
-    end
 
-    
-    monthreports = Monthreport.find(:all, :conditions => ["account_id = ? and date > ?", params[:id], '1980-01-01'], :order => 'date')
-
-  end
-  
+    @expense_categories = categorized_items(@items, 'expenses', @expenses, @lastmonth)
+    @income_categories  = categorized_items(@items, 'income', @income, @lastmonth)
+  end 
   
   def search
-    
     @sum = Item.sum(:amount)
     
     unless params[:account_id].blank?
@@ -139,16 +115,11 @@ class AccountsController < ApplicationController
   
   def new
     @account = Account.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @account }
-    end
   end
 
 
   def edit
-    @account = Account.find(params[:id])
+
   end
 
 
@@ -171,11 +142,9 @@ class AccountsController < ApplicationController
 
 
   def update
-    @account = Account.find(params[:id])
-
     respond_to do |format|
       if @account.update_attributes(params[:account])
-        format.html { redirect_to(@account, :notice => 'Die Kontodaten wurden erfolgreich geändert.') }
+        format.html { redirect_to(@account, :notice => 'Die Kontodaten wurden erfolgreich ge&auml;ndert.') }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -186,11 +155,10 @@ class AccountsController < ApplicationController
 
 
   def destroy
-    @account = Account.find(params[:id])
     @account.destroy
 
     respond_to do |format|
-      format.html { redirect_to '/', :notice => 'Das Konto wurde gelöscht.' }
+      format.html { redirect_to '/', :notice => 'Das Konto wurde gel&ouml;scht.' }
       format.xml  { head :ok }
     end
   end
@@ -217,5 +185,11 @@ class AccountsController < ApplicationController
     @items = @items.sort_by(&:amount).reverse if params[:order] == 'saldo desc'
     @items = @items.sort_by(&:category_id) if params[:order] == 'cat'
     @items = @items.sort_by(&:category_id).reverse if params[:order] == 'cat desc'
+  end
+  
+  private
+
+  def load_account
+    @account = Account.find(params[:id]) if params[:id]
   end
 end

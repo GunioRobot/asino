@@ -49,6 +49,7 @@
             'chart.strokestyle':            'black',
             'chart.gutter':                 25,
             'chart.title':                  '',
+            'chart.title.hpos':             null,
             'chart.title.vpos':             null,
             'chart.labels':                 null,
             'chart.labels.position':       'center',
@@ -58,12 +59,17 @@
             'chart.text.size':              10,
             'chart.key':                    null,
             'chart.key.shadow':             false,
+            'chart.key.shadow.color':       '#666',
+            'chart.key.shadow.blur':        3,
+            'chart.key.shadow.offsetx':     2,
+            'chart.key.shadow.offsety':     2,
             'chart.key.background':         'white',
             'chart.key.position':           'graph',
             'chart.contextmenu':            null,
             'chart.tooltips':               null,
             'chart.tooltips.effect':         'fade',
             'chart.tooltips.css.class':      'RGraph_tooltip',
+            'chart.tooltips.highlight':     true,
             'chart.annotatable':            false,
             'chart.annotate.color':         'black',
             'chart.zoom.factor':            1.5,
@@ -81,7 +87,9 @@
             'chart.zoom.action':            'zoom',
             'chart.resizable':              false,
             'chart.adjustable':             false,
-            'chart.ymax':                   null
+            'chart.ymax':                   null,
+            'chart.ymin':                   0,
+            'chart.scale.decimals':         null
         }
         
         // Check the common library has been included
@@ -123,6 +131,11 @@
         * Fire the onbeforedraw event
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
+        
+        /**
+        * Clear all of this canvases event handlers (the ones installed by RGraph)
+        */
+        RGraph.ClearEventListeners(this.id);
 
         // Calculate the radius
         this.radius       = (Math.min(this.canvas.width, this.canvas.height) / 2);
@@ -163,7 +176,7 @@
             /**
             * The onclick event
             */
-            this.canvas.onclick = function (e)
+            var canvas_onclick_func = function (e)
             {
                 var obj     = e.target.__object__;
                 var canvas  = e.target;
@@ -192,18 +205,19 @@
                     */
                     RGraph.Tooltip(canvas, obj.Get('chart.tooltips')[segment[5]], e.pageX, e.pageY, segment[5]);
 
-                    e.cancelBubble = true;
                     e.stopPropagation();
 
                     return;
                 }
             }
-            
-            
+            this.canvas.addEventListener('click', canvas_onclick_func, false);
+            RGraph.AddEventListener(this.id, 'click', canvas_onclick_func);
+
+
             /**
             * The onmousemove event
             */
-            this.canvas.onmousemove = function (e)
+            var canvas_onmousemove_func = function (e)
             {
                 var obj     = e.target.__object__;
                 var canvas  = e.target;
@@ -214,18 +228,14 @@
                 var segment = RGraph.getSegment(e);
 
                 if (segment && obj.Get('chart.tooltips')[segment[5]]) {
-                    canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                    canvas.style.cursor = 'pointer';
                     return;
                 }
 
                 canvas.style.cursor = 'default';
             }
-        
-        // This resets the canvas events - getting rid of any installed event handlers
-        // FIXME Should do this? I think not...
-        } else {
-            this.canvas.onclick     = null;
-            this.canvas.onmousemove = null;
+            this.canvas.addEventListener('mousemove', canvas_onmousemove_func, false);
+            RGraph.AddEventListener(this.id, 'mousemove', canvas_onmousemove_func);
         }
         
         /**
@@ -286,7 +296,7 @@
         for (var i=15; i<360; i+=15) {
         
             // Radius must be greater than 0 for Opera to work
-            this.context.arc(this.centerx, this.centery, this.radius - this.Get('chart.gutter'), i / 57.3, i / 57.3, 0);
+            this.context.arc(this.centerx, this.centery, this.radius - this.Get('chart.gutter'), i / 57.3, (i + 0.1) / 57.3, 0); // The 0.01 avoids a bug in Chrome 6
         
             this.context.lineTo(this.centerx, this.centery);
         }
@@ -349,17 +359,18 @@
     
         // Work out the maximum value and the sum
         if (!this.Get('chart.ymax')) {
-            this.scale = RGraph.getScale(RGraph.array_max(data));
+            this.scale = RGraph.getScale(RGraph.array_max(data), this);
             this.max = this.scale[4];
         } else {
             var ymax = this.Get('chart.ymax');
+            var ymin = this.Get('chart.ymin');
 
             this.scale = [
-                          ymax * 0.2,
-                          ymax * 0.4,
-                          ymax * 0.6,
-                          ymax * 0.8,
-                          ymax * 1
+                          ((ymax - ymin) * 0.2) + ymin,
+                          ((ymax - ymin) * 0.4) + ymin,
+                          ((ymax - ymin) * 0.6) + ymin,
+                          ((ymax - ymin) * 0.8) + ymin,
+                          ((ymax - ymin) * 1 + ymin)
                          ];
             this.max = this.scale[4];
         }
@@ -376,6 +387,7 @@
             this.context.globalAlpha = this.Get('chart.colors.alpha');
         }
 
+        // Draw the Rose segments
         for (var i=0; i<this.data.length; ++i) {
 
             this.context.strokeStyle = this.Get('chart.strokestyle');
@@ -387,7 +399,9 @@
             var segmentRadians = (1 / this.data.length) * (2 * Math.PI);
     
             this.context.beginPath(); // Begin the segment   
-                var radius = (this.data[i] / this.max) * (this.radius - this.Get('chart.gutter') - 10);
+
+                var radius = ((this.data[i] - this.Get('chart.ymin')) / (this.max - this.Get('chart.ymin'))) * (this.radius - this.Get('chart.gutter') - 10);
+
                 this.context.arc(this.centerx, this.centery, radius, this.startRadians - (Math.PI / 2), this.startRadians + segmentRadians - (Math.PI / 2), 0);
                 this.context.lineTo(this.centerx, this.centery);
                 this.context.fill();
@@ -449,41 +463,41 @@
 
         // The "North" axis labels
         if (axes.indexOf('n') > -1) {
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - ((r - this.Get('chart.gutter')) * 0.2), String(this.scale[0]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - ((r - this.Get('chart.gutter')) * 0.4), String(this.scale[1]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - ((r - this.Get('chart.gutter')) * 0.6), String(this.scale[2]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - ((r - this.Get('chart.gutter')) * 0.8), String(this.scale[3]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - r + this.Get('chart.gutter'), String(this.scale[4]), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - ((r - this.Get('chart.gutter')) * 0.2), String(Number(this.scale[0]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - ((r - this.Get('chart.gutter')) * 0.4), String(Number(this.scale[1]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - ((r - this.Get('chart.gutter')) * 0.6), String(Number(this.scale[2]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - ((r - this.Get('chart.gutter')) * 0.8), String(Number(this.scale[3]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery - r + this.Get('chart.gutter'), String(Number(this.scale[4]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
         }
 
         // The "South" axis labels
         if (axes.indexOf('s') > -1) {
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.2), String(this.scale[0]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.4), String(this.scale[1]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.6), String(this.scale[2]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.8), String(this.scale[3]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + r - this.Get('chart.gutter'), String(this.scale[4]), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.2), String(Number(this.scale[0]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.4), String(Number(this.scale[1]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.6), String(Number(this.scale[2]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.8), String(Number(this.scale[3]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx, this.centery + r - this.Get('chart.gutter'), String(Number(this.scale[4]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
         }
         
         // The "East" axis labels
         if (axes.indexOf('e') > -1) {
-            RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.2), this.centery, String(this.scale[0]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.4), this.centery, String(this.scale[1]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.6), this.centery, String(this.scale[2]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.8), this.centery, String(this.scale[3]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx + r - this.Get('chart.gutter'), this.centery, String(this.scale[4]), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.2), this.centery, String(Number(this.scale[0]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.4), this.centery, String(Number(this.scale[1]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.6), this.centery, String(Number(this.scale[2]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.8), this.centery, String(Number(this.scale[3]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx + r - this.Get('chart.gutter'), this.centery, String(Number(this.scale[4]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
         }
 
         // The "West" axis labels
         if (axes.indexOf('w') > -1) {
-            RGraph.Text(context, font_face, font_size, this.centerx - ((r - this.Get('chart.gutter')) * 0.2), this.centery, String(this.scale[0]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx - ((r - this.Get('chart.gutter')) * 0.4), this.centery, String(this.scale[1]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx - ((r - this.Get('chart.gutter')) * 0.6), this.centery, String(this.scale[2]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx - ((r - this.Get('chart.gutter')) * 0.8), this.centery, String(this.scale[3]), 'center', 'center', true, false, color);
-            RGraph.Text(context, font_face, font_size, this.centerx - r + this.Get('chart.gutter'), this.centery, String(this.scale[4]), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx - ((r - this.Get('chart.gutter')) * 0.2), this.centery, String(Number(this.scale[0]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx - ((r - this.Get('chart.gutter')) * 0.4), this.centery, String(Number(this.scale[1]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx - ((r - this.Get('chart.gutter')) * 0.6), this.centery, String(Number(this.scale[2]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx - ((r - this.Get('chart.gutter')) * 0.8), this.centery, String(Number(this.scale[3]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
+            RGraph.Text(context, font_face, font_size, this.centerx - r + this.Get('chart.gutter'), this.centery, String(Number(this.scale[4]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
         }
 
-        RGraph.Text(context, font_face, font_size, this.centerx,  this.centery, '0', 'center', 'center', true, false, color);
+        RGraph.Text(context, font_face, font_size, this.centerx,  this.centery, typeof(this.Get('chart.ymin')) == 'number' ? String(Number(this.Get('chart.ymin')).toFixed(this.Get('chart.scale.decimals'))) : '0', 'center', 'center', true, false, color);
     }
 
 

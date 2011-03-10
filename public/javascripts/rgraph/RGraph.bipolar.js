@@ -55,13 +55,16 @@
             'chart.title.left':             '',
             'chart.title.right':            '',
             'chart.gutter':                 25,
+            'chart.gutter.center':          60,
             'chart.title':                  '',
+            'chart.title.hpos':             null,
             'chart.title.vpos':             null,
-            'chart.colors':                 ['#fcf', '#00f', '#f00', '#0f0', '#ff0', '#0ff', '#f0f', '#ff6101', '#b401ff', '#e4ff01', '#fb8195', '#ccc'],
+            'chart.colors':                 ['#0f0'],
             'chart.contextmenu':            null,
             'chart.tooltips':               null,
             'chart.tooltips.effect':         'fade',
             'chart.tooltips.css.class':      'RGraph_tooltip',
+            'chart.tooltips.highlight':     true,
             'chart.units.pre':              '',
             'chart.units.post':             '',
             'chart.shadow':                 false,
@@ -73,6 +76,8 @@
             'chart.annotate.color':         'black',
             'chart.xmax':                   null,
             'chart.scale.decimals':         null,
+            'chart.scale.point':            '.',
+            'chart.scale.thousand':         ',',
             'chart.axis.color':             'black',
             'chart.zoom.factor':            1.5,
             'chart.zoom.fade.in':           true,
@@ -121,331 +126,6 @@
     RGraph.Bipolar.prototype.Get = function (name)
     {
         return this.properties[name.toLowerCase()];
-    }
-
-
-    /**
-    * Draws the axes
-    */
-    RGraph.Bipolar.prototype.DrawAxes = function ()
-    {
-        // Draw the left set of axes
-        this.context.beginPath();
-        this.context.strokeStyle = this.Get('chart.axis.color');
-
-        this.axisWidth  = (this.canvas.width - 60 ) / 2;
-        this.axisHeight = this.canvas.height - (2 * this.Get('chart.gutter'));
-
-        this.context.moveTo(this.Get('chart.gutter'), this.canvas.height - this.Get('chart.gutter'));
-        this.context.lineTo(this.axisWidth, this.canvas.height - this.Get('chart.gutter'));
-        this.context.lineTo(this.axisWidth, this.Get('chart.gutter'));
-        
-        this.context.stroke();
-
-        // Draw the right set of axes
-        this.context.beginPath();
-
-        this.axisWidth  = ((this.canvas.width - 60) / 2) + 60;
-        
-        this.context.moveTo(this.axisWidth, this.Get('chart.gutter'));
-        this.context.lineTo(this.axisWidth, this.canvas.height - this.Get('chart.gutter'));
-        this.context.lineTo(this.canvas.width - this.Get('chart.gutter'), this.canvas.height - this.Get('chart.gutter'));
-
-        this.context.stroke();
-    }
-
-
-    /**
-    * Draws the tick marks on the axes
-    */
-    RGraph.Bipolar.prototype.DrawTicks = function ()
-    {
-        var numDataPoints = this.left.length;
-        var barHeight     = ( (this.canvas.height - (2 * this.Get('chart.gutter')))- (this.left.length * (this.Get('chart.margin') * 2) )) / numDataPoints;
-        
-        // Draw the left Y tick marks
-        for (var i = this.canvas.height - this.Get('chart.gutter'); i >= this.Get('chart.gutter'); i -= (barHeight + ( this.Get('chart.margin') * 2)) ) {
-            if (i < (this.canvas.height - this.Get('chart.gutter')) ) {
-                this.context.beginPath();
-                this.context.moveTo(this.axisWidth - 60, i);
-                this.context.lineTo(this.axisWidth - 60 + 3, i);
-                this.context.stroke();
-            }
-        }
-
-        //Draw the right axis Y tick marks
-        for (var i = this.canvas.height - this.Get('chart.gutter'); i >= this.Get('chart.gutter'); i -= (barHeight + ( this.Get('chart.margin') * 2)) ) {
-            if (i < (this.canvas.height - this.Get('chart.gutter')) ) {
-                this.context.beginPath();
-                this.context.moveTo(this.axisWidth, i);
-                this.context.lineTo(this.axisWidth - 3, i);
-                this.context.stroke();
-            }
-        }
-        
-        // Draw the left sides X tick marks
-        var xInterval = (this.canvas.width - (2 * this.Get('chart.gutter')) - 60) / 10;
-
-        // Is chart.xtickinterval specified ? If so, use that.
-        if (typeof(this.Get('chart.xtickinterval')) == 'number') {
-            xInterval = this.Get('chart.xtickinterval');
-        }
-
-        for (i=this.Get('chart.gutter'); i<(this.canvas.width - 60 ) / 2; i += xInterval) {
-            this.context.beginPath();
-            this.context.moveTo(i, this.canvas.height - this.Get('chart.gutter'));  // 4 is the tick height
-            this.context.lineTo(i, (this.canvas.height - this.Get('chart.gutter')) + 4);
-            this.context.closePath();
-            
-            this.context.stroke();
-        }
-
-        // Draw the right sides X tick marks
-        var stoppingPoint = (this.canvas.width - (2 * this.Get('chart.gutter')) - 60) / 2;
-        var stoppingPoint = stoppingPoint + 60 + this.Get('chart.gutter')
-
-        for (i=this.canvas.width  - this.Get('chart.gutter'); i > stoppingPoint; i-=xInterval) {
-            this.context.beginPath();
-                this.context.moveTo(i, this.canvas.height - this.Get('chart.gutter'));
-                this.context.lineTo(i, (this.canvas.height - this.Get('chart.gutter')) + 4);
-            this.context.closePath();
-            
-            this.context.stroke();
-        }
-        
-        // Store this for later
-        this.barHeight = barHeight;
-    }
-
-
-    /**
-    * Figures out the maximum value, or if defined, uses xmax
-    */
-    RGraph.Bipolar.prototype.GetMax = function()
-    {
-        var max = 0;
-        var dec = this.Get('chart.scale.decimals');
-        
-        // chart.xmax defined
-        if (this.Get('chart.xmax')) {
-
-            max = this.Get('chart.xmax');
-            
-            this.scale    = [];
-            this.scale[0] = Number((max / 5) * 1).toFixed(dec);
-            this.scale[1] = Number((max / 5) * 2).toFixed(dec);
-            this.scale[2] = Number((max / 5) * 3).toFixed(dec);
-            this.scale[3] = Number((max / 5) * 4).toFixed(dec);
-            this.scale[4] = Number(max).toFixed(dec);
-
-            this.max = max;
-            
-
-        // Generate the scale ourselves
-        } else {
-            this.leftmax  = RGraph.array_max(this.left);
-            this.rightmax = RGraph.array_max(this.right);
-            max = Math.max(this.leftmax, this.rightmax);
-
-            this.scale    = RGraph.getScale(max);
-            this.scale[0] = Number(this.scale[0]).toFixed(dec);
-            this.scale[1] = Number(this.scale[1]).toFixed(dec);
-            this.scale[2] = Number(this.scale[2]).toFixed(dec);
-            this.scale[3] = Number(this.scale[3]).toFixed(dec);
-            this.scale[4] = Number(this.scale[4]).toFixed(dec);
-
-            this.max = this.scale[4];
-        }
-
-        // Don't need to return it as it is stored in this.max
-    }
-
-
-    /**
-    * Function to draw the left hand bars
-    */
-    RGraph.Bipolar.prototype.DrawLeftBars = function ()
-    {
-        // Set the stroke colour
-        this.context.strokeStyle = '#333';
-
-        for (i=0; i<this.left.length; ++i) {
-            
-            /**
-            * Turn on a shadow if requested
-            */
-            if (this.Get('chart.shadow')) {
-                this.context.shadowColor   = this.Get('chart.shadow.color');
-                this.context.shadowBlur    = this.Get('chart.shadow.blur');
-                this.context.shadowOffsetX = this.Get('chart.shadow.offsetx');
-                this.context.shadowOffsetY = this.Get('chart.shadow.offsety');
-            }
-
-            this.context.beginPath();
-
-                // Set the colour
-                if (this.Get('chart.colors')[i]) {
-                    this.context.fillStyle = this.Get('chart.colors')[i];
-                }
-                
-                /**
-                * Work out the coordinates
-                */
-                var width = ( (this.left[i] / this.max) * ((this.canvas.width - 60 - (2 * this.Get('chart.gutter')) ) / 2) );
-                var coords = [
-                              this.axisWidth - 60 - width,
-                              this.Get('chart.margin') + (i * ( (this.canvas.height - (2 * this.Get('chart.gutter')) ) / this.left.length)) + this.Get('chart.gutter'),
-                              width,
-                              this.barHeight
-                             ];
-
-                // Draw the IE shadow if necessary
-                if (document.all && this.Get('chart.shadow')) {
-                    this.DrawIEShadow(coords);
-                }
-    
-                
-                this.context.strokeRect(coords[0], coords[1], coords[2], coords[3]);
-                this.context.fillRect(coords[0], coords[1], coords[2], coords[3]);
-
-            this.context.stroke();
-            this.context.fill();
-
-            /**
-            * Add the coordinates to the coords array
-            */
-            this.coords.push([
-                              coords[0],
-                              coords[1],
-                              coords[2],
-                              coords[3]
-                             ]);
-        }
-
-        /**
-        * Turn off any shadow
-        */
-        RGraph.NoShadow(this);
-    }
-
-
-    /**
-    * Function to draw the right hand bars
-    */
-    RGraph.Bipolar.prototype.DrawRightBars = function ()
-    {
-        // Set the stroke colour
-        this.context.strokeStyle = '#333';
-            
-        /**
-        * Turn on a shadow if requested
-        */
-        if (this.Get('chart.shadow')) {
-            this.context.shadowColor   = this.Get('chart.shadow.color');
-            this.context.shadowBlur    = this.Get('chart.shadow.blur');
-            this.context.shadowOffsetX = this.Get('chart.shadow.offsetx');
-            this.context.shadowOffsetY = this.Get('chart.shadow.offsety');
-        }
-
-        for (i=0; i<this.right.length; ++i) {
-            this.context.beginPath();
-
-            // Set the colour
-            if (this.Get('chart.colors')[i]) {
-                this.context.fillStyle = this.Get('chart.colors')[i];
-            }
-
-            var width = ( (this.right[i] / this.max) * ((this.canvas.width - 60 - (2 * this.Get('chart.gutter')) ) / 2) );
-            var coords = [
-                          this.axisWidth,
-                          this.Get('chart.margin') + (i * ((this.canvas.height - (2 * this.Get('chart.gutter'))) / this.right.length)) + this.Get('chart.gutter'),
-                          width,
-                          this.barHeight
-                        ];
-
-                // Draw the IE shadow if necessary
-                if (document.all && this.Get('chart.shadow')) {
-                    this.DrawIEShadow(coords);
-                }
-            this.context.strokeRect(coords[0], coords[1], coords[2], coords[3]);
-            this.context.fillRect(coords[0], coords[1], coords[2], coords[3]);
-
-            this.context.closePath();
-            
-            /**
-            * Add the coordinates to the coords array
-            */
-            this.coords.push([
-                              coords[0],
-                              coords[1],
-                              coords[2],
-                              coords[3]
-                             ]);
-        }
-        
-        this.context.stroke();
-
-        /**
-        * Turn off any shadow
-        */
-        RGraph.NoShadow(this);
-    }
-
-
-    /**
-    * Draws the titles
-    */
-    RGraph.Bipolar.prototype.DrawLabels = function ()
-    {
-        this.context.fillStyle = this.Get('chart.text.color');
-
-        var labelPoints = new Array();
-        var font = this.Get('chart.text.font');
-        var size = this.Get('chart.text.size');
-        
-        var max = Math.max(this.left.length, this.right.length);
-        
-        for (i=0; i<max; ++i) {
-            var barAreaHeight = this.canvas.height - (2 * this.Get('chart.gutter'));
-            var barHeight     = barAreaHeight / this.left.length;
-            var yPos          = (i * barAreaHeight) + this.Get('chart.gutter');
-
-            labelPoints.push(this.Get('chart.gutter') + (i * barHeight) + (barHeight / 2) + 5);
-        }
-
-        for (i=0; i<labelPoints.length; ++i) {
-            RGraph.Text(this.context, this.Get('chart.text.font'),
-                                        this.Get('chart.text.size'),
-                                        this.canvas.width / 2,
-                                        labelPoints[i],
-                                        String(this.Get('chart.labels')[i] ? this.Get('chart.labels')[i] : ''), null, 'center');
-        }
-
-        // Now draw the X labels for the left hand side
-        RGraph.Text(this.context, font, size, this.Get('chart.gutter'), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this.scale[4], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-        RGraph.Text(this.context, font, size, this.Get('chart.gutter') + ((this.canvas.width - 60 - (2 * this.Get('chart.gutter'))) / 2) * (1/5), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this.scale[3], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-        RGraph.Text(this.context, font, size, this.Get('chart.gutter') + ((this.canvas.width - 60 - (2 * this.Get('chart.gutter'))) / 2) * (2/5), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this.scale[2], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-        RGraph.Text(this.context, font, size, this.Get('chart.gutter') + ((this.canvas.width - 60 - (2 * this.Get('chart.gutter'))) / 2) * (3/5), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this.scale[1], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-        RGraph.Text(this.context, font, size, this.Get('chart.gutter') + ((this.canvas.width - 60 - (2 * this.Get('chart.gutter'))) / 2) * (4/5), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this.scale[0], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-
-        // Now draw the X labels for the right hand side
-        RGraph.Text(this.context, font, size, this.canvas.width - this.Get('chart.gutter'), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this.scale[4], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-        RGraph.Text(this.context, font, size, this.canvas.width - (this.Get('chart.gutter') + ((this.canvas.width - 60 - (2 * this.Get('chart.gutter'))) / 2) * (1/5)), this.canvas.height - this.Get('chart.gutter') + 14,RGraph.number_format(this.scale[3], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-        RGraph.Text(this.context, font, size, this.canvas.width - (this.Get('chart.gutter') + ((this.canvas.width - 60 - (2 * this.Get('chart.gutter'))) / 2) * (2/5)), this.canvas.height - this.Get('chart.gutter') + 14,RGraph.number_format(this.scale[2], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-        RGraph.Text(this.context, font, size, this.canvas.width - (this.Get('chart.gutter') + ((this.canvas.width - 60 - (2 * this.Get('chart.gutter'))) / 2) * (3/5)), this.canvas.height - this.Get('chart.gutter') + 14,RGraph.number_format(this.scale[1], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-        RGraph.Text(this.context, font, size, this.canvas.width - (this.Get('chart.gutter') + ((this.canvas.width - 60 - (2 * this.Get('chart.gutter'))) / 2) * (4/5)), this.canvas.height - this.Get('chart.gutter') + 14,RGraph.number_format(this.scale[0], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
-    }
-    
-    /**
-    * Draws the titles
-    */
-    RGraph.Bipolar.prototype.DrawTitles = function ()
-    {
-        RGraph.Text(this.context, this.Get('chart.text.font'), this.Get('chart.text.size'), 30, (this.Get('chart.gutter') / 2) + 5, String(this.Get('chart.title.left')), 'center');
-        RGraph.Text(this.context,this.Get('chart.text.font'), this.Get('chart.text.size'), this.canvas.width - 30, (this.Get('chart.gutter') / 2) + 5, String(this.Get('chart.title.right')), 'center', 'right');
-        
-        // Draw the main title for the whole chart
-        RGraph.DrawTitle(this.canvas, this.Get('chart.title'), this.Get('chart.gutter'));
     }
 
     
@@ -550,7 +230,7 @@
                     var height = obj.coords[i][3];
 
                     if (mouseX >= left && mouseX <= (left + width ) && mouseY >= top && mouseY <= (top + height) ) {
-                        canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                        canvas.style.cursor = 'pointer';
                         return;
                     }
                 }
@@ -638,7 +318,8 @@
                 * Stop the event bubbling
                 */
                 e.stopPropagation();
-                e.cancelBubble = true;
+                
+                return false;
             }
             this.canvas.addEventListener('click', eventHandler_canvas_click, false);
             RGraph.AddEventListener(this.id, 'click', eventHandler_canvas_click);
@@ -676,6 +357,331 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+    }
+
+
+    /**
+    * Draws the axes
+    */
+    RGraph.Bipolar.prototype.DrawAxes = function ()
+    {
+        // Draw the left set of axes
+        this.context.beginPath();
+        this.context.strokeStyle = this.Get('chart.axis.color');
+
+        this.axisWidth  = (this.canvas.width - this.Get('chart.gutter.center') ) / 2;
+        this.axisHeight = this.canvas.height - (2 * this.Get('chart.gutter'));
+
+        this.context.moveTo(this.Get('chart.gutter'), this.canvas.height - this.Get('chart.gutter'));
+        this.context.lineTo(this.axisWidth, this.canvas.height - this.Get('chart.gutter'));
+        this.context.lineTo(this.axisWidth, this.Get('chart.gutter'));
+        
+        this.context.stroke();
+
+        // Draw the right set of axes
+        this.context.beginPath();
+
+        this.axisWidth  = ((this.canvas.width - this.Get('chart.gutter.center')) / 2) + this.Get('chart.gutter.center');
+        
+        this.context.moveTo(this.axisWidth, this.Get('chart.gutter'));
+        this.context.lineTo(this.axisWidth, this.canvas.height - this.Get('chart.gutter'));
+        this.context.lineTo(this.canvas.width - this.Get('chart.gutter'), this.canvas.height - this.Get('chart.gutter'));
+
+        this.context.stroke();
+    }
+
+
+    /**
+    * Draws the tick marks on the axes
+    */
+    RGraph.Bipolar.prototype.DrawTicks = function ()
+    {
+        var numDataPoints = this.left.length;
+        var barHeight     = ( (this.canvas.height - (2 * this.Get('chart.gutter')))- (this.left.length * (this.Get('chart.margin') * 2) )) / numDataPoints;
+        
+        // Draw the left Y tick marks
+        for (var i = this.canvas.height - this.Get('chart.gutter'); i >= this.Get('chart.gutter'); i -= (barHeight + ( this.Get('chart.margin') * 2)) ) {
+            if (i < (this.canvas.height - this.Get('chart.gutter')) ) {
+                this.context.beginPath();
+                this.context.moveTo(this.axisWidth - this.Get('chart.gutter.center'), i);
+                this.context.lineTo(this.axisWidth - this.Get('chart.gutter.center') + 3, i);
+                this.context.stroke();
+            }
+        }
+
+        //Draw the right axis Y tick marks
+        for (var i = this.canvas.height - this.Get('chart.gutter'); i >= this.Get('chart.gutter'); i -= (barHeight + ( this.Get('chart.margin') * 2)) ) {
+            if (i < (this.canvas.height - this.Get('chart.gutter')) ) {
+                this.context.beginPath();
+                this.context.moveTo(this.axisWidth, i);
+                this.context.lineTo(this.axisWidth - 3, i);
+                this.context.stroke();
+            }
+        }
+        
+        // Draw the left sides X tick marks
+        var xInterval = (this.canvas.width - (2 * this.Get('chart.gutter')) - this.Get('chart.gutter.center')) / 10;
+
+        // Is chart.xtickinterval specified ? If so, use that.
+        if (typeof(this.Get('chart.xtickinterval')) == 'number') {
+            xInterval = this.Get('chart.xtickinterval');
+        }
+
+        for (i=this.Get('chart.gutter'); i<(this.canvas.width - this.Get('chart.gutter.center') ) / 2; i += xInterval) {
+            this.context.beginPath();
+            this.context.moveTo(i, this.canvas.height - this.Get('chart.gutter'));  // 4 is the tick height
+            this.context.lineTo(i, (this.canvas.height - this.Get('chart.gutter')) + 4);
+            this.context.closePath();
+            
+            this.context.stroke();
+        }
+
+        // Draw the right sides X tick marks
+        var stoppingPoint = (this.canvas.width - (2 * this.Get('chart.gutter')) - this.Get('chart.gutter.center')) / 2;
+        var stoppingPoint = stoppingPoint + this.Get('chart.gutter.center') + this.Get('chart.gutter')
+
+        for (i=this.canvas.width  - this.Get('chart.gutter'); i > stoppingPoint; i-=xInterval) {
+            this.context.beginPath();
+                this.context.moveTo(i, this.canvas.height - this.Get('chart.gutter'));
+                this.context.lineTo(i, (this.canvas.height - this.Get('chart.gutter')) + 4);
+            this.context.closePath();
+            
+            this.context.stroke();
+        }
+        
+        // Store this for later
+        this.barHeight = barHeight;
+    }
+
+
+    /**
+    * Figures out the maximum value, or if defined, uses xmax
+    */
+    RGraph.Bipolar.prototype.GetMax = function()
+    {
+        var max = 0;
+        var dec = this.Get('chart.scale.decimals');
+        
+        // chart.xmax defined
+        if (this.Get('chart.xmax')) {
+
+            max = this.Get('chart.xmax');
+            
+            this.scale    = [];
+            this.scale[0] = Number((max / 5) * 1).toFixed(dec);
+            this.scale[1] = Number((max / 5) * 2).toFixed(dec);
+            this.scale[2] = Number((max / 5) * 3).toFixed(dec);
+            this.scale[3] = Number((max / 5) * 4).toFixed(dec);
+            this.scale[4] = Number(max).toFixed(dec);
+
+            this.max = max;
+            
+
+        // Generate the scale ourselves
+        } else {
+            this.leftmax  = RGraph.array_max(this.left);
+            this.rightmax = RGraph.array_max(this.right);
+            max = Math.max(this.leftmax, this.rightmax);
+
+            this.scale    = RGraph.getScale(max, this);
+            this.scale[0] = Number(this.scale[0]).toFixed(dec);
+            this.scale[1] = Number(this.scale[1]).toFixed(dec);
+            this.scale[2] = Number(this.scale[2]).toFixed(dec);
+            this.scale[3] = Number(this.scale[3]).toFixed(dec);
+            this.scale[4] = Number(this.scale[4]).toFixed(dec);
+
+            this.max = this.scale[4];
+        }
+
+        // Don't need to return it as it is stored in this.max
+    }
+
+
+    /**
+    * Function to draw the left hand bars
+    */
+    RGraph.Bipolar.prototype.DrawLeftBars = function ()
+    {
+        // Set the stroke colour
+        this.context.strokeStyle = '#333';
+
+        for (i=0; i<this.left.length; ++i) {
+            
+            /**
+            * Turn on a shadow if requested
+            */
+            if (this.Get('chart.shadow')) {
+                this.context.shadowColor   = this.Get('chart.shadow.color');
+                this.context.shadowBlur    = this.Get('chart.shadow.blur');
+                this.context.shadowOffsetX = this.Get('chart.shadow.offsetx');
+                this.context.shadowOffsetY = this.Get('chart.shadow.offsety');
+            }
+
+            this.context.beginPath();
+
+                // Set the colour
+                if (this.Get('chart.colors')[i]) {
+                    this.context.fillStyle = this.Get('chart.colors')[i];
+                }
+                
+                /**
+                * Work out the coordinates
+                */
+                var width = ( (this.left[i] / this.max) * ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter')) ) / 2) );
+                var coords = [
+                              this.axisWidth - this.Get('chart.gutter.center') - width,
+                              this.Get('chart.margin') + (i * ( (this.canvas.height - (2 * this.Get('chart.gutter')) ) / this.left.length)) + this.Get('chart.gutter'),
+                              width,
+                              this.barHeight
+                             ];
+
+                // Draw the IE shadow if necessary
+                if (document.all && this.Get('chart.shadow')) {
+                    this.DrawIEShadow(coords);
+                }
+    
+                
+                this.context.strokeRect(coords[0], coords[1], coords[2], coords[3]);
+                this.context.fillRect(coords[0], coords[1], coords[2], coords[3]);
+
+            this.context.stroke();
+            this.context.fill();
+
+            /**
+            * Add the coordinates to the coords array
+            */
+            this.coords.push([
+                              coords[0],
+                              coords[1],
+                              coords[2],
+                              coords[3]
+                             ]);
+        }
+
+        /**
+        * Turn off any shadow
+        */
+        RGraph.NoShadow(this);
+    }
+
+
+    /**
+    * Function to draw the right hand bars
+    */
+    RGraph.Bipolar.prototype.DrawRightBars = function ()
+    {
+        // Set the stroke colour
+        this.context.strokeStyle = '#333';
+            
+        /**
+        * Turn on a shadow if requested
+        */
+        if (this.Get('chart.shadow')) {
+            this.context.shadowColor   = this.Get('chart.shadow.color');
+            this.context.shadowBlur    = this.Get('chart.shadow.blur');
+            this.context.shadowOffsetX = this.Get('chart.shadow.offsetx');
+            this.context.shadowOffsetY = this.Get('chart.shadow.offsety');
+        }
+
+        for (i=0; i<this.right.length; ++i) {
+            this.context.beginPath();
+
+            // Set the colour
+            if (this.Get('chart.colors')[i]) {
+                this.context.fillStyle = this.Get('chart.colors')[i];
+            }
+
+            var width = ( (this.right[i] / this.max) * ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter')) ) / 2) );
+            var coords = [
+                          this.axisWidth,
+                          this.Get('chart.margin') + (i * ((this.canvas.height - (2 * this.Get('chart.gutter'))) / this.right.length)) + this.Get('chart.gutter'),
+                          width,
+                          this.barHeight
+                        ];
+
+                // Draw the IE shadow if necessary
+                if (document.all && this.Get('chart.shadow')) {
+                    this.DrawIEShadow(coords);
+                }
+            this.context.strokeRect(coords[0], coords[1], coords[2], coords[3]);
+            this.context.fillRect(coords[0], coords[1], coords[2], coords[3]);
+
+            this.context.closePath();
+            
+            /**
+            * Add the coordinates to the coords array
+            */
+            this.coords.push([
+                              coords[0],
+                              coords[1],
+                              coords[2],
+                              coords[3]
+                             ]);
+        }
+        
+        this.context.stroke();
+
+        /**
+        * Turn off any shadow
+        */
+        RGraph.NoShadow(this);
+    }
+
+
+    /**
+    * Draws the titles
+    */
+    RGraph.Bipolar.prototype.DrawLabels = function ()
+    {
+        this.context.fillStyle = this.Get('chart.text.color');
+
+        var labelPoints = new Array();
+        var font = this.Get('chart.text.font');
+        var size = this.Get('chart.text.size');
+        
+        var max = Math.max(this.left.length, this.right.length);
+        
+        for (i=0; i<max; ++i) {
+            var barAreaHeight = this.canvas.height - (2 * this.Get('chart.gutter'));
+            var barHeight     = barAreaHeight / this.left.length;
+            var yPos          = (i * barAreaHeight) + this.Get('chart.gutter');
+
+            labelPoints.push(this.Get('chart.gutter') + (i * barHeight) + (barHeight / 2) + 5);
+        }
+
+        for (i=0; i<labelPoints.length; ++i) {
+            RGraph.Text(this.context, this.Get('chart.text.font'),
+                                        this.Get('chart.text.size'),
+                                        this.canvas.width / 2,
+                                        labelPoints[i],
+                                        String(this.Get('chart.labels')[i] ? this.Get('chart.labels')[i] : ''), null, 'center');
+        }
+
+        // Now draw the X labels for the left hand side
+        RGraph.Text(this.context, font, size, this.Get('chart.gutter'), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this, this.scale[4], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+        RGraph.Text(this.context, font, size, this.Get('chart.gutter') + ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter'))) / 2) * (1/5), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this, this.scale[3], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+        RGraph.Text(this.context, font, size, this.Get('chart.gutter') + ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter'))) / 2) * (2/5), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this, this.scale[2], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+        RGraph.Text(this.context, font, size, this.Get('chart.gutter') + ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter'))) / 2) * (3/5), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this, this.scale[1], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+        RGraph.Text(this.context, font, size, this.Get('chart.gutter') + ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter'))) / 2) * (4/5), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this, this.scale[0], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+
+        // Now draw the X labels for the right hand side
+        RGraph.Text(this.context, font, size, this.canvas.width - this.Get('chart.gutter'), this.canvas.height - this.Get('chart.gutter') + 14, RGraph.number_format(this, this.scale[4], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+        RGraph.Text(this.context, font, size, this.canvas.width - (this.Get('chart.gutter') + ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter'))) / 2) * (1/5)), this.canvas.height - this.Get('chart.gutter') + 14,RGraph.number_format(this, this.scale[3], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+        RGraph.Text(this.context, font, size, this.canvas.width - (this.Get('chart.gutter') + ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter'))) / 2) * (2/5)), this.canvas.height - this.Get('chart.gutter') + 14,RGraph.number_format(this, this.scale[2], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+        RGraph.Text(this.context, font, size, this.canvas.width - (this.Get('chart.gutter') + ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter'))) / 2) * (3/5)), this.canvas.height - this.Get('chart.gutter') + 14,RGraph.number_format(this, this.scale[1], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+        RGraph.Text(this.context, font, size, this.canvas.width - (this.Get('chart.gutter') + ((this.canvas.width - this.Get('chart.gutter.center') - (2 * this.Get('chart.gutter'))) / 2) * (4/5)), this.canvas.height - this.Get('chart.gutter') + 14,RGraph.number_format(this, this.scale[0], this.Get('chart.units.pre'), this.Get('chart.units.post')), null, 'center');
+    }
+    
+    /**
+    * Draws the titles
+    */
+    RGraph.Bipolar.prototype.DrawTitles = function ()
+    {
+        RGraph.Text(this.context, this.Get('chart.text.font'), this.Get('chart.text.size'), 30, (this.Get('chart.gutter') / 2) + 5, String(this.Get('chart.title.left')), 'center');
+        RGraph.Text(this.context,this.Get('chart.text.font'), this.Get('chart.text.size'), this.canvas.width - 30, (this.Get('chart.gutter') / 2) + 5, String(this.Get('chart.title.right')), 'center', 'right');
+        
+        // Draw the main title for the whole chart
+        RGraph.DrawTitle(this.canvas, this.Get('chart.title'), this.Get('chart.gutter'));
     }
 
 

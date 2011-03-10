@@ -1,69 +1,68 @@
-<%= render :partial => 'layouts/sidebar' %>
+<%= render :partial => 'layouts/sidebar', :locals => {:account => @account, :accounts => @accounts} %>
 
 <div class="column right">
-  <h2>
-	<% if @startdate %>
-	<%= link_to '&lt;', "#{request.path}?month=#{@month - 1}" %> 
-	Übersicht <%= @account.title if @account %>: <%= @startdate.strftime("%B %Y") %>
-	<%= link_to '&gt;', "#{request.path}?month=#{@month + 1}" %> 
-	<% end %>
-  </h2>
-  <table style="width:950px;">
+
+  <table>
 	  <tr>
-		<td class="al em" colspan="3">
-			Kontostand:
-			<span id="accountsaldo">
-			  <%= number_to_currency @sum.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %>
-			</span>
-			
-			<div style="padding:10px 0px 5px 0px;">
-			  <% form_for(Search.new, :url => search_accounts_path, :html => {:method => :get}) do |f| %>
+		<td class="al em" colspan="3" rowspan="2">
+		    <h1 id="pagetitle">
+          	<% if @startdate %>
+          	<%= link_to image_tag('icons/left.png'), "#{request.path}?month=#{@month - 1}", 
+          	                    :title => l((@startdate - 1.month), :format => :monthname) %> 
+          	  <%= @account ? @account.title : 'Alle Konten'  %>: <%= l @startdate, :format => :monthname_and_year %>
+          	<%= link_to image_tag('icons/right.png'), "#{request.path}?month=#{@month + 1}", 
+          	                    :title => l((@startdate + 1.month), :format => :monthname) %>
+          	<% end %>
+            </h1>
+			<div style="padding:10px 0px 5px 0px;display:block;">
+			  <%= form_tag(search_accounts_path, :method => :get) do |f| %>
 			  <input type="search" name="term" size="20">
 			  <input type="hidden" name="account_id" value="<%= @account.id if @account %>">
-			  <%= f.submit 'Suche', :class => 'small' %>
+			  <%= submit_tag 'Suche', :class => 'small' %>
 			  <% end %>
 			</div>
 		</td>
-	    <td class="ar light" colspan="2">
-		  <% if @lastmonth %>
-		    Unterschied zum Vormonat am <%= (@lastmonth).strftime("%d.%m.") %><br/>
-		    <%= "+" if (@income - @last_month_income) > 0 %>
-	        <%= number_to_currency     (@income - @last_month_income).to_s, 
-		      												:unit => ' &euro;', :separator => ",", :delimiter => "." %>
-		    <%= trend_img(@income - @last_month_income) %><br/>
-		    <%= "+" if (@expenses - @last_month_expenses) > 0 %>
-		    <%= number_to_currency     (@expenses - @last_month_expenses), 
-		      												:unit => ' &euro;', :separator => ",", :delimiter => "." %>
-		    <%= trend_img(@expenses - @last_month_expenses) %><br/>
-		    <hr />
-		    <%= "+" if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) > 0 %>
-		    <%= number_to_currency ((@income + @expenses) - (@last_month_income + @last_month_expenses)).to_s, 
-		      												:unit => ' &euro;', :separator => ",", :delimiter => "." %>
-		    <%= trend_img ((@income + @expenses) - (@last_month_income + @last_month_expenses))%>
-		    <hr/>
-		  <% end %>
-	    </td>
-		<td class="ar em" colspan="2">
-		  <% if @income %>
-		    &nbsp;<br/>
-	        Einnahmen: 
-	          <span id="income">+<%= number_to_currency @income.to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span><br/>
-		    Ausgaben: 
-		      <span id="expenses"><%= number_to_currency @expenses, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span><br/>
-		    <% end %>
-		    <% if @income and @expenses %>
-		      <hr/>
-		      Gesamt 
-		      <span id="saldo"><%= number_to_currency (@income + @expenses).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span>
-		    <% elsif @result_saldo %>
-		      <hr/>
-		      Gesamt 
-		      <span id="saldo"><%= number_to_currency (@result_saldo).to_s, :unit => ' &euro;', :separator => ",", :delimiter => "." %></span>
-		    <hr/>
-		   <% end %>
-		</td>
-		<td></td>
+        <td colspan="2" class="ar"><b>Kontostand: <%= currency @sum %></b></td>
+        <td colspan="3"></td>
 	  </tr>
+	  <tr>
+  	    <td class="ar" colspan="2">
+    		  <% if @income %>
+    		    &nbsp;<br/>
+    	        Einnahmen: 
+    	          <span id="income">+<%= currency @income %></span><br/>
+    		    Ausgaben: 
+    		      <span id="expenses"><%= currency @expenses %></span><br/>
+    		    <% end %>
+    		    <% if @income and @expenses %>
+    		      <hr/>
+    		      Gesamt 
+    		      <span id="saldo"><%= currency(@income + @expenses) %></span>
+    		    <% elsif @result_saldo %>
+    		      <hr/>
+    		      Gesamt 
+    		      <span id="saldo"><%= currency(@result_saldo) %></span>
+    		    <hr/>
+    		   <% end %>
+  	    </td>
+  		<td class="al light" colspan="2">
+    		  <% if @lastmonth %>
+    		    Unterschied zum <%= (@lastmonth).strftime("%d.%m.") %><br/>
+    		    <%= "+" if (@income - @last_month_income) > 0 %>
+    	        <%= currency(@income - @last_month_income) %>
+    		    <%= trend_img(@income - @last_month_income) %><br/>
+    		    <%= "+" if (@expenses - @last_month_expenses) > 0 %>
+    		    <%= currency(@expenses - @last_month_expenses) %>
+    		    <%= trend_img(@expenses - @last_month_expenses) %><br/>
+    		    <hr />
+    		    <%= "+" if ((@income + @expenses) - (@last_month_income + @last_month_expenses)) > 0 %>
+    		    <%= currency((@income + @expenses) - (@last_month_income + @last_month_expenses)) %>
+    		    <%= trend_img ((@income + @expenses) - (@last_month_income + @last_month_expenses))%>
+    		    <hr/>
+    		  <% end %>
+  		</td>
+  		<td></td>
+      </tr>
 	  <tr>
 		<th class="ar">
           <%= sortlink('Datum', 'date') %>
@@ -75,23 +74,23 @@
           <%= sortlink('Beschreibung', 'descr') %>
 		</th>
 		<th class="al"><%= 'Konto' unless @account %></th>
+		<th class="ar">
+		  <%= sortlink('Saldo', 'saldo') %>
+		</th>
 		<th class="al">
 		  Kategorie
 		</th>
 		<th class="al">
 		  Fix
 		</th>
-		<th class="ar">
-		  <%= sortlink('Saldo', 'saldo') %>
-		</th>
-		<th style="width:40px;"></th>
+		<th style="width:60px;"></th>
 	  </tr>
     <% @items.each do |item| %>
-      <%= render :partial => 'items/item_row' , :locals => {:item => item }%>
+      <%= render :partial => 'items/item_row' , :locals => {:item => item, :account => @account }%>
     <% end %>
     <% if @items.empty? %>
       <tr>
-	    <td colspan="6">
+	    <td colspan="8">
 		  Für dieses Konto wurden noch keine Zahlungen eingegeben.
 		  <% if @account %>
 		    <div class="m20">
@@ -111,3 +110,5 @@
 </div>
 
 <div class="clr"></div>
+
+<div id="note" style="display:none;">Note</div>

@@ -60,6 +60,7 @@
             'chart.labels':                 [],
             'chart.margin':                 2,
             'chart.title':                  '',
+            'chart.title.hpos':             null,
             'chart.title.vpos':             null,
             'chart.events':                 [],
             'chart.borders':                true,
@@ -68,6 +69,7 @@
             'chart.tooltips':               [],
             'chart.tooltips.effect':         'fade',
             'chart.tooltips.css.class':      'RGraph_tooltip',
+            'chart.tooltips.highlight':     true,
             'chart.xmax':                   0,
             'chart.contextmenu':            null,
             'chart.annotatable':            false,
@@ -103,7 +105,7 @@
     */
     RGraph.Gantt.prototype.Set = function (name, value)
     {
-        this.properties[name] = value;
+        this.properties[name.toLowerCase()] = value;
     }
 
 
@@ -114,7 +116,7 @@
     */
     RGraph.Gantt.prototype.Get = function (name)
     {
-        return this.properties[name];
+        return this.properties[name.toLowerCase()];
     }
 
     
@@ -127,6 +129,11 @@
         * Fire the onbeforedraw event
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
+
+        /**
+        * Clear all of this canvases event handlers (the ones installed by RGraph)
+        */
+        RGraph.ClearEventListeners(this.id);
 
         var gutter = this.Get('chart.gutter');
 
@@ -275,6 +282,10 @@
             }
         }
 
+
+        /**
+        * Draw the actual events
+        */
         for (i=0; i<events.length; ++i) {
             
             var ev = events[i];
@@ -293,6 +304,13 @@
             */
             if ( (barStartX + barWidth) > (canvas.width - gutter) ) {
                 barWidth = canvas.width - gutter - barStartX;
+            }
+
+            // draw the border around the bar
+            if (this.Get('chart.borders')) {
+                context.strokeStyle = 'black';
+                context.beginPath();
+                context.strokeRect(barStartX, barStartY + this.Get('chart.margin'), barWidth, this.barHeight - (2 * this.Get('chart.margin')) );
             }
 
             /**
@@ -317,13 +335,6 @@
                 context.fillStyle = this.Get('chart.text.color');
                 RGraph.Text(context, this.Get('chart.text.font'), this.Get('chart.text.size'), barStartX + barWidth + 5, barStartY + this.halfBarHeight, String(ev[2]) + '%', 'center');
             }
-
-            // Redraw the border around the bar
-            if (this.Get('chart.borders')) {
-                context.strokeStyle = 'black';
-                context.beginPath();
-                context.strokeRect(barStartX, barStartY + this.Get('chart.margin'), barWidth, this.barHeight - (2 * this.Get('chart.margin')) );
-            }
         }
 
 
@@ -338,7 +349,7 @@
             /**
             * If the cursor is over a hotspot, change the cursor to a hand
             */
-            this.canvas.onmousemove = function (eventObj)
+            var canvas_onmousemove_func = function (eventObj)
             {
                 eventObj = RGraph.FixEventObject(eventObj);
                 var canvas = eventObj.target;
@@ -368,16 +379,18 @@
                         && mouseY <= (top + height)
                         && (typeof(obj.Get('chart.tooltips')) == 'function' || obj.Get('chart.tooltips')[i]) ) {
 
-                        canvas.style.cursor = document.all ? 'hand' : 'pointer';
+                        canvas.style.cursor = 'pointer';
                         return;
                     }
                 }
 
                 canvas.style.cursor = 'default';
             }
+            this.canvas.addEventListener('mousemove', canvas_onmousemove_func, false);
+            RGraph.AddEventListener(this.id, 'mousemove', canvas_onmousemove_func);
 
 
-            this.canvas.onclick = function (eventObj)
+            var canvas_onclick_func = function (eventObj)
             {
                 eventObj = RGraph.FixEventObject(eventObj);
 
@@ -436,14 +449,15 @@
                             context.strokeStyle = 'black';
                             context.fillStyle = 'rgba(255,255,255,0.8)';
                             context.strokeRect(xCoord, yCoord, width, height);
-                            context.fillRect(xCoord + 1, yCoord + 1, width - 2, height - 2);
+                            context.fillRect(xCoord, yCoord, width, height);
     
-                            eventObj.stopPropagation = true;
-                            eventObj.cancelBubble = true;
+                            eventObj.stopPropagation();
                         }
                         return;
                     }
                 }
             }
+            this.canvas.addEventListener('click', canvas_onclick_func, false);
+            RGraph.AddEventListener(this.id, 'click', canvas_onclick_func);
         }
     }

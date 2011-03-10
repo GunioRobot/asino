@@ -1,49 +1,35 @@
+# Manages items (which you should think of transactions on a bank account). Each transaction creates a new item within an account
 class ItemsController < ApplicationController
-  # GET /items
-  # GET /items.xml
+  
+  before_filter :load_item, :only => [:show, :edit, :update, :destroy, :add_category, :toggle_fix, :new_note, :create_note]
+  before_filter :load_accounts, :only => [:new, :edit, :create]
+  
   def index
     @items = Item.all
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @items }
-    end
   end
 
-  # GET /items/1
-  # GET /items/1.xml
+
   def show
-    @item = Item.find(params[:id])
 
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @item }
-    end
   end
 
-  # GET /items/new
-  # GET /items/new.xml
+
   def new
-    @accounts = Account.all
-    @account = Account.find(params[:account_id])
-    @item = Item.new({:account_id => params[:account_id]})
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @item }
+    if params[:account_id]
+      @account = Account.find(params[:account_id])
+      @item = Item.new({:account_id => params[:account_id]})
+    else
+      @item = Item.new()
     end
   end
 
-  # GET /items/1/edit
+
   def edit
-    @accounts = Account.all
-    @item = Item.find(params[:id])
+    
   end
 
-  # POST /items
-  # POST /items.xml
+
   def create
-    @accounts = Account.all
     @account = Account.find(params[:item][:account_id])
     params[:item][:amount] = params[:item][:amount].gsub(',','.')
     @item = Item.new(params[:item])
@@ -60,10 +46,7 @@ class ItemsController < ApplicationController
   end
 
 
-  # PUT /items/1
-  # PUT /items/1.xml
   def update
-    @item = Item.find(params[:id])
     params[:item][:amount] = params[:item][:amount].gsub(',','.')
 
     respond_to do |format|
@@ -77,9 +60,9 @@ class ItemsController < ApplicationController
     end
   end
 
-  # delete a payment item
+
+
   def destroy
-    @item = Item.find(params[:id])
     @item.destroy
 
     render :update do |page|
@@ -90,25 +73,25 @@ class ItemsController < ApplicationController
   
   # change category assignment for an item. Called via ajax.
   def add_category
-    item = Item.find(params[:id])
+    @account = Account.find(params[:current_account]) if params[:current_account]
     category = Category.find(params[:item][:category_id].to_i)
-    item.category_id = category.id
-    item.update_attribute(:category_id, params[:item][:category_id])
-    item.update_attribute(:transfer, (category.transfer ? true : false))
-    item.reload
+    @item.category_id = category.id
+    @item.update_attribute(:category_id, params[:item][:category_id])
+    @item.update_attribute(:transfer, (category.transfer ? true : false))
+    @item.reload
     render :update do |page|
-      page.replace_html "item_#{item.id}", :partial => 'items/item_row_cells', :locals => {:item => item}
+      page.replace_html "item_#{item.id}", :partial => 'items/item_row_cells', :locals => {:item => @item, 
+                                                                                           :account => @account}
     end
   end
   
   
   # Toggle the fix property of an item, indicating that it is a monthly recurring payment. Called via ajax.
   def toggle_fix
-    item = Item.find(params[:id])
-    item.update_attribute(:fix, (item.fix ? false : true))
-    RAILS_DEFAULT_LOGGER.debug "toggled fix"
+    @item.update_attribute(:fix, (@item.fix ? false : true))
     render :update do |page|
-      page.replace_html "item_#{item.id}", :partial => 'items/item_row_cells', :locals => {:item => item}
+      page.replace_html "item_#{@item.id}", :partial => 'items/item_row_cells', :locals => {:item => @item,
+                                                                                            :account => @account}
     end
   end
   
@@ -118,16 +101,22 @@ class ItemsController < ApplicationController
     failure = false
     accounts = Account.find(:all)
     accounts.each do |account|
-      next if account.feed.blank?
+      next unless account.feed
       if account.import_from_feed
       
       else
-        msg = "#{account.title} konnte nicht aktualisiert werden, der RSS Feed ist nicht gültig!"
+        msg = "#{account.title} konnte nicht aktualisiert werden, der RSS Feed ist nicht g&uuml;ltig!"
         failure = true 
         next
       end
     end
     redirect_to accounts_path, :notice => msg and return unless failure
     redirect_to accounts_path, :alert => msg and return if failure
+  end
+  
+  private
+
+  def load_item
+    @item = Item.find(params[:id]) if params[:id]
   end
 end

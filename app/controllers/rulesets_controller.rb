@@ -1,14 +1,14 @@
+# Rulesets have one to n rules that apply to new items
 class RulesetsController < ApplicationController
 
+  before_filter :load_ruleset, :only => [:show, :edit, :update, :destroy]
+  before_filter :load_accounts, :only => [:index, :new, :edit]
+
   def index
-    @accounts = Account.all
-    @account = Account.find(params[:account_id]) unless params[:id].blank?
-    @rulesets = params[:account_id] ? Ruleset.find(:all, :conditions => ['account_id = ?', params[:account_id]]) : Ruleset.all
+    @rulesets = params[:account_id] ? Ruleset.where('account_id = ?', params[:account_id]) : Ruleset.all
   end
 
   def new
-    @accounts = Account.all
-    @account = Account.find(params[:account_id]) unless params[:account_id].blank?
     @ruleset = Ruleset.new({:account_id => params[:account_id]})
   end
   
@@ -28,15 +28,11 @@ class RulesetsController < ApplicationController
 
 
   def edit
-    @accounts = Account.all
-    @account = Account.find(params[:account_id]) unless params[:account_id].blank?
-    @ruleset = Ruleset.find(params[:id])
     @ruleset.action_parameter = @ruleset.action_parameter.to_i
   end
   
 
   def update
-    @ruleset = Ruleset.find(params[:id])
     respond_to do |format|
       if @ruleset.update_attributes(params[:ruleset])
         format.html { redirect_to(rulesets_path, :notice => 'Die Regel wurde erfolgreich aktualisiert.') }
@@ -49,7 +45,6 @@ class RulesetsController < ApplicationController
   end
   
   def destroy
-    @ruleset = Ruleset.find(params[:id])
     @ruleset.destroy
 
     render :update do |page|
@@ -57,4 +52,15 @@ class RulesetsController < ApplicationController
     end
   end
 
+  private
+
+  def load_ruleset
+    @ruleset = Ruleset.find(params[:id]) if params[:id]
+  end
+  
+  def load_accounts
+    @accounts = Account.all
+    @account = Account.find(params[:account_id]) unless params[:account_id].blank?
+  end
+  
 end

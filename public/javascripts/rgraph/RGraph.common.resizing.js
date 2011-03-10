@@ -12,7 +12,7 @@
     * o------------------------------------------------------------------------------o
     */
 
-    if (typeof(RGraph) == 'undefined') RGraph = {};
+    if (typeof(RGraph) == 'undefined') RGraph = {isRGraph:true,type:'common'};
 
 
     /**
@@ -95,7 +95,7 @@
             context.closePath();
             context.fill();
             
-            // Circle at the centre of the arrows
+            // Square at the centre of the arrows
             context.beginPath();
                 context.fillStyle = 'white';
                 context.moveTo(canvas.width, canvas.height - (resizeHandle / 2));
@@ -147,27 +147,34 @@
                 }
     
                 if (RGraph.Resizing.div) {
-                
+
                     var div   = RGraph.Resizing.div;
                     var canvas = div.__canvas__;
                     var coords = RGraph.getCanvasXY(div.__canvas__);
 
-                    // Create a DIV to go in the canvases place
-                    var placeHolderDIV = document.createElement('DIV');
-                        placeHolderDIV.style.width = (RGraph.Resizing.originalw)+ 'px';
-                        placeHolderDIV.style.height = (RGraph.Resizing.originalh) + 'px';
-                        placeHolderDIV.style.position = canvas.style.position;
-                        placeHolderDIV.style.left     = canvas.style.left;
-                        placeHolderDIV.style.top      = canvas.style.top;
-                        placeHolderDIV.style.cssFloat = canvas.style.cssFloat;
-                    canvas.parentNode.insertBefore(placeHolderDIV, canvas);
+                    var parentNode = canvas.parentNode;
+
+                    if (canvas.style.position != 'absolute') {
+                        // Create a DIV to go in the canvases place
+                        var placeHolderDIV = document.createElement('DIV');
+                            placeHolderDIV.style.width = RGraph.Resizing.originalw + 'px';
+                            placeHolderDIV.style.height = RGraph.Resizing.originalh + 'px';
+                            //placeHolderDIV.style.backgroundColor = 'red';
+                            placeHolderDIV.style.display = 'inline-block'; // Added 5th Nov 2010
+                            placeHolderDIV.style.position = canvas.style.position;
+                            placeHolderDIV.style.left     = canvas.style.left;
+                            placeHolderDIV.style.top      = canvas.style.top;
+                            placeHolderDIV.style.cssFloat = canvas.style.cssFloat;
+                        parentNode.insertBefore(placeHolderDIV, canvas);
+                    }
+
 
                     // Now set the canvas to be positioned absolutely
-                    canvas.style.backgroundColor = 'rgba(255,255,255,1)';
+                    canvas.style.backgroundColor = 'white';
                     canvas.style.position        = 'absolute';
                     canvas.style.border          = '1px dashed gray';
-                    canvas.style.left            = RGraph.Resizing.originalCanvasX + 'px';
-                    canvas.style.top             = RGraph.Resizing.originalCanvasY + 'px';
+                    canvas.style.left            = (RGraph.Resizing.originalCanvasX  - 1) + 'px';
+                    canvas.style.top             = (RGraph.Resizing.originalCanvasY - 1) + 'px';
 
                     canvas.width = parseInt(div.style.width);
                     canvas.height = parseInt(div.style.height);
@@ -178,6 +185,11 @@
                     div.style.left = '-1000px';
                     div.style.top = '-1000px';
                 }
+
+                /**
+                * Fire the onresize event
+                */
+                RGraph.FireCustomEvent(canvas.__object__, 'onresize');
             }
 
 
@@ -240,7 +252,7 @@
                     div.style.position = 'absolute';
                     div.style.left     = canvasCoords[0] + 'px';
                     div.style.top      = canvasCoords[1] + 'px';
-                    div.style.width    = canvas.width +'px';
+                    div.style.width    = canvas.width + 'px';
                     div.style.height   = canvas.height + 'px';
                     div.style.border   = '1px dotted black';
                     div.style.backgroundColor = 'gray';
@@ -259,8 +271,8 @@
                     
                     RGraph.Resizing.div.onmouseover = function (e)
                     {
-                        if (document.all) event.stopPropagation();
-                        e.cancelBubble = true;
+                        e = RGraph.FixEventObject(e);
+                        e.stopPropagation();
                     }
     
                     // The mouse
@@ -296,6 +308,10 @@
                     
                     // Lose the border
                     canvas.style.border = '';
+                    
+                    // Add 1 pixel to the top/left because the border is going
+                    canvas.style.left = (parseInt(canvas.style.left) + 1) + 'px';
+                    canvas.style.top  = (parseInt(canvas.style.top) + 1) + 'px';
 
                     // Redraw the canvas
                     canvas.__object__.Draw();
@@ -303,6 +319,11 @@
                     // Set the width and height on the DIV
                     RGraph.Resizing.div.style.width  = canvas.__original_width__ + 'px';
                     RGraph.Resizing.div.style.height = canvas.__original_height__ + 'px';
+                    
+                    /**
+                    * Fire the resize event
+                    */
+                    RGraph.FireCustomEvent(canvas.__object__, 'onresize');
                 }
             }
         }
