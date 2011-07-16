@@ -6,3 +6,4 @@ config/locales/log
 server_deployment.txt
 db/backups/*.sql
 rails_best_practices_output.html
+pin
