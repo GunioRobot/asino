@@ -17,7 +17,12 @@ class Account < ActiveRecord::Base
     feed = Feedzirra::Feed.fetch_and_parse(self.feed)
     feed.entries.each do |entry|
       puts entry.title.split(' - ')[1]
-      next if Item.exists?(:uid => entry.id)
+      next if Item.exists?(:uid => entry.id) # that would have been nice. but looks like the uid in the feed changes
+      # so we check for duplicates by content. Not good for items that are really the same
+      next if Item.exists?(:amount => entry.title.sanitize.split(' - ')[0].delete('.').gsub(',','.').to_f,
+                            :created_at => entry.updated.to_date,:account_id => self.id,
+                            :payee => entry.title.sanitize.split(' - ')[1],
+                            :description => entry.title.sanitize.split(' - ')[2])
       puts "adding #{entry.title.split(' - ')[1]}"
       puts "    date: #{entry.updated}"
       Item.create({:uid => entry.id, 
