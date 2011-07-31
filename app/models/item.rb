@@ -26,7 +26,7 @@ class Item < ActiveRecord::Base
 
   
   def apply_rulesets
-    return if self.account.blank?
+    return if self.account.blank? or self.payee.blank?
 
     rulesets = Ruleset.where('(account_id is NULL or account_id = ?) and active = 1', self.account_id)
     rulesets.each do |ruleset|      
@@ -59,6 +59,7 @@ class Item < ActiveRecord::Base
   
   # check if the new payment is a recurring one and set its state to fixed if so.
   def check_for_fixed
+    return 0 if self.payee.nil?
     date = Time.now - 1.month
     past_items = Item.where('created_at between ? and ? and payee = ? and amount = ?',
       date.at_beginning_of_month,
