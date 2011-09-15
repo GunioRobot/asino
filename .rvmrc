@@ -1,5 +1,0 @@
-if [[ -s "/Users/andreas.gehret/.rvm/environments/1.9.2@asino-rails3" ]] ; then
-  . "/Users/andreas.gehret/.rvm/environments/1.9.2@asino-rails3"
-else
-  rvm --create use  "1.9.2@asino-rails3"
-fi
