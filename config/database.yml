@@ -1,7 +1,7 @@
 # SQLite version 3.x
 #   gem install sqlite3-ruby (not necessary on OS X Leopard)
 development:
-  adapter: mysql
+  adapter: mysql2
   encoding: utf8
   reconnect: false
   database: asino3_development
@@ -34,7 +34,7 @@ cucumber:
   socket: /tmp/mysql.sock
 
 production:
-  adapter: mysql
+  adapter: mysql2
   encoding: utf8
   reconnect: false
   database: asino_production
