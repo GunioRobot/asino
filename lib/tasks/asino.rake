@@ -11,7 +11,7 @@ namespace :asino do
 
   task :monthreports => :environment do
     Monthreport.destroy_all
-    items = Item.find(:all, :conditions => ["transfer = 0"], :order => "created_at")
+    items = Item.find(:all, :order => "created_at")
     puts "updating #{items.size} items"
     items.each do |item|
       item.add_to_monthreport
