@@ -28,7 +28,7 @@ https://github.com/agehret/asino/raw/master/public/images/screenshots/course_sma
 
 - MYSQL
 - Ruby 1.9.2
-- Rails 3.0.5
+- Rails 3.0.9
 - Firefox or Chrome or Safari (IE and Windows has not been tested)
 
 == Scheduled Tasks
