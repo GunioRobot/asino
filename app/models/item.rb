@@ -20,6 +20,9 @@ class Item < ActiveRecord::Base
   scope :for_date, lambda { |date| 
     where("created_at between ? and ?", date.at_beginning_of_month, date.at_end_of_month).order("created_at desc")
   }
+  scope :until_date, lambda { |date| 
+    where("created_at < ?", date).order("created_at desc")
+  }
   scope :for_current_date, lambda { |date| 
     where("created_at between ? and ?", date.at_beginning_of_month, date.end_of_day).order("created_at desc")
   }

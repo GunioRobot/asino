@@ -13,8 +13,8 @@ class AccountsController < ApplicationController
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
-    
-    @sum = Item.sum(:amount)
+
+    @sum = Item.until_date(@enddate).sum(:amount)
                            
     @items = Item.for_date(@enddate)
     @income = Item.income.for_date(@enddate).sum(:amount)
@@ -36,8 +36,11 @@ class AccountsController < ApplicationController
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
     
     @items = Item.for_account(@account.id).for_date(@enddate)
-    @sum = Item.for_account(@account.id).sum(:amount) if @account
-    @sum = Item.sum(:amount) unless @account
+    if @account
+       @sum = Item.for_account(@account.id).until_date(@enddate).sum(:amount) 
+    else
+      @sum = Item.until_date(@enddate).sum(:amount)
+    end
     @income = Item.income.for_account(@account.id).for_date(@enddate).sum(:amount)
     @expenses = Item.expenses.for_account(@account.id).for_date(@enddate).sum(:amount)
     
