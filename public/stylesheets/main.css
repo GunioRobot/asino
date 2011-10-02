@@ -9,15 +9,15 @@
 }
 
 html {
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ddd),color-stop(1, #777));
-		background-image: -moz-linear-gradient(0% 100% 90deg, #777, #ddd);
-		
+		min-height:100%;
 }
 
 body {
 	margin: 0px;
-	height:100%;
+	min-height:100%;
 	background: #ddd;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ddd),color-stop(1, #777));
+	background-image: -moz-linear-gradient(0% 100% 90deg, #777, #ddd);
 }
 
 h1,
