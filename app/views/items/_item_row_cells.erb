@@ -24,9 +24,6 @@
     <%= render :partial => 'items/add_category', :locals => {:item => item, :account => account} %>
   </td>
 <% end %>
-<td>
-  <%= render :partial => 'items/add_fix', :locals => {:item => item} %>
-</td>
 <td class="ar<%= ' transfer' if item.transfer %>">
   <%= link_to image_tag('icons/note_add.png'), new_item_note_path(item), :rel => 'facebox', :title => "Notiz hinzufügen" %>
   <%= link_to image_tag('icons/edit.png'), edit_item_path(item), :title => 'Bearbeiten' %>

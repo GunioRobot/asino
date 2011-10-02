@@ -79,9 +79,6 @@
 		<th class="al">
 		  Kategorie
 		</th>
-		<th class="al">
-		  Fix
-		</th>
 		<th style="width:60px;"></th>
 	  </tr>
     <% @items.each do |item| %>
@@ -89,7 +86,7 @@
     <% end %>
     <% if @items.empty? %>
       <tr>
-	    <td colspan="8">
+	    <td colspan="7">
 		  Für dieses Konto wurden noch keine Zahlungen eingegeben.
 		  <% if @account %>
 		    <div class="m20">
