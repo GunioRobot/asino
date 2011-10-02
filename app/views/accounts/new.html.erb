@@ -5,7 +5,7 @@
 
 <%= raw note 'RSS Feed einrichten', 'asino greift Ihre Kontotransaktionen vom Saldomat RSS Feed ab. Werfen Sie bitte einen Blick in die Saldomat Einstellungen -> "RSS Server um" diesen zu aktivieren.' %>
 
-<% form_for(@account) do |f| %>
+<%= form_for(@account) do |f| %>
   <% if @account.errors.any? %>
     <div id="error_explanation">  
       <ul>

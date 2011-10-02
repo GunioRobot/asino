@@ -1,5 +1,5 @@
 <div class="rule">
-  <% form_for(rule, :remote => true) do |f| %>
+  <%= form_for(rule, :remote => true) do |f| %>
     <%= error_messages_for rule %>
     <p>
   	  <%= f.select :affected_attribute, [['Empfänger', 'payee'],['Beschreibung','description']], :class => 'nice' %>
