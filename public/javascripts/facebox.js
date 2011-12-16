@@ -1,5 +1,5 @@
 /*  Facebox for Prototype, version 2.0
- *  By Robert Gaal - http://wakoopa.com 
+ *  By Robert Gaal - http://wakoopa.com
  *
  *  Heavily based on Facebox by Chris Wanstrath - http://famspam.com/facebox
  *  First ported to Prototype by Phil Burrows - http://blog.philburrows.com
@@ -22,7 +22,7 @@ var Facebox = Class.create({
 			loading_image	: '/images/facebox/loading.gif',
 			close_image		: '/images/facebox/closelabel.gif',
 			image_types		: new RegExp('\.' + ['png', 'jpg', 'jpeg', 'gif'].join('|') + '$', 'i'),
-			inited				: true,	
+			inited				: true,
 			facebox_html	: '\
 	  <div id="facebox" style="display:none;"> \
 	    <div class="popup"> \
@@ -121,7 +121,7 @@ var Facebox = Class.create({
     $$('#facebox .body').first().childElements().each(function(elem,i){
      elem.show();
     });
-    		
+
 		if(!this.facebox.visible()) new Effect.Appear(this.facebox, {duration: .3});
 		this.facebox.setStyle({
 			'top': pageScroll.top + (document.viewport.getHeight() / 3) + 'px',

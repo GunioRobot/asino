@@ -3,24 +3,24 @@
 
 <div id="sidebar" class="column left">
   <ul>
-      
+
     <li><%= link_to 'Alle Konten', '/accounts', :class => "#{'active' if !account}" %></li>
-    
+
     <% accounts.each do |acc| %>
       <li><%= link_to acc.title, acc, :class => "#{'active' if acc == account}" %></li>
     <% end %>
     <li><%= link_to 'Neues Konto', new_account_path %></li>
   </ul>
-  
+
   <% unless Account.all.empty? %>
     <ul class="single">
       <li>
-        <%= link_to 'Neue Zahlung', 
-                    new_account_item_path(account), 
+        <%= link_to 'Neue Zahlung',
+                    new_account_item_path(account),
                     :class => "#{'active' if controller.controller_name == 'items' and controller.action_name == 'new'}" if account and account.id %>
       </li>
       <li>
-        <%= link_to 'Neue Zahlung', new_item_path              , 
+        <%= link_to 'Neue Zahlung', new_item_path              ,
                     :class => "#{'active' if controller.controller_name == 'items' and controller.action_name == 'new'}" if !account %>
       </li>
     </ul>

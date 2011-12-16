@@ -18,25 +18,25 @@
     {
         var canvas  = obj.canvas;
         var context = obj.context;
-        
+
         RGraph.Register(obj);
-            
+
         if (obj.type == 'line') {
             canvas.onmousedown = function (e)
             {
                 e = RGraph.FixEventObject(e);
-    
+
                 var obj         = e.target.__object__;
                 var id          = obj.id;
                 var canvas      = obj.canvas;
                 var context     = obj.context;
                 var coords      = obj.coords;
                 var mouseCoords = RGraph.getMouseXY(e);
-    
+
                 RGraph.Redraw();
-    
+
                 for (var i=0; i<coords.length; ++i) {
-    
+
                     if (   mouseCoords[0] > coords[i][0] - 5
                         && mouseCoords[1] > coords[i][1] - 5
                         && mouseCoords[0] < coords[i][0] + 5
@@ -47,25 +47,25 @@
                         var numDataPoints = obj.original_data[0].length;
                         var data_series   = i / numDataPoints;
                             data_series = Math.floor(data_series);
-    
-    
-    
+
+
+
                       canvas.style.cursor = 'ns-resize';
                       RGraph.Registry.Set('chart.adjusting.line.' + id, [obj, i, [coords[i][0], coords[i][1]], data_series]);
-    
+
                       return;
                     }
                 }
             }
-    
-    
+
+
             canvas.onmousemove = function (e)
             {
                 e = RGraph.FixEventObject(e);
                 var id = e.target.__object__.id;
-    
+
                 var state = RGraph.Registry.Get('chart.adjusting.line.' + id);
-    
+
                 if (state) {
                     var obj         = state[0];
                     var idx         = state[1];
@@ -76,24 +76,24 @@
                     var mouseCoords = RGraph.getMouseXY(e);
                     var x           = mouseCoords[0];
                     var y           = mouseCoords[1];
-    
+
                     if (y >= (obj.canvas.height - obj.Get('chart.gutter'))) {
                         y = obj.canvas.height - obj.Get('chart.gutter');
                     } else if (y <= obj.Get('chart.gutter')) {
                         y = obj.Get('chart.gutter');
                     }
-    
+
                     var pos   = obj.canvas.height - (2 * obj.Get('chart.gutter'));
                         pos   = pos - (y - obj.Get('chart.gutter'));
                     var value = (obj.max / (obj.canvas.height - (2 * obj.Get('chart.gutter')))) * pos;
-    
+
                     // Adjust the index so that it's applicable to the correct data series
                     for (var i=0; i<data_series; ++i) {
                         idx -= obj.original_data[0].length;
                     }
-    
+
                     obj.original_data[data_series][idx] = value;
-    
+
                     obj.Set('chart.ymax', obj.max);
                     canvas.style.cursor = 'ns-resize';
                     RGraph.Redraw();
@@ -102,36 +102,36 @@
                     * Fire the onadjust event
                     */
                     RGraph.FireCustomEvent(obj, 'onadjust');
-    
+
                     return;
-    
+
                 } else {
-                    
+
                     var canvas  = e.target;
                     var context = canvas.__object__.context;
                     var obj     = canvas.__object__;
                     var mouseCoords = RGraph.getMouseXY(e);
                     var x       = mouseCoords[0];
                     var y       = mouseCoords[1];
-    
+
                     for (var i=0; i<obj.coords.length; ++i) {
-    
+
                         if (   x > obj.coords[i][0] - 5
                             && y > obj.coords[i][1] - 5
                             && x < obj.coords[i][0] + 5
                             && y < obj.coords[i][1] + 5
                            ) {
-    
+
                            canvas.style.cursor = 'ns-resize';
                            return;
                         }
                     }
                 }
-                
+
                 e.target.style.cursor = null;
             }
-    
-    
+
+
             canvas.onmouseup = function (e)
             {
                 var id = e.target.__object__.id;
@@ -139,25 +139,25 @@
                 RGraph.Registry.Set('chart.adjusting.line.' + id, null);
                 e.target.style.cursor = null;
             }
-    
-    
+
+
             canvas.onmouseout = function (e)
             {
                 canvas.onmouseup(e);
             }
-        
+
         /**
         * Progress bar
         */
         } else if (obj.type == 'hprogress') {
 
-            
+
             canvas.onmousedown = function (e)
             {
                 var id = e.target.__object__.id;
 
                 RGraph.Registry.Set('chart.adjusting.progress.' + id, [true]);
-                
+
                 canvas.onmousemove(e);
             }
 
@@ -171,17 +171,17 @@
                     var obj     = e.target.__object__;
                     var canvas  = obj.canvas;
                     var context = obj.context;
-                    
+
                     if (obj.type == 'hprogress') {
-                    
+
                         var coords = RGraph.getMouseXY(e);
                             coords[0] = Math.max(0, coords[0] - obj.Get('chart.gutter'));
                         var barWidth  = canvas.width - (2 * obj.Get('chart.gutter'));
-                        
+
                         // Work out the new value
                         var value  = (coords[0] / barWidth) * (obj.max - obj.Get('chart.min'));
                             value += obj.Get('chart.min');
-                        
+
                         obj.value = Math.max(0, value.toFixed());
                         RGraph.Clear(obj.canvas);
                         obj.Draw();
@@ -191,10 +191,10 @@
                         var coords = RGraph.getMouseXY(e);
                             coords[1] = Math.max(0, coords[1] - obj.Get('chart.gutter'));
                         var barHeight = canvas.height - (2 * obj.Get('chart.gutter'));
-                        
+
                         // Work out the new value
                         var value = ( (barHeight - coords[1]) / barHeight) * obj.max;
-                        
+
                         obj.value = Math.max(0, value.toFixed());
                         RGraph.Clear(obj.canvas);
                         obj.Draw();
@@ -206,20 +206,20 @@
                     RGraph.FireCustomEvent(obj, 'onadjust');
                 }
             }
-            
-            
+
+
             canvas.onmouseup = function (e)
             {
                 var id = e.target.__object__.id;
                 RGraph.Registry.Set('chart.adjusting.progress.' + id, null);
             }
-    
-    
+
+
             canvas.onmouseout = function (e)
             {
                 canvas.onmouseup(e);
             }
-        
+
         /**
         * Rose chart
         */
@@ -250,7 +250,7 @@
                 } else if (coords[0] < obj.centerx && coords[1] >= obj.centery) {
                     theta = 90 - theta;
                     theta = 180 + theta;
-                    
+
                 } else if (coords[0] < obj.centerx && coords[1] < obj.centery) {
                     theta = theta + 270;
                 }
@@ -276,11 +276,11 @@
                             */
                             RGraph.FireCustomEvent(obj, 'onadjust');
                         }
-                        
+
                         if (Hyp <= (obj.angles[i][2] + 5) && Hyp >= (obj.angles[i][2] - 5) ) {
                             canvas.style.cursor = 'move';
                             return;
-                        
+
                         } else if (obj.Get('chart.tooltips') && Hyp <= (obj.angles[i][2] - 5) ) {
                             canvas.style.cursor = 'pointer';
                             return;
@@ -332,9 +332,9 @@
                             RGraph.Registry.Get('chart.tooltip').style.display = 'none';
                             RGraph.Registry.Set('chart.tooltip', null);
                         }
-                        
+
                         RGraph.Registry.Set('chart.adjusting.rose.' + id, segment);
-                        
+
                         e.stopPropagation();
                     }
                 }
@@ -350,12 +350,12 @@
 
                     RGraph.Registry.Set('chart.adjusting.rose.' + id, null);
                     e.stopPropagation();
-                    
+
                     return false;
                 }
             }
-    
-    
+
+
             canvas.onmouseout = function (e)
             {
                 canvas.onmouseup(e);
@@ -365,7 +365,7 @@
         * Bar chart
         */
         } else if (obj.type == 'bar') {
-        
+
             // Stacked bar charts not supported
             if (obj.Get('chart.grouping') == 'stacked') {
                 alert('[BAR] Adjusting stacked bar charts is not supported');
@@ -390,7 +390,7 @@
                 // Loop through the coords to see if the mouse position is at the top of a bar
                 for (var i=0; i<obj.coords.length; ++i) {
                     if (mousex > obj.coords[i][0] && mousex < (obj.coords[i][0] + obj.coords[i][2])) {
-                        
+
                         // Change the mouse pointer
                         if (mousey > (obj.coords[i][1] - 5) && mousey < (obj.coords[i][1] + 5)) {
                             canvas.style.cursor = 'ns-resize';
@@ -399,11 +399,11 @@
                         }
 
                         var idx = RGraph.Registry.Get('chart.adjusting.bar.' + id)
-                        
+
                         if (typeof(idx) == 'number') {
                             var newheight = obj.grapharea - (mousey - obj.Get('chart.gutter'));
                             var newvalue  = (newheight / obj.grapharea) * obj.max;
-                            
+
                             // Top and bottom boundaries
                             if (newvalue > obj.max) newvalue = obj.max;
                             if (newvalue < 0)       newvalue = 0;
@@ -418,17 +418,17 @@
                                             break;
                                         }
                                     }
-                                    
+
                                     --index;
                                 } else if (typeof(obj.data[j]) == 'number') {
-                            
+
                                     if (index == idx) {
                                         obj.data[j] = newvalue;
                                         // No need to set b
                                         break;
                                     }
                                 }
-                                
+
                                 if (b) {
                                     break;
                                 }
@@ -447,7 +447,7 @@
                         return;
                     }
                 }
-                
+
                 canvas.style.cursor = 'default';
             }
 
@@ -467,7 +467,7 @@
                 for (var i=0; i<obj.coords.length; ++i) {
                     if (
                            mousex > obj.coords[i][0] && mousex < (obj.coords[i][0] + obj.coords[i][2])
-                        
+
                        ) {
 
                         obj.Set('chart.ymax', obj.max);
@@ -482,7 +482,7 @@
             canvas.onmouseup = function (e)
             {
                 var id = e.target.__object__.id;
-                
+
                 RGraph.Registry.Set('chart.adjusting.bar.' + id, null);
             }
 
@@ -501,8 +501,8 @@
 
             var canvas = obj.canvas;
             var context = obj.context;
-            
-            
+
+
             canvas.onmousemove = function (e)
             {
                 var obj         = e.target.__object__;
@@ -522,7 +522,7 @@
                     var hyp = Math.sqrt((dx * dx) + (dy * dy));
 
                     var newvalue = (hyp / (obj.size / 2)) * obj.max;
-                    
+
                     newvalue = Math.min(obj.max, newvalue);
                     newvalue = Math.max(0, newvalue);
 
@@ -545,14 +545,14 @@
 
                     // Determine if the mouse is near a point, and if so, change the pointer
                     for (var i=0; i<obj.coords.length; ++i) {
-                        
+
                         var dx = Math.abs(mouseCoords[0] - obj.coords[i][0]);
                         var dy = Math.abs(mouseCoords[1] - obj.coords[i][1]);
                         var a  = Math.atan(dy / dx);
-    
-                        
+
+
                         var hyp = Math.sqrt((dx * dx) + (dy * dy));
-    
+
                         if (hyp <= 5) {
                             canvas.style.cursor = 'move';
                             return;
@@ -562,12 +562,12 @@
                     canvas.style.cursor = 'default';
                 }
             }
-            
-            
+
+
             canvas.onmousedown = function (e)
             {
                 e = RGraph.FixEventObject(e);
-                
+
                 var obj         = e.target.__object__;
                 var id          = obj.id;
                 var canvas      = obj.canvas;
@@ -577,12 +577,12 @@
 
                 // Determine if the mouse is near a point
                 for (var i=0; i<obj.coords.length; ++i) {
-                    
+
                     var dx = Math.abs(mouseCoords[0] - obj.coords[i][0]);
                     var dy = Math.abs(mouseCoords[1] - obj.coords[i][1]);
                     var a  = Math.atan(dy / dx);
 
-                    
+
                     var hyp = Math.sqrt((dx * dx) + (dy * dy));
 
                     if (hyp <= 5) {
@@ -591,7 +591,7 @@
                         return;
                     }
                 }
-                    
+
                 canvas.style.cursor = 'default';
             }
 
@@ -601,8 +601,8 @@
                 RGraph.Registry.Set('chart.adjusting.tradar.' + e.target.id, null);
                 canvas.style.cursor = 'default';
             }
-    
-    
+
+
             canvas.onmouseout = function (e)
             {
                 canvas.onmouseup(e);
@@ -614,7 +614,7 @@
     /**
     * Returns 1 or -1 depening on whether the given number is positive or negative.
     * Zero is considered positive.
-    * 
+    *
     * @param  int num The number
     * @return int     1 if the number is positive or zero, -1 if it's negative
     */

@@ -36,7 +36,7 @@ class RulesController < ApplicationController
   def update
     respond_to do |format|
       if @rule.update_attributes(params[:rule])
-        format.js   
+        format.js
         format.html { redirect_to(@rule, :notice => 'Rule was successfully updated.') }
       else
         format.html { render :action => "edit" }

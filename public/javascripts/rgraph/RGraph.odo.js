@@ -11,13 +11,13 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
 
     /**
     * The odometer constructor. Pass it the ID of the canvas tag, the start value of the odo,
     * the end value, and the value that the pointer should point to.
-    * 
+    *
     * @param string id    The ID of the canvas tag
     * @param int    start The start value of the Odo
     * @param int    end   The end value of the odo
@@ -113,7 +113,7 @@
 
     /**
     * A peudo setter
-    * 
+    *
     * @param name  string The name of the property to set
     * @param value mixed  The value of the property
     */
@@ -133,7 +133,7 @@
 
     /**
     * A getter
-    * 
+    *
     * @param name  string The name of the property to get
     */
     RGraph.Odometer.prototype.Get = function (name)
@@ -169,7 +169,7 @@
 
         // Draw the needle
         this.DrawNeedle(this.value, this.Get('chart.needle.color'));
-        
+
         /**
         * Draw any extra needles
         */
@@ -179,22 +179,22 @@
                 this.DrawNeedle(needle[0], needle[1]);
             }
         }
-        
-        
+
+
         /**
         * Setup the context menu if required
         */
         if (this.Get('chart.contextmenu')) {
             RGraph.ShowContext(this);
         }
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -202,14 +202,14 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
         if (this.Get('chart.resizable')) {
             RGraph.AllowResizing(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
@@ -258,7 +258,7 @@
         */
         this.context.beginPath();
         this.context.strokeStyle = '#bbb';
-        
+
         for (var i=0; i<=360; i+=3) {
             this.context.arc(this.centerx, this.centery, this.radius, 0, RGraph.degrees2Radians(i), false);
             this.context.lineTo(this.centerx, this.centery);
@@ -284,7 +284,7 @@
             this.context.lineTo(this.centerx, this.centery);
         }
         this.context.stroke();
-        
+
         // Redraw the outer circle
         this.context.beginPath();
         this.context.strokeStyle = 'black';
@@ -300,7 +300,7 @@
             this.context.arc(this.centerx, this.centery, this.radius - this.Get('chart.label.area'), 0, 6.28, 0);
             this.context.fill();
             this.context.stroke();
-    
+
             /**
             * Turn off the shadow
             */
@@ -318,13 +318,13 @@
             this.context.lineWidth = 5;
             this.context.strokeStyle = greengrad;
             this.context.arc(this.centerx, this.centery, this.radius - 2.5,
-            
+
                 -1.57,
                 ((this.Get('chart.green.max') / this.end) * 6.2830) - 1.57,
                 0);
 
             this.context.stroke();
-            
+
             this.context.lineWidth = 1;
         }
 
@@ -354,13 +354,13 @@
             this.context.lineWidth = 5;
             this.context.strokeStyle = yellowgrad;
             this.context.arc(this.centerx, this.centery, this.radius - 2.5, (
-            
+
                 (this.Get('chart.green.max') / this.end) * 6.2830) - 1.57,
                 ((this.Get('chart.red.min') / this.end) * 6.2830) - 1.57,
                 0);
 
             this.context.stroke();
-            
+
             this.context.lineWidth = 1;
         }
 
@@ -378,7 +378,7 @@
         this.context.closePath();
         this.context.fill();
 
-        
+
         // Now draw the red area if they're defined
         var redgrad = this.canvas.getContext('2d').createRadialGradient(this.canvas.width / 2, this.canvas.height / 2, 0, this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2, this.canvas.width / 2);
         redgrad.addColorStop(0, 'white');
@@ -392,7 +392,7 @@
             this.context.strokeStyle = redgrad;
             this.context.arc(this.centerx, this.centery, this.radius - 2.5, ( (this.Get('chart.red.min') / this.end) * 6.2830) - 1.57,(2 * Math.PI) - (0.5 * Math.PI),0);
             this.context.stroke();
-            
+
             this.context.lineWidth = 1;
         }
 
@@ -420,7 +420,7 @@
             grad.addColorStop(1, '#BEBCB0');
             grad.addColorStop(0.5, '#F0EFEA');
             grad.addColorStop(0, '#BEBCB0');
-            
+
             this.context.beginPath();
                 this.context.fillStyle = grad;
                 this.context.strokeStyle = grad;
@@ -428,7 +428,7 @@
                 this.context.arc(this.centerx, this.centery, this.radius + 9, 0, 2 * Math.PI, 0);
             this.context.stroke();
         }
-        
+
         // Put the linewidth back to what it was
         this.context.lineWidth = this.Get('chart.linewidth');
 
@@ -460,7 +460,7 @@
     RGraph.Odometer.prototype.DrawNeedle = function (value, color)
     {
         // ===== First draw a grey background circle =====
-        
+
         this.context.fillStyle = '#999';
 
         this.context.beginPath();
@@ -472,7 +472,7 @@
         this.context.fill();
 
         // ===============================================
-        
+
         this.context.fillStyle = color
         this.context.strokeStyle = '#666';
 
@@ -482,7 +482,7 @@
             this.context.arc(this.centerx, this.centery, 8, 0, 6.28, false);
             this.context.fill();
         this.context.closePath();
-        
+
         this.context.stroke();
         this.context.fill();
 
@@ -492,13 +492,13 @@
             this.context.lineWidth   = this.Get('chart.needle.width');
             this.context.lineCap     = 'round';
             this.context.lineJoin    = 'round';
-            
+
             // Draw the needle
             this.context.beginPath();
                 // The trailing bit on the opposite side of the dial
                 this.context.beginPath();
                     this.context.moveTo(this.centerx, this.centery);
-                    
+
                     if (this.Get('chart.needle.tail')) {
                         this.context.arc(this.centerx,
                                          this.centery,
@@ -508,7 +508,7 @@
                                          false
                                         );
                     }
-    
+
                 // Draw the long bit on the opposite side
                 this.context.arc(this.centerx,
                                  this.centery,
@@ -518,10 +518,10 @@
                                  false
                                 );
             this.context.closePath();
-            
+
             //this.context.stroke();
             //this.context.fill();
-        
+
 
         } else if (this.Get('chart.needle.type') == 'triangle') {
 
@@ -551,7 +551,7 @@
 
         this.context.stroke();
         this.context.fill();
-            
+
         // Draw the mini center circle
         this.context.beginPath();
         this.context.fillStyle = color;
@@ -571,11 +571,11 @@
                 this.context.arc(this.centerx, this.centery, this.radius - this.Get('chart.label.area')-5, (((value / this.range) * 360) - 90) / 57.3, (((value / this.range) * 360) - 90 + 0.1) / 57.3, false);
                 this.context.arc(this.centerx, this.centery, this.radius - this.Get('chart.label.area') - 20, RGraph.degrees2Radians( ((value / this.range) * 360) - 85), RGraph.degrees2Radians( ((value / this.range) * 360) - 95), 1);
             this.context.closePath();
-    
+
             this.context.fill();
             //this.context.stroke();
         }
-        
+
         /**
         * Draw a white circle at the centre
         */
@@ -587,7 +587,7 @@
 
         this.context.fill();
     }
-    
+
     /**
     * Draws the labels for the Odo
     */
@@ -639,9 +639,9 @@
             RGraph.Text(context, font, size, centerx - (0.588 * r ), centery - (0.809 * r ), String(units_pre + (end * (9/10)).toFixed(decimals) + units_post), 'center', 'center', false, 324);
             RGraph.Text(context, font, size, centerx, centery - r, this.Get('chart.zerostart') ? units_pre + '0' : String(units_pre + (end * (10/10)).toFixed(decimals) + units_post), 'center', 'center', false, 360);
         }
-        
+
         this.context.fill();
-        
+
         /**
         * Draw the text label below the center point
         */

@@ -2,10 +2,10 @@
 
 <div class="column right" style="width:80%;">
   <h1>
-  	<%= link_to image_tag('icons/left.png'), "#{request.path}?month=#{@month - 1}", 
+  	<%= link_to image_tag('icons/left.png'), "#{request.path}?month=#{@month - 1}",
   	                    :title => l((@startdate - 1.month), :format => :monthname) %>
 	Ausgaben <%= @account.title if @account %>: <%= l @startdate, :format => :monthname_and_year %>
-  	<%= link_to image_tag('icons/right.png'), "#{request.path}?month=#{@month + 1}", 
+  	<%= link_to image_tag('icons/right.png'), "#{request.path}?month=#{@month + 1}",
   	                    :title => l((@startdate + 1.month), :format => :monthname) %>
   </h1>
 
@@ -31,20 +31,20 @@
 								'#ffbc57','#ffc266','#ffc875',
 								'#ffce83','#ffd492','#ffd9a0',
 								'#ffdfaf','#ffe5be']);
-          
+
           p.Draw();
       }
   </script>
-  
+
   <canvas id="incomeGraph" width="400" height="550">
       [Ihr Internetbroswer unterstützt kein Canvas Objekt.]
   </canvas>
-  
+
   <script>
       function drawIncome()
       {
-  
-  
+
+
           var i = new RGraph.Pie('incomeGraph', [<%= @income_categories.collect {|m| m.sum * -1}.join(',') %>]);
           i.Set('chart.title', 'Einnahmen')
           i.Set('chart.labels', ['<%= @income_categories.collect {|d| "#{d.percent}% #{d.name}" if d.percent > 0.5}.join("','") %>']);
@@ -57,15 +57,15 @@
           i.Set('chart.text.color', '#888')
           i.Set('chart.align', 'left')
           i.Set('chart.colors', ['#3a6601','#498001','#579902','#66b302','#74cb02','#83e502']);
-          
+
           i.Draw();
       }
-      
+
       window.onload = drawExpenses(), drawIncome()
   </script>
-  
+
   <div class="m20"></div>
-  
+
   <table style="float:left;width:400px;display:block;">
     <tr>
 	  <td class="ar em" colspan="3">
@@ -94,13 +94,13 @@
 	    Gesamt: + <%= currency @income + @expenses %><br/>
 	  </td>
 	  <td></td>
-	</tr>  
+	</tr>
   </table>
- 
+
   <div class="clr"></div>
-  
+
   <div class="m20"></div>
-  
+
 </div>
 
 <div class="clr"></div>

@@ -2,20 +2,20 @@ Asino3::Application.routes.draw do
   get "home/index"
 
   devise_for :users
-  
+
   resources :items do
     resources :notes
-    member do 
+    member do
       get 'add_category'
       post 'toggle_fix'
       #get 'note', :action => 'new_note'
       #post 'note', :action => 'create_note'
     end
-    collection do 
+    collection do
       get 'get_from_rss'
     end
   end
-  
+
   resources :accounts do
     resources  :items, :rulesets
     member do
@@ -28,7 +28,7 @@ Asino3::Application.routes.draw do
       get 'course'
     end
   end
-  
+
   resources :categories
 
   resources :rules
@@ -85,7 +85,7 @@ Asino3::Application.routes.draw do
   # just remember to delete public/index.html.
   # root :to => "welcome#index"
   root :to => "accounts#index"
-  
+
 
   # See how all your routes lay out with "rake routes"
 

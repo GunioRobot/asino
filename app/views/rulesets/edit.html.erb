@@ -11,15 +11,15 @@
     <%= f.text_field :name %> <%= f.check_box :active %> <%= f.label :active, 'Regel ist aktiv' %>
   </p>
   <p>
-    <%= f.label :account_id, 'Gilt für: ' %> 
-    <%= f.collection_select(:account_id, Account.all(:order => 'title'), 
+    <%= f.label :account_id, 'Gilt für: ' %>
+    <%= f.collection_select(:account_id, Account.all(:order => 'title'),
 										:id, :title, {:include_blank => 'Alle Konten'}) %>
   </p>
   <p>
 	<%= f.label :action, 'Aktion: ' %>
 	<%= f.select :action, [['Kategorie zuweisen', 'set_category']]%>
 	<span>
-	    <%= f.collection_select(:action_parameter, 
+	    <%= f.collection_select(:action_parameter,
 	                            Category.where('category_id is NULL').order('name'), :id, :name) %>
 	</span>
   </p>

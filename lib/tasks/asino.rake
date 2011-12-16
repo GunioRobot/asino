@@ -1,5 +1,5 @@
 namespace :asino do
-  
+
   task :get => :environment do
     accounts = Account.find(:all)
     puts "Found #{accounts.size} accounts"
@@ -17,7 +17,7 @@ namespace :asino do
       item.add_to_monthreport
     end
   end
-  
+
   task:backup => :environment do
     unless config = YAML::load(ERB.new(IO.read(RAILS_ROOT + "/config/database.yml")).result)[RAILS_ENV]
       abort "No database is configured for the environment '#{RAILS_ENV}'"

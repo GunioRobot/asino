@@ -9,10 +9,10 @@ class Account < ActiveRecord::Base
   has_many :items, :order => 'created_at desc', :dependent => :destroy
   has_many :rulesets, :dependent => :destroy
   has_many :monthreports, :dependent => :destroy
-  
+
   validates_presence_of :title, :message => "Bitte geben Sie dem Konto einen Namen!"
   validates_uniqueness_of :title, :message => "Dieser Kontoname wird bereits verwendet!"
-  
+
   def import_from_feed
     feed = Feedzirra::Feed.fetch_and_parse(self.feed)
     feed.entries.each do |entry|
@@ -25,7 +25,7 @@ class Account < ActiveRecord::Base
                             :description => entry.title.sanitize.split(' - ')[2])
       puts "adding #{entry.title.split(' - ')[1]}"
       puts "    date: #{entry.updated}"
-      Item.create({:uid => entry.id, 
+      Item.create({:uid => entry.id,
                    :created_at => entry.updated.to_date,
                    :account_id => self.id,
                    :amount => entry.title.sanitize.split(' - ')[0].delete('.').gsub(',','.').to_f,

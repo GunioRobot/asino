@@ -9,7 +9,7 @@ module NavigationHelpers
     case page_name
 
     when /the home\s?page/
-      '/'   
+      '/'
     when /the "(.*)" account\s?page$/i
       "/accounts/#{(Account.find_by_title($1).id)}"
     when /the new account page/

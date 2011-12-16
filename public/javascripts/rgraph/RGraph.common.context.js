@@ -18,7 +18,7 @@
     /**
     * This gunction shows a context menu containing the parameters
     * provided to it
-    * 
+    *
     * @param object canvas    The canvas object
     * @param array  menuitems The context menu menuitems
     * @param object e         The event object
@@ -33,7 +33,7 @@
         if (RGraph.Registry.Get('chart.contextmenu')) {
             RGraph.HideContext();
         }
-        
+
         // Hide any zoomed canvas
         RGraph.HideZoomedCanvas();
 
@@ -41,7 +41,7 @@
         * Hide the palette if necessary
         */
         RGraph.HidePalette();
-        
+
         /**
         * This is here to ensure annotating is OFF
         */
@@ -84,13 +84,13 @@
         * Now add the context menu items
         */
         for (i=0; i<menuitems.length; ++i) {
-            
+
             var menuitem = document.createElement('div');
-            
+
             menuitem.__canvas__      = canvas;
             menuitem.__contextmenu__ = div;
             menuitem.className       = 'RGraph_contextmenu_item';
-            
+
             if (menuitems[i]) {
                 menuitem.style.padding = '2px 5px 2px 23px';
                 menuitem.style.fontFamily = 'Arial';
@@ -141,14 +141,14 @@
                 } else {
                     menuitem.addEventListener('click', menuitems[i][1], false);
                 }
-            
+
             // Submenu
             } else if (menuitems[i] && menuitems[i][1] && RGraph.is_array(menuitems[i][1])) {
                 var tmp = menuitems[i][1]; // This is here because of "references vs primitives" and how they're passed around in Javascript
                 menuitem.addEventListener('mouseover', function (e) {RGraph.Contextmenu_submenu(canvas.__object__, tmp, e.target);}, false);
             }
         }
-        
+
         /**
         * Now all the menu items have been added, set the shadow width
         * Shadow now handled by CSS3?
@@ -167,7 +167,7 @@
         if (x + div.offsetWidth > document.body.offsetWidth) {
             x -= div.offsetWidth;
         }
-        
+
         // Reposition the menu (now we have the real offsetWidth)
         div.style.left = x + 'px';
         div.style.top = y + 'px';
@@ -202,10 +202,10 @@
         window.onclick = function (e)
         {
             RGraph.HideContext();
-            
+
             // Removed on 3/7/10 - stops a bug in conjunction with annotating which presents itself on the Rscatter
             //RGraph.Redraw();
-            
+
             // Fire the onclick event again
             if (e.target.onclick && e.button == 0) {
                 e.target.onclick(e);
@@ -232,7 +232,7 @@
     {
         var cm   = RGraph.Registry.Get('chart.contextmenu');
         var cmbg = RGraph.Registry.Get('chart.contextmenu.bg');
-        
+
         //Hide any submenu currently being displayed
         RGraph.HideContextSubmenu();
 
@@ -243,7 +243,7 @@
             cm.style.visibility = 'hidden';
             cm.style.display = 'none';
             RGraph.Registry.Set('chart.contextmenu', null);
-            
+
             cmbg.style.visibility = 'hidden';
             cmbg.style.display = 'none';
             RGraph.Registry.Set('chart.contextmenu.bg', null);
@@ -312,7 +312,7 @@
 
     /**
     * This draws a submenu should it be necessary
-    * 
+    *
     * @param object obj  The graph object
     * @param object menu The context menu
     */
@@ -338,22 +338,22 @@
         subMenu.style.WebkitBoxShadow = '3px 3px 3px rgba(96,96,96,0.5)';
         subMenu.style.filter          = 'progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135)';
         document.body.appendChild(subMenu);
-        
+
         for (var i=0; i<menuitems.length; ++i) {
-                    
+
             var menuitem = document.createElement('DIV');
-            
+
             menuitem.__canvas__      = canvas;
             menuitem.__contextmenu__ = menu;
             menuitem.className       = 'RGraph_contextmenu_item';
-            
+
             if (menuitems[i]) {
                 menuitem.style.padding = '2px 5px 2px 23px';
                 menuitem.style.fontFamily = 'Arial';
                 menuitem.style.fontSize = '10pt';
                 menuitem.style.fontWeight = 'normal';
                 menuitem.innerHTML = menuitems[i][0];
-        
+
                 if (menuitems[i][1]) {
                     if (menuitem.addEventListener) {
                         menuitem.addEventListener("mouseover", function (e) {e.target.style.backgroundColor = 'rgba(0,0,0,0.2)'; e.target.style.cursor = 'pointer';}, false);
@@ -375,9 +375,9 @@
                 menuitem.style.borderBottom = '1px solid #ddd';
                 menuitem.style.marginLeft = '25px';
             }
-            
+
             subMenu.appendChild(menuitem);
-        
+
             if (menuitems[i] && menuitems[i][1]) {
                 if (document.all) {
                     menuitem.attachEvent('onclick', menuitems[i][1]);
@@ -407,7 +407,7 @@
     /**
     * A function designed to be used in conjunction with thed context menu
     * to allow people to get image versions of canvases.
-    * 
+    *
     * @param      canvas Optionally you can pass in the canvas, which will be used
     */
     RGraph.showPNG = function ()
@@ -420,10 +420,10 @@
         if (arguments[0] && arguments[0].id) {
             var canvas = arguments[0];
             var event  = arguments[1];
-        
+
         } else if (RGraph.Registry.Get('chart.contextmenu')) {
             var canvas = RGraph.Registry.Get('chart.contextmenu').__canvas__;
-        
+
         } else {
             alert('[RGRAPH SHOWPNG] Could not find canvas!');
         }
@@ -443,8 +443,8 @@
             bg.style.backgroundColor = 'rgb(204,204,204)';
             bg.style.opacity = 0;
         document.body.appendChild(bg);
-        
-        
+
+
         /**
         * Create the div that the graph sits in
         */
@@ -472,15 +472,15 @@
             div.id = '__rgraph_image_div__';
         document.body.appendChild(div);
 
-        
+
         /**
         * Add the HTML text inputs
         */
         div.innerHTML += '<div style="position: absolute; margin-left: 10px; top: ' + canvas.height + 'px; width: ' + (canvas.width - 50) + 'px; height: 25px"><span style="display: inline; display: inline-block; width: 65px; text-align: right">URL:</span><textarea style="float: right; overflow: hidden; height: 15px; width: ' + (canvas.width - (2 * obj.Get('chart.gutter')) - 80) + 'px" onclick="this.select()" readonly="readonly" id="__rgraph_dataurl__">' + canvas.toDataURL() + '</textarea></div>';
         div.innerHTML += '<div style="position: absolute; top: ' + (canvas.height + 25) + 'px; left: ' + (obj.Get('chart.gutter') - 65 + (canvas.width / 2)) + 'px; width: ' + (canvas.width - obj.Get('chart.gutter')) + 'px; font-size: 65%">A link using the URL: <a href="' + canvas.toDataURL() + '">View</a></div>'
 
-        
-        
+
+
         /**
         * Create the image rendition of the graph
         */
@@ -494,11 +494,11 @@
         img.src = canvas.toDataURL();
 
         div.appendChild(img);
-        
+
         setTimeout(function () {document.getElementById("__rgraph_dataurl__").select();}, 50);
-        
+
         window.addEventListener('resize', function (e){var img = RGraph.Registry.Get('chart.png');img.style.left = (document.body.clientWidth / 2) - (img.width / 2) + 'px';}, false);
-        
+
         bg.onclick = function (e)
         {
             var div = document.getElementById("__rgraph_image_div__");
@@ -522,9 +522,9 @@
                 bg = null;
             }
         }
-        
+
         window.addEventListener('resize', function (e) {bg.onclick(e);}, false)
-        
+
         /**
         * This sets the image as a global variable, circumventing repeated calls to document.getElementById()
         */
@@ -545,13 +545,13 @@
         setTimeout('__rgraph_image_bg__.style.opacity = 0.5', 250);
 
 
-        
+
         img.onclick = function (e)
         {
             if (e.stopPropagation) e.stopPropagation();
             else event.cancelBubble = true;
         }
-        
+
         if (event && event.stopPropagation) {
             event.stopPropagation();
         }

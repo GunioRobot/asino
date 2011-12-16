@@ -1,9 +1,9 @@
 # Manages categories that apply to items
 class CategoriesController < ApplicationController
-  
+
   before_filter :load_category, :only => [:show, :edit, :update, :destroy]
   before_filter :load_accounts, :only => [:index, :new, :edit]
-    
+
   # GET /categories
   # GET /categories.xml
   def index
@@ -73,5 +73,5 @@ class CategoriesController < ApplicationController
   def load_category
     @category = Category.find(params[:id]) if params[:id]
   end
-  
+
 end

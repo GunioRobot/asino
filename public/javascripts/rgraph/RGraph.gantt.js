@@ -11,12 +11,12 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
 
     /**
     * The gantt chart constructor
-    * 
+    *
     * @param object canvas The cxanvas object
     * @param array  data   The chart data
     */
@@ -36,7 +36,7 @@
         */
         RGraph.OldBrowserCompat(this.context);
 
-        
+
         // Set some defaults
         this.properties = {
             'chart.background.barcolor1':   'white',
@@ -99,7 +99,7 @@
 
     /**
     * A peudo setter
-    * 
+    *
     * @param name  string The name of the property to set
     * @param value mixed  The value of the property
     */
@@ -111,7 +111,7 @@
 
     /**
     * A peudo getter
-    * 
+    *
     * @param name  string The name of the property to get
     */
     RGraph.Gantt.prototype.Get = function (name)
@@ -119,7 +119,7 @@
         return this.properties[name.toLowerCase()];
     }
 
-    
+
     /**
     * Draws the chart
     */
@@ -150,7 +150,7 @@
         * Draw the background
         */
         RGraph.background.Draw(this);
-        
+
         /**
         * Draw a space for the left hand labels
         */
@@ -161,35 +161,35 @@
         this.context.fillRect(0,gutter - 5,gutter * 3, this.canvas.height - (2 * gutter) + 10);
         this.context.moveTo(gutter * 3, gutter);
         this.context.lineTo(gutter * 3, this.canvas.height - gutter);
-        
+
         this.context.stroke();
         this.context.fill();
-        
+
         /**
         * Draw the labels at the top
         */
         this.DrawLabels();
-        
+
         /**
         * Draw the events
         */
         this.DrawEvents();
-        
-        
+
+
         /**
         * Setup the context menu if required
         */
         if (this.Get('chart.contextmenu')) {
             RGraph.ShowContext(this);
         }
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -197,21 +197,21 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
         if (this.Get('chart.resizable')) {
             RGraph.AllowResizing(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
     }
 
-    
+
     /**
     * Draws the labels at the top and the left of the chart
     */
@@ -232,7 +232,7 @@
         for (i=0; i<this.Get('chart.labels').length; ++i) {
             RGraph.Text(this.context, this.Get('chart.text.font'), this.Get('chart.text.size'), xPos + (i * labelSpace), gutter * (3/4), String(this.Get('chart.labels')[i]), 'center', 'center');
         }
-        
+
         // Draw the vertical labels
         for (i=0; i<this.Get('chart.events').length; ++i) {
             var ev = this.Get('chart.events')[i];
@@ -242,7 +242,7 @@
             RGraph.Text(this.context, this.Get('chart.text.font'), this.Get('chart.text.size'), x - 5, y, String(ev[3]), 'center', 'right');
         }
     }
-    
+
     /**
     * Draws the events to the canvas
     */
@@ -266,17 +266,17 @@
                 if (this.Get('chart.vbars')[i][0] + this.Get('chart.vbars')[i][1] > this.Get('chart.xmax')) {
                     this.Get('chart.vbars')[i][1] = 364 - this.Get('chart.vbars')[i][0];
                 }
-    
+
                 var barX   = (3 * gutter) + (this.Get('chart.vbars')[i][0] / this.Get('chart.xmax')) * (this.graphArea - (2 * gutter) );
                 var barY   = gutter;
                 var width  = ( (this.graphArea - (2 * gutter)) / this.Get('chart.xmax')) * this.Get('chart.vbars')[i][1];
                 var height = canvas.height - (2 * gutter);
-                
+
                 // Right hand bounds checking
                 if ( (barX + width) > (this.canvas.width - gutter) ) {
                     width = this.canvas.width - gutter - barX;
                 }
-    
+
                 context.fillStyle = this.Get('chart.vbars')[i][2];
                 context.fillRect(barX, barY, width, height);
             }
@@ -287,7 +287,7 @@
         * Draw the actual events
         */
         for (i=0; i<events.length; ++i) {
-            
+
             var ev = events[i];
 
             context.beginPath();
@@ -330,7 +330,7 @@
                                       barStartY + this.Get('chart.margin'),
                                       (ev[2] / 100) * barWidth,
                                       this.barHeight - (2 * this.Get('chart.margin')) );
-                
+
                 context.beginPath();
                 context.fillStyle = this.Get('chart.text.color');
                 RGraph.Text(context, this.Get('chart.text.font'), this.Get('chart.text.size'), barStartX + barWidth + 5, barStartY + this.halfBarHeight, String(ev[2]) + '%', 'center');
@@ -401,10 +401,10 @@
                 var mouseCoords = RGraph.getMouseXY(eventObj);
                 var mouseX      = mouseCoords[0];
                 var mouseY      = mouseCoords[1];
-                
-                
+
+
                 for (i=0; i<obj.coords.length; ++i) {
-                    
+
                     var idx = i;
                     var xCoord = obj.coords[i][0];
                     var yCoord = obj.coords[i][1];
@@ -427,10 +427,10 @@
                         */
                         if (typeof(obj.Get('chart.tooltips')) == 'function') {
                             var text = obj.Get('chart.tooltips')(idx);
-                        
+
                         } else if (typeof(obj.Get('chart.tooltips')) == 'object' && typeof(obj.Get('chart.tooltips')[idx]) == 'function') {
                             var text = obj.Get('chart.tooltips')[idx](idx);
-                        
+
                         } else if (typeof(obj.Get('chart.tooltips')) == 'object') {
                             var text = obj.Get('chart.tooltips')[idx];
 
@@ -442,7 +442,7 @@
 
                             // SHOW THE CORRECT TOOLTIP
                             RGraph.Tooltip(canvas, text, eventObj.pageX, eventObj.pageY, idx);
-                            
+
                             /**
                             * Draw a rectangle around the correct bar, in effect highlighting it
                             */
@@ -450,7 +450,7 @@
                             context.fillStyle = 'rgba(255,255,255,0.8)';
                             context.strokeRect(xCoord, yCoord, width, height);
                             context.fillRect(xCoord, yCoord, width, height);
-    
+
                             eventObj.stopPropagation();
                         }
                         return;

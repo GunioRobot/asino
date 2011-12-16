@@ -16,7 +16,7 @@
 
     /**
     * The progress bar constructor
-    * 
+    *
     * @param int id    The ID of the canvas tag
     * @param int value The indicated value of the meter.
     * @param int max   The end value (the upper most) of the meter
@@ -101,7 +101,7 @@
 
     /**
     * A generic setter
-    * 
+    *
     * @param string name  The name of the property to set
     * @param string value The value of the poperty
     */
@@ -113,7 +113,7 @@
 
     /**
     * A generic getter
-    * 
+    *
     * @param string name  The name of the property to get
     */
     RGraph.Progress.prototype.Get = function (name)
@@ -150,7 +150,7 @@
         if (this.Get('chart.contextmenu')) {
             RGraph.ShowContext(this);
         }
-        
+
         /**
         * Alternatively, show the tooltip if requested
         */
@@ -183,7 +183,7 @@
                 * This "deselects" any already selected bar
                 */
                 RGraph.Redraw();
-    
+
                 /**
                 * Get the mouse X/Y coordinates
                 */
@@ -203,16 +203,16 @@
                     var idx    = i;
 
                     if (mouseX >= left && mouseX <= (left + width) && mouseY >= top && mouseY <= (top + height) ) {
-    
+
                         /**
                         * Get the tooltip text
                         */
                         if (typeof(obj.Get('chart.tooltips')) == 'function') {
                             var text = obj.Get('chart.tooltips')(idx);
-                        
+
                         } else if (typeof(obj.Get('chart.tooltips')) == 'object' && typeof(obj.Get('chart.tooltips')[idx]) == 'function') {
                             var text = obj.Get('chart.tooltips')[idx](idx);
-                        
+
                         } else if (typeof(obj.Get('chart.tooltips')) == 'object') {
                             var text = obj.Get('chart.tooltips')[idx];
 
@@ -230,7 +230,7 @@
                             obj.context.fillStyle   = 'rgba(255,255,255,0.5)';
                             obj.context.strokeRect(left, top, width, height);
                             obj.context.fillRect(left, top, width, height);
-        
+
                             obj.context.stroke();
                             obj.context.fill();
 
@@ -277,7 +277,7 @@
                         canvas.style.cursor = document.all ? 'hand' : 'pointer';
                         break;
                     }
-                    
+
                     canvas.style.cursor = 'default';
                 }
             }
@@ -287,14 +287,14 @@
             this.canvas.onclick     = null;
             this.canvas.onmousemove = null;
         }
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -302,21 +302,21 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
         if (this.Get('chart.resizable')) {
             RGraph.AllowResizing(this);
         }
-        
+
         /**
         * Instead of using RGraph.common.adjusting.js, handle them here
         */
         if (this.Get('chart.adjustable')) {
             RGraph.AllowAdjusting(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
@@ -324,7 +324,7 @@
     }
 
     /**
-    * 
+    *
     */
     RGraph.Progress.prototype.Drawbar = function ()
     {
@@ -350,13 +350,13 @@
 
         this.context.fillStyle   = this.Get('chart.color');
         this.context.strokeStyle = 'black';
-        
+
         var margin = this.Get('chart.margin');
 
         // Draw the actual bar itself
         if (this.Get('chart.orientation') == 'horizontal') {
             var barWidth = Math.min(this.width, (this.value / this.max) * this.width);
-            
+
             if (this.Get('chart.tickmarks.inner')) {
 
                 this.context.lineWidth   = 1;
@@ -372,7 +372,7 @@
                 }
                 this.context.stroke();
             }
-            
+
             this.context.beginPath();
             this.context.strokeStyle = 'black';
             this.context.strokeRect(this.Get('chart.gutter'), this.Get('chart.gutter') + margin, barWidth, this.height - margin - margin);
@@ -384,7 +384,7 @@
             if (this.Get('chart.arrows')) {
                 var x = this.Get('chart.gutter') + barWidth;
                 var y = this.Get('chart.gutter');
-                
+
                 this.context.lineWidth = 1;
                 this.context.fillStyle = 'black';
                 this.context.strokeStyle = 'black';
@@ -471,7 +471,7 @@
             if (this.Get('chart.arrows')) {
                 var x = this.Get('chart.gutter') - 4;
                 var y = this.canvas.height - this.Get('chart.gutter') - barHeight;
-                
+
                 this.context.lineWidth = 1;
                 this.context.fillStyle = 'black';
                 this.context.strokeStyle = 'black';
@@ -527,14 +527,14 @@
 
             // This is used by the label function below
             this.tickInterval = this.width / this.Get('chart.numticks');
-    
+
             for (var i=this.Get('chart.gutter') + this.tickInterval; i<=(this.width + this.Get('chart.gutter')); i+=this.tickInterval) {
                 this.context.moveTo(i, this.Get('chart.gutter') + this.height);
                 this.context.lineTo(i, this.Get('chart.gutter') + this.height + 4);
             }
-        
+
         } else if (this.Get('chart.tickmarks') && this.Get('chart.orientation') == 'vertical') {
-        
+
             this.tickInterval = this.height / this.Get('chart.numticks');
 
             for (var i=this.Get('chart.gutter'); i<=(this.canvas.height - this.Get('chart.gutter') - this.tickInterval); i+=this.tickInterval) {

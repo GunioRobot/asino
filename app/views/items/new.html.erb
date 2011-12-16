@@ -2,11 +2,11 @@
 
 <div class="column right">
   <h1>Neue Zahlung</h1>
-  
+
   <div class="note">
-    <a href="#">  
-      <h2>Vorsicht!</h2>  
-      <p>Bitte dran denken: Bei Abbuchungen immer einen negativen Betrag eingeben! </p>  
+    <a href="#">
+      <h2>Vorsicht!</h2>
+      <p>Bitte dran denken: Bei Abbuchungen immer einen negativen Betrag eingeben! </p>
     </a>
   </div>
 
@@ -14,7 +14,7 @@
   <%= error_messages_for @item %>
 
   <p>
-	<%= f.label :account_id, 'Konto' %>:  
+	<%= f.label :account_id, 'Konto' %>:
 	<% if @account %>
       <%= @account.title %>
       <%= f.hidden_field :account_id, :value => @account.id %>

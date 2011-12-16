@@ -11,12 +11,12 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
 
     /**
     * The bar chart constructor
-    * 
+    *
     * @param object canvas The canvas object
     * @param array  data   The chart data
     */
@@ -43,12 +43,12 @@
             alert('[FUNNEL] No canvas support');
             return;
         }
-        
+
         // Check the common library has been included
         if (typeof(RGraph) == 'undefined') {
             alert('[FUNNEL] Fatal error: The common library does not appear to have been included');
         }
-        
+
         /**
         * The funnel charts properties
         */
@@ -111,7 +111,7 @@
 
     /**
     * A setter
-    * 
+    *
     * @param name  string The name of the property to set
     * @param value mixed  The value of the property
     */
@@ -123,7 +123,7 @@
 
     /**
     * A getter
-    * 
+    *
     * @param name  string The name of the property to get
     */
     RGraph.Funnel.prototype.Get = function (name)
@@ -152,20 +152,20 @@
 
         RGraph.DrawTitle(this.canvas, this.Get('chart.title'), this.Get('chart.gutter'), null, this.Get('chart.text.size') + 2);
         this.DrawFunnel();
-        
-        
+
+
         /**
         * Setup the context menu if required
         */
         if (this.Get('chart.contextmenu')) {
             RGraph.ShowContext(this);
         }
-        
+
         /**
         * The tooltip handler
         */
         if (this.Get('chart.tooltips')) {
-        
+
             RGraph.Register(this);
 
             var canvas_onclick_func = function (e)
@@ -189,7 +189,7 @@
                         && y > coords[i][1]
                         && y < coords[i][5]
                        ) {
-                       
+
                         /**
                         * Handle the right corner
                         */
@@ -205,7 +205,7 @@
                             if (a2 > a1) {
                                 continue;
                             }
-                        
+
                         /**
                         * Handle the left corner
                         */
@@ -217,7 +217,7 @@
                             var w2 = mouseCoords[0] - coords[i][0];
                             var h2 = mouseCoords[1] - coords[i][1];
                             var a2 = Math.atan(h2 / w2) * 57.3; // DEGREES
-                        
+
                             if (a2 > a1) {
                                 continue;
                             }
@@ -241,14 +241,14 @@
 
                         context.stroke();
                         context.fill();
-                    
+
                         /**
                         * Draw the key again for in-graph keys so they don't appear "under" the highlight
                         */
                         if (obj.Get('chart.key').length && obj.Get('chart.key.position') == 'graph') {
                             RGraph.DrawKey(obj, obj.Get('chart.key'), obj.Get('chart.colors'));
                         }
-                        
+
                         /**
                         * Redraw the labels if necessary
                         */
@@ -261,10 +261,10 @@
                         */
                         if (typeof(obj.Get('chart.tooltips')) == 'function') {
                             var text = obj.Get('chart.tooltips')(i);
-                        
+
                         } else if (typeof(obj.Get('chart.tooltips')) == 'object' && typeof(obj.Get('chart.tooltips')[i]) == 'function') {
                             var text = obj.Get('chart.tooltips')[i](i);
-                        
+
                         } else if (typeof(obj.Get('chart.tooltips')) == 'object') {
                             var text = obj.Get('chart.tooltips')[i];
 
@@ -274,17 +274,17 @@
 
                         // Show the tooltip
                         RGraph.Tooltip(canvas, text, e.pageX, e.pageY, i);
-        
+
                         // Stop the event propagating
                         e.stopPropagation();
-                        
+
                         break;
                     }
                 }
             }
             this.canvas.addEventListener('click', canvas_onclick_func, false);
             RGraph.AddEventListener(this.id, 'click', canvas_onclick_func);
-            
+
             /**
             * Onmousemove event handler
             */
@@ -309,7 +309,7 @@
                         && y > coords[i][1]
                         && y < coords[i][5]
                        ) {
-                       
+
                         /**
                         * Handle the right corner
                         */
@@ -325,7 +325,7 @@
                             if (a2 > a1) {
                                 continue;
                             }
-                        
+
                         /**
                         * Handle the left corner
                         */
@@ -337,12 +337,12 @@
                             var w2 = mouseCoords[0] - coords[i][0];
                             var h2 = mouseCoords[1] - coords[i][1];
                             var a2 = Math.atan(h2 / w2) * 57.3; // DEGREES
-                        
+
                             if (a2 > a1) {
                                 continue;
                             }
                         }
-                        
+
                         // Is there a tooltip defined?
                         if (!obj.Get('chart.tooltips')[i] && typeof(obj.Get('chart.tooltips')) != 'function') {
                             break;
@@ -350,14 +350,14 @@
 
                         overFunnel = true;
                         canvas.style.cursor = 'pointer';
-        
+
                         // Stop the event propagating
                         e.stopPropagation();
-                        
+
                         break;
                     }
                 }
-                
+
                 if (!overFunnel) {
                     canvas.style.cursor = 'default';
                     canvas.style.cursor = 'default';
@@ -372,14 +372,14 @@
         * Draw the labels on the chart
         */
         this.DrawLabels();
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -387,14 +387,14 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
         if (this.Get('chart.resizable')) {
             RGraph.AllowResizing(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
@@ -418,7 +418,7 @@
         /**
         * Loop through each segment to draw
         */
-        
+
         // Set a shadow if it's been requested
         if (this.Get('chart.shadow')) {
             context.shadowColor   = this.Get('chart.shadow.color');
@@ -430,7 +430,7 @@
         for (i=0; i<this.data.length; ++i) {
 
             i = Number(i);
-            
+
             var curvalue  = this.data[i];
             var curwidth  = (curvalue / total) * width;
             var curheight = height / this.data.length;
@@ -504,26 +504,26 @@
         * If the shadow is enabled, redraw every segment, in order to allow for shadows going upwards
         */
         if (this.Get('chart.shadow')) {
-        
+
             RGraph.NoShadow(this);
-        
+
             for (i=0; i<this.coords.length; ++i) {
-            
+
                 context.strokeStyle = this.Get('chart.strokestyle');
                 context.fillStyle = this.Get('chart.colors')[i];
-        
+
                 context.beginPath();
                     context.moveTo(this.coords[i][0], this.coords[i][1]);
                     context.lineTo(this.coords[i][2], this.coords[i][3]);
                     context.lineTo(this.coords[i][4], this.coords[i][5]);
                     context.lineTo(this.coords[i][6], this.coords[i][7]);
                 context.closePath();
-                
+
                 context.stroke();
                 context.fill();
             }
         }
-        
+
         /**
         * Lastly, draw the key if necessary
         */
@@ -531,7 +531,7 @@
             RGraph.DrawKey(this, this.Get('chart.key'), this.Get('chart.colors'));
         }
     }
-    
+
     /**
     * Draws the labels
     */
@@ -546,14 +546,14 @@
 
             for (var j=0; j<this.coords.length; ++j) {  // MUST be "j"
                 context.beginPath();
-                
+
                 // Set the color back to black
                 context.strokeStyle = 'black';
                 context.fillStyle = this.Get('chart.text.color');
-                
+
                 // Turn off any shadow
                 RGraph.NoShadow(this);
-                
+
                 var label = this.Get('chart.labels')[j];
 
                 RGraph.Text(context, this.Get('chart.text.font'), this.Get('chart.text.size'), this.Get('chart.text.halign') == 'left' ? 15 : this.canvas.width / 2, this.coords[j][1], label, 'center', this.Get('chart.text.halign') == 'left' ? 'left' : 'center', true, null, this.Get('chart.text.boxed') ? 'white' : null);
@@ -564,7 +564,7 @@
 
     /**
     * This function is used by MSIE only to manually draw the shadow
-    * 
+    *
     * @param array coords The coords for the bar
     */
     RGraph.Funnel.prototype.DrawIEShadow = function (coords, noOffset)
@@ -576,7 +576,7 @@
 
         context.lineWidth = 1;
         context.fillStyle = this.Get('chart.shadow.color');
-        
+
         // Draw the shadow
         context.beginPath();
             context.moveTo(coords[0] + (noOffset ? 0 : offsetx), coords[1] + (noOffset ? 0 : offsety));
@@ -584,11 +584,11 @@
             context.lineTo(coords[4] + (noOffset ? 0 : offsetx), coords[5] + (noOffset ? 0 : offsety));
             context.lineTo(coords[6] + (noOffset ? 0 : offsetx), coords[7] + (noOffset ? 0 : offsety));
         context.closePath();
-        
-        context.fill();
-        
 
-        
+        context.fill();
+
+
+
         // Change the fillstyle back to what it was
         this.context.fillStyle = prevFillStyle;
     }

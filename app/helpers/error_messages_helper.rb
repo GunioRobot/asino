@@ -1,5 +1,5 @@
 module ErrorMessagesHelper
-# Render error messages for the given objects. 
+# Render error messages for the given objects.
 # The :message and :header_message options are allowed.
   def error_messages_for(*objects)
     messages = objects.compact.map { |o| o.errors.full_messages }.flatten

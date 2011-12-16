@@ -4,10 +4,10 @@
   <%= 'Transfer: ' if item.transfer %>
   <%= item.description %>
   <% if item.note.blank? %>
-    <%= link_to '', item_note_path(item.id, :id => 0), 
+    <%= link_to '', item_note_path(item.id, :id => 0),
                         :rel => 'facebox', :id => "note_#{item.id}" %>
   <% else %>
-    <%= link_to image_tag('icons/note.png'), item_note_path(item.id, :id => 0), 
+    <%= link_to image_tag('icons/note.png'), item_note_path(item.id, :id => 0),
                         :rel => 'facebox', :title => item.note, :id => "note_#{item.id}" %>
   <% end %>
 </td>

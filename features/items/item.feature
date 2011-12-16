@@ -6,7 +6,7 @@ Feature: Create a transaction
   Given I am logged in
   And an account exists with title "Giro"
   And there are some default categories
-  
+
   Scenario: Visit the account page, create a new item and edit it
     When I go to the "Giro" account page
     Then I should see "Neue Zahlung eingeben"
@@ -38,7 +38,7 @@ Feature: Create a transaction
     #When I follow "Löschen" within "#item_1"
     #And I go to the "Giro" account page
     #Then I should not see "Testempfänger"
-    
+
 
 
   Scenario: The user manipulates several transactions both with positive and negative values and the monthreport should sum all transactions
@@ -90,4 +90,3 @@ Feature: Create a transaction
     And I press "Speichern"
     Then I should see "Die Zahlung wurde erfolgreich aktualisiert." within "#flash"
     And the "Giro" monthreport should be expenses: "-205.75" and income: "123.87" and saldo: "-81.88"
-    

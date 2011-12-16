@@ -11,12 +11,12 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
 
     /**
     * The bar chart constructor
-    * 
+    *
     * @param string canvas The canvas ID
     * @param min    integer The minimum value
     * @param max    integer The maximum value
@@ -98,12 +98,12 @@
             alert('[METER] No canvas support');
             return;
         }
-        
+
         // Check the canvasText library has been included
         if (typeof(RGraph) == 'undefined') {
             alert('[METER] Fatal error: The common library does not appear to have been included');
         }
-        
+
         /**
         * Constrain the value to be within the min and max
         */
@@ -114,7 +114,7 @@
 
     /**
     * A setter
-    * 
+    *
     * @param name  string The name of the property to set
     * @param value mixed  The value of the property
     */
@@ -126,7 +126,7 @@
 
     /**
     * A getter
-    * 
+    *
     * @param name  string The name of the property to get
     */
     RGraph.Meter.prototype.Get = function (name)
@@ -156,7 +156,7 @@
         this.DrawBackground();
         this.DrawNeedle();
         this.DrawLabels();
-        
+
         /**
         * Draw the title
         */
@@ -168,14 +168,14 @@
         if (this.Get('chart.contextmenu')) {
             RGraph.ShowContext(this);
         }
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -183,7 +183,7 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
@@ -191,7 +191,7 @@
             RGraph.AllowResizing(this);
         }
 
-        
+
         /**
         * For MSIE only, to cover the spurious lower ends of the circle
         */
@@ -210,7 +210,7 @@
             this.context.fillRect(this.centerx + this.radius - 5, this.canvas.height - this.gutter + 1, 10, this.gutter);
             this.context.fill();
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
@@ -231,7 +231,7 @@
                 this.context.shadowBlur    = this.Get('chart.shadow.blur');
                 this.context.shadowOffsetX = this.Get('chart.shadow.offsetx');
                 this.context.shadowOffsetY = this.Get('chart.shadow.offsety');
-                
+
                 this.context.arc(this.centerx, this.centery, this.radius, 3.14, 6.28, false);
                 //this.context.arc(this.centerx, this.centery, , 0, 6.28, false);
             this.context.fill();
@@ -280,7 +280,7 @@
         this.context.closePath();
         this.context.stroke();
         this.context.fill();
-        
+
         // Draw the yellow area
         this.context.strokeStyle = this.Get('chart.yellow.color');
         this.context.fillStyle = this.Get('chart.yellow.color');
@@ -289,7 +289,7 @@
         this.context.closePath();
         this.context.stroke();
         this.context.fill();
-        
+
         // Draw the yellow area
         this.context.strokeStyle = this.Get('chart.red.color');
         this.context.fillStyle = this.Get('chart.red.color');
@@ -310,7 +310,7 @@
         this.context.closePath();
 
         this.context.stroke();
-        
+
         // Reset the linewidth back to 1
         this.context.lineWidth = 1;
     }
@@ -333,7 +333,7 @@
         this.context.arc(this.centerx, this.centery, this.radius * 0.7, a, a + 0.001, false);
         this.context.lineTo(this.centerx, this.centery);
         this.context.stroke();
-        
+
         // Draw the triangular needle head
         this.context.beginPath();
             this.context.lineWidth = 1;
@@ -349,7 +349,7 @@
         this.context.beginPath();
         this.context.arc(this.centerx, this.centery, r, 0, 6.28, 0);
         this.context.fill();
-        
+
         // Draw the centre bit of the circle
         this.context.fillStyle = 'white';
         this.context.beginPath();

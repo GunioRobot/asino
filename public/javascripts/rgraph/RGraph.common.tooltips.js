@@ -13,7 +13,7 @@
     */
 
     if (typeof(RGraph) == 'undefined') RGraph = {isRGraph:true,type:'common'};
-    
+
     /**
     * This is used in two functions, hence it's here
     */
@@ -25,7 +25,7 @@
 
     /**
     * Shows a tooltip next to the mouse pointer
-    * 
+    *
     * @param canvas object The canvas element object
     * @param text   string The tooltip text
     * @param int     x      The X position that the tooltip should appear at. Combined with the canvases offsetLeft
@@ -83,41 +83,41 @@
                 ) {
 
                 var tooltipObj = RGraph.Registry.Get('chart.tooltip');
-        
+
                 tooltipObj.style.width  = null;
                 tooltipObj.style.height = null;
-        
+
                 tooltipObj.innerHTML = text;
                 tooltipObj.__text__  = text;
-        
+
                 /**
                 * Now that the new content has been set, re-set the width & height
                 */
                 RGraph.Registry.Get('chart.tooltip').style.width  = RGraph.getTooltipWidth(text, canvas.__object__) + 'px';
                 RGraph.Registry.Get('chart.tooltip').style.height = RGraph.Registry.Get('chart.tooltip').offsetHeight - (RGraph.isIE9up() ? 7 : 0) + 'px';
-                
-            
+
+
                 var currentx = parseInt(RGraph.Registry.Get('chart.tooltip').style.left);
                 var currenty = parseInt(RGraph.Registry.Get('chart.tooltip').style.top);
-            
+
                 var diffx = x - currentx - ((x + RGraph.Registry.Get('chart.tooltip').offsetWidth) > document.body.offsetWidth ? RGraph.Registry.Get('chart.tooltip').offsetWidth : 0);
                 var diffy = y - currenty - RGraph.Registry.Get('chart.tooltip').offsetHeight;
-            
+
                 // Position the tooltip
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.left = "' + (currentx + (diffx * 0.2)) + 'px"', 25);
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.left = "' + (currentx + (diffx * 0.4)) + 'px"', 50);
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.left = "' + (currentx + (diffx * 0.6)) + 'px"', 75);
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.left = "' + (currentx + (diffx * 0.8)) + 'px"', 100);
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.left = "' + (currentx + (diffx * 1.0)) + 'px"', 125);
-            
+
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.top = "' + (currenty + (diffy * 0.2)) + 'px"', 25);
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.top = "' + (currenty + (diffy * 0.4)) + 'px"', 50);
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.top = "' + (currenty + (diffy * 0.6)) + 'px"', 75);
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.top = "' + (currenty + (diffy * 0.8)) + 'px"', 100);
                 setTimeout('RGraph.Registry.Get("chart.tooltip").style.top = "' + (currenty + (diffy * 1.0)) + 'px"', 125);
-            
+
             } else {
-        
+
                 alert('[TOOLTIPS] The "snap" effect is only supported on the Line, Rscatter, Scatter and Tradar charts');
             }
 
@@ -166,13 +166,13 @@
         tooltipObj.__text__                 = text; // This is set because the innerHTML can change when it's set
         tooltipObj.__canvas__               = canvas;
         tooltipObj.style.display            = 'inline';
-        
+
         if (typeof(idx) == 'number') {
             tooltipObj.__index__ = idx;
         }
 
         document.body.appendChild(tooltipObj);
-        
+
         var width  = tooltipObj.offsetWidth;
         var height = tooltipObj.offsetHeight - (RGraph.isIE9up() ? 7 : 0);
 
@@ -195,7 +195,7 @@
         if ( (x + width) > document.body.offsetWidth ) {
             x             = x - width - 7;
             var placementLeft = true;
-            
+
             if (canvas.__object__.Get('chart.tooltips.effect') == 'none') {
                 x = x - 3;
             }
@@ -239,7 +239,7 @@
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.left = (parseInt(RGraph.Registry.Get('chart.tooltip').style.left) - leftDelta) + 'px' }", 200));
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.left = (parseInt(RGraph.Registry.Get('chart.tooltip').style.left) - leftDelta) + 'px' }", 225));
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.left = (parseInt(RGraph.Registry.Get('chart.tooltip').style.left) - leftDelta) + 'px' }", 250));
-            
+
             // Progressively move the tooltip to where it should be (the Y position)
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.top = (parseInt(RGraph.Registry.Get('chart.tooltip').style.top) - topDelta) + 'px' }", 25));
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.top = (parseInt(RGraph.Registry.Get('chart.tooltip').style.top) - topDelta) + 'px' }", 50));
@@ -275,7 +275,7 @@
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.height = '" + (height * 0.8) + "px'; }", 200));
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.height = '" + (height * 0.9) + "px'; }", 225));
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.height = '" + height + "px'; }", 250));
-            
+
             // When the animation is finished, set the tooltip HTML
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').innerHTML = RGraph.Registry.Get('chart.tooltip').__text__; }", 250));
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.boxShadow = 'rgba(96,96,96,0.5) 3px 3px 3px'; }", 250));
@@ -284,7 +284,7 @@
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.borderRadius = '5px'; }", 250));
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.MozBorderRadius = '5px'; }", 250));
             RGraph.Registry.Get('chart.tooltip.timers').push(setTimeout("if (RGraph.Registry.Get('chart.tooltip')) { RGraph.Registry.Get('chart.tooltip').style.WebkitBorderRadius = '5px'; }", 250));
-        
+
         } else if (effect == 'contract') {
 
             tooltipObj.style.left = (x - width) + 'px';
@@ -389,7 +389,7 @@
             e = RGraph.FixEventObject(e)
             e.stopPropagation();
         }
-        
+
         tooltipObj.onclick = function (e)
         {
             if (e.button == 0) {
@@ -407,7 +407,7 @@
 
             if (tooltip) {
                 RGraph.HideTooltip();
-                
+
                 // Redraw if highlighting is enabled
                 if (tooltip.__canvas__.__object__.Get('chart.tooltips.highlight')) {
                     RGraph.Redraw();
@@ -424,7 +424,7 @@
 
             if (tooltip) {
                 tooltip.parentNode.removeChild(tooltip);
-                tooltip.style.display = 'none';                
+                tooltip.style.display = 'none';
                 tooltip.style.visibility = 'hidden';
                 RGraph.Registry.Set('chart.tooltip', null);
 
@@ -435,7 +435,7 @@
                 }
             }
         }
-        
+
         /**
         * Keep a reference to the tooltip
         */
@@ -446,10 +446,10 @@
         */
         RGraph.FireCustomEvent(canvas.__object__, 'ontooltip');
     }
-    
-    
+
+
     /**
-    * 
+    *
     */
     RGraph.getTooltipText = function (text)
     {
@@ -458,13 +458,13 @@
         if (result) {
             text = document.getElementById(result[1]).innerHTML;
         }
-        
+
         return text;
     }
 
 
     /**
-    * 
+    *
     */
     RGraph.getTooltipWidth = function (text, obj)
     {
@@ -495,7 +495,7 @@
 
         if (tooltip) {
             tooltip.parentNode.removeChild(tooltip);
-            tooltip.style.display = 'none';                
+            tooltip.style.display = 'none';
             tooltip.style.visibility = 'hidden';
             RGraph.Registry.Set('chart.tooltip', null);
         }

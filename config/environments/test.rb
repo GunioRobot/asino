@@ -32,6 +32,6 @@ Asino3::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
-  
+
   require 'factory_girl'
 end

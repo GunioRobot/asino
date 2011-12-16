@@ -6,10 +6,10 @@
 		<td class="al em" colspan="3" rowspan="2">
 		    <h1 id="pagetitle">
           	<% if @startdate %>
-          	<%= link_to image_tag('icons/left.png'), "#{request.path}?month=#{@month - 1}", 
-          	                    :title => l((@startdate - 1.month), :format => :monthname) %> 
+          	<%= link_to image_tag('icons/left.png'), "#{request.path}?month=#{@month - 1}",
+          	                    :title => l((@startdate - 1.month), :format => :monthname) %>
           	  <%= @account ? @account.title : 'Alle Konten'  %>: <%= l @startdate, :format => :monthname_and_year %>
-          	<%= link_to image_tag('icons/right.png'), "#{request.path}?month=#{@month + 1}", 
+          	<%= link_to image_tag('icons/right.png'), "#{request.path}?month=#{@month + 1}",
           	                    :title => l((@startdate + 1.month), :format => :monthname) %>
           	<% end %>
             </h1>
@@ -28,18 +28,18 @@
   	    <td class="ar" colspan="2">
     		  <% if @income %>
     		    &nbsp;<br/>
-    	        Einnahmen: 
+    	        Einnahmen:
     	          <span id="income">+<%= currency @income %></span><br/>
-    		    Ausgaben: 
+    		    Ausgaben:
     		      <span id="expenses"><%= currency @expenses %></span><br/>
     		    <% end %>
     		    <% if @income and @expenses %>
     		      <hr/>
-    		      Gesamt 
+    		      Gesamt
     		      <span id="saldo"><%= currency(@income + @expenses) %></span>
     		    <% elsif @result_saldo %>
     		      <hr/>
-    		      Gesamt 
+    		      Gesamt
     		      <span id="saldo"><%= currency(@result_saldo) %></span>
     		    <hr/>
     		   <% end %>

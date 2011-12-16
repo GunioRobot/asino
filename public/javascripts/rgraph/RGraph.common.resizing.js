@@ -17,7 +17,7 @@
 
     /**
     * This function can be used to allow resizing
-    * 
+    *
     * @param object obj Your graph object
     */
     RGraph.AllowResizing = function (obj)
@@ -27,7 +27,7 @@
             var context = obj.context;
             var resizeHandle = 15;
             RGraph.Resizing.canvas = canvas;
-            
+
             /**
             * Add the original width and height to the canvas
             */
@@ -35,7 +35,7 @@
                 canvas.__original_width__  = canvas.width;
                 canvas.__original_height__ = canvas.height;
             }
-    
+
             /**
             * Draw the resize handle
             */
@@ -50,7 +50,7 @@
 
 
                 // Draw the arrows
-                
+
                     // Vertical line
                     obj.context.moveTo(obj.canvas.width - (resizeHandle / 2), obj.canvas.height - resizeHandle);
                     obj.context.lineTo(obj.canvas.width - (resizeHandle / 2), obj.canvas.height);
@@ -58,7 +58,7 @@
 
                     obj.context.moveTo(obj.canvas.width, obj.canvas.height - (resizeHandle / 2));
                     obj.context.lineTo(obj.canvas.width - resizeHandle, obj.canvas.height - (resizeHandle / 2));
-                
+
             context.fill();
             context.stroke();
 
@@ -94,7 +94,7 @@
                 context.lineTo(canvas.width  - 3, canvas.height - (resizeHandle / 2) - 3);
             context.closePath();
             context.fill();
-            
+
             // Square at the centre of the arrows
             context.beginPath();
                 context.fillStyle = 'white';
@@ -126,7 +126,7 @@
             window.onmousemove = function (e)
             {
                 e = RGraph.FixEventObject(e);
-                
+
                 var canvas    = RGraph.Resizing.canvas;
                 var newWidth  = RGraph.Resizing.originalw - (RGraph.Resizing.originalx - e.pageX);// - 5
                 var newHeight = RGraph.Resizing.originalh - (RGraph.Resizing.originaly - e.pageY);// - 5
@@ -145,7 +145,7 @@
                 if (!RGraph.Resizing || !RGraph.Resizing.div || !RGraph.Resizing.mousedown) {
                     return;
                 }
-    
+
                 if (RGraph.Resizing.div) {
 
                     var div   = RGraph.Resizing.div;
@@ -199,18 +199,18 @@
             canvas.onmousemove = function (e)
             {
                 e = RGraph.FixEventObject(e);
-                
+
                 var coords  = RGraph.getMouseXY(e);
                 var canvas  = e.target;
                 var context = canvas.getContext('2d');
 
                 RGraph.Resizing.title = canvas.title;
-                
+
                 if (   (coords[0] > (canvas.width - resizeHandle)
                     && coords[0] < canvas.width
                     && coords[1] > (canvas.height - resizeHandle)
                     && coords[1] < canvas.height)) {
-    
+
                         canvas.title = 'Resize the graph';
                         canvas.style.cursor = 'move';
 
@@ -218,12 +218,12 @@
                            && coords[0] < canvas.width - resizeHandle
                            && coords[1] > (canvas.height - resizeHandle)
                            && coords[1] < canvas.height) {
-    
+
                     canvas.style.cursor = 'pointer';
                     canvas.title = 'Reset graph to original size';
 
                 } else {
-    
+
                     canvas.style.cursor = 'default';
                     canvas.title = '';
                 }
@@ -233,10 +233,10 @@
             canvas.onmousedown = function (e)
             {
                 e = RGraph.FixEventObject(e);
-    
+
                 var coords = RGraph.getMouseXY(e);
                 var canvasCoords = RGraph.getCanvasXY(e.target);
-                
+
                 if (   coords[0] > (obj.canvas.width - resizeHandle)
                     && coords[0] < obj.canvas.width
                     && coords[1] > (obj.canvas.height - resizeHandle)
@@ -268,21 +268,21 @@
                         MouseupFunc(e);
                     }
 
-                    
+
                     RGraph.Resizing.div.onmouseover = function (e)
                     {
                         e = RGraph.FixEventObject(e);
                         e.stopPropagation();
                     }
-    
+
                     // The mouse
                     RGraph.Resizing.originalx = e.pageX;
                     RGraph.Resizing.originaly = e.pageY;
-                    
+
                     //The canvas
                     RGraph.Resizing.originalw = obj.canvas.width;
                     RGraph.Resizing.originalh = obj.canvas.height;
-                    
+
                     RGraph.Resizing.originalCanvasX = RGraph.getCanvasXY(obj.canvas)[0];
                     RGraph.Resizing.originalCanvasY = RGraph.getCanvasXY(obj.canvas)[1];
                 }
@@ -305,21 +305,21 @@
                     // Restore the original width and height
                     canvas.width = canvas.__original_width__;
                     canvas.height = canvas.__original_height__;
-                    
+
                     // Lose the border
                     canvas.style.border = '';
-                    
+
                     // Add 1 pixel to the top/left because the border is going
                     canvas.style.left = (parseInt(canvas.style.left) + 1) + 'px';
                     canvas.style.top  = (parseInt(canvas.style.top) + 1) + 'px';
 
                     // Redraw the canvas
                     canvas.__object__.Draw();
-                    
+
                     // Set the width and height on the DIV
                     RGraph.Resizing.div.style.width  = canvas.__original_width__ + 'px';
                     RGraph.Resizing.div.style.height = canvas.__original_height__ + 'px';
-                    
+
                     /**
                     * Fire the resize event
                     */

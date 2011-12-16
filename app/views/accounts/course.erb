@@ -8,14 +8,14 @@
   <script>
       window.onload = function ()
       {
-  
-  
-          var l = new RGraph.Line('courseGraph', [<%= @expenses.collect {|m| m[1] * -1}.join(',') %>], 
+
+
+          var l = new RGraph.Line('courseGraph', [<%= @expenses.collect {|m| m[1] * -1}.join(',') %>],
                                                  [<%= @income.collect {|m| m[1]}.join(',') %>],
                                                  [<%= @saldo.collect {|m| m[1]}.join(',') %>]);
           l.Set('chart.labels', ['<%= @expenses.collect {|d| l(d[0], :format => :monthname_abbrev)}.join("','") %>']);
           l.Set('chart.gutter', 50);
-          l.Set('chart.outofbounds', true); 
+          l.Set('chart.outofbounds', true);
           <%= "l.Set('chart.xaxispos', 'center');" unless @saldo.collect {|m| m[1]}.select {|v| v < 0}.empty? %>
           l.Set('chart.linewidth', 1.5)
           l.Set('chart.shadow', true);
@@ -46,7 +46,7 @@
           l.Set('chart.tooltips', ['<%= @expenses.collect {|m| m[1]}.join("','")  %>'],
                                   ['<%= @income.collect {|m| m[1]}.join("','")  %>'],
                                   ['<%= @saldo.collect {|m| m[1]}.join("','")  %>']);
-  
+
           l.Draw();
       }
   </script>

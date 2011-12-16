@@ -1,9 +1,9 @@
 # Manages items (which you should think of transactions on a bank account). Each transaction creates a new item within an account
 class ItemsController < ApplicationController
-  
+
   before_filter :load_item, :only => [:show, :edit, :update, :destroy, :add_category, :toggle_fix, :new_note, :create_note]
   before_filter :load_accounts, :only => [:new, :edit, :create]
-  
+
   def index
     @items = Item.all
   end
@@ -25,7 +25,7 @@ class ItemsController < ApplicationController
 
 
   def edit
-    
+
   end
 
 
@@ -69,8 +69,8 @@ class ItemsController < ApplicationController
       page.visual_effect :blind_up, "item_#{@item.id}", :duration => 0.5
     end
   end
-  
-  
+
+
   # change category assignment for an item. Called via ajax.
   def add_category
     @account = Account.find(params[:current_account]) if params[:current_account]
@@ -80,12 +80,12 @@ class ItemsController < ApplicationController
     @item.update_attribute(:transfer, (category.transfer ? true : false))
     @item.reload
     render :update do |page|
-      page.replace_html "item_#{item.id}", :partial => 'items/item_row_cells', :locals => {:item => @item, 
+      page.replace_html "item_#{item.id}", :partial => 'items/item_row_cells', :locals => {:item => @item,
                                                                                            :account => @account}
     end
   end
-  
-  
+
+
   # Toggle the fix property of an item, indicating that it is a monthly recurring payment. Called via ajax.
   def toggle_fix
     @item.update_attribute(:fix, (@item.fix ? false : true))
@@ -94,8 +94,8 @@ class ItemsController < ApplicationController
                                                                                             :account => @account}
     end
   end
-  
-  
+
+
   def get_from_rss
     msg = "Zahlungen wurden aktualisiert."
     failure = false
@@ -103,17 +103,17 @@ class ItemsController < ApplicationController
     accounts.each do |account|
       next unless account.feed
       if account.import_from_feed
-      
+
       else
         msg = "#{account.title} konnte nicht aktualisiert werden, der RSS Feed ist nicht g&uuml;ltig!"
-        failure = true 
+        failure = true
         next
       end
     end
     redirect_to accounts_path, :notice => msg and return unless failure
     redirect_to accounts_path, :alert => msg and return if failure
   end
-  
+
   private
 
   def load_item

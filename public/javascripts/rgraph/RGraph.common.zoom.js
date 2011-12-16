@@ -17,7 +17,7 @@
 
     /**
     * Installs the event handlers for zooming an area of the graph
-    * 
+    *
     * @param object obj Your graph object
     */
     RGraph.ZoomArea = function (obj)
@@ -26,9 +26,9 @@
 
             var canvas  = obj.canvas;
             var context = obj.context;
-            
+
             obj.canvas.style.cursor = 'crosshair';
-            
+
             RGraph.Register(obj);
 
 
@@ -37,7 +37,7 @@
                 var canvas = e.target;
                 var coords = RGraph.getMouseXY(e);
                 var obj    = canvas.__object__;
-                    
+
                 if (RGraph.Registry.Get('chart.zoomed.area.div')) {
                     RGraph.Registry.Get('chart.zoomed.area.div').style.display = 'none';
                 }
@@ -48,7 +48,7 @@
                 } else {
 
                     var divs = RGraph.Registry.Get('chart.zoomed.area.divs');
-                    
+
                     if (divs && divs.length) {
                         for (var i=0; i<divs.length; ++i) {
                             if (divs[i]) {
@@ -97,7 +97,7 @@
             canvas.onmousemove = function (e)
             {
                 var startCoords = RGraph.Registry.Get('chart.zoomed.area.mousedown');
-                
+
                 if (startCoords && startCoords.length) {
 
                     var coords      = RGraph.getMouseXY(e);
@@ -112,9 +112,9 @@
                     var width   = endx - startx;
                     var height  = endy - starty;
                     var areaDiv = RGraph.Registry.Get('chart.zoomed.area.areadiv');
-                    
+
                     if (width >= 0 && height >= 0) {
-                    
+
                         if (width > 5 && height > 5) {
                             areaDiv.style.width = (width - 15) + 'px';
                             areaDiv.style.height = (height - 15) + 'px';
@@ -145,7 +145,7 @@
                         noticeDiv.style.top  = canvasCoords[1] + startCoords[1] - noticeDiv.offsetHeight + 'px';
                         noticeDiv.style.left = canvasCoords[0] + startCoords[0] - (noticeDiv.offsetWidth / 2) + 'px';
                         noticeDiv.style.width = noticeDiv.offsetWidth + 'px';
-                        
+
                         setTimeout(function () {noticeDiv.style.opacity = 0.8;}, 2100);
                         setTimeout(function () {noticeDiv.style.opacity = 0.6;}, 2200);
                         setTimeout(function () {noticeDiv.style.opacity = 0.4;}, 2300);
@@ -168,7 +168,7 @@
                 if (RGraph.Registry.Get('chart.zoomed.area.mousedown')) {
 
                     //RGraph.Redraw();
-                    
+
                     RGraph.Registry.Get('chart.zoomed.area.areadiv').style.display = 'none';
                     RGraph.Registry.Get('chart.zoomed.area.areadiv').style.left = '-1000px';
                     RGraph.Registry.Get('chart.zoomed.area.areadiv').style.top = '-1000px';
@@ -192,7 +192,7 @@
                     var width        = Math.abs(endx - startx);
                     var height       = Math.abs(endy - starty);
                     var factor       = obj.Get('chart.zoom.factor') - 1;
-                    
+
                     var img = document.createElement('IMG');
                     img.src = canvas.toDataURL();
                     img.style.position = 'relative';
@@ -214,14 +214,14 @@
                     div.origHeight     = height;
                     div.style.width    = width + 'px';
                     div.style.height   = height + 'px';
-                    div.style.border   = '1px solid black';                    
+                    div.style.border   = '1px solid black';
                     div.style.boxShadow          = '0 0 15px black';
                     div.style.MozBoxShadow       = '0 0 15px black';
                     div.style.WebkitBoxShadow    = '0 0 15px black';
                     div.style.overflow           = 'hidden';
                     div.style.opacity            = 0;
                     div.style.zIndex             = 99;
-                    
+
                     document.body.appendChild(div);
                     div.appendChild(img);
 
@@ -234,58 +234,58 @@
                         var event = RGraph.FixEventObject(event);
                         var img   = event.target;
                         var div   = event.target.parentNode;
-                        
+
                         var current_width  = div.offsetWidth
                         var current_height = div.offsetHeight
                         var target_width   = img.offsetWidth;
                         var target_height  = img.offsetHeight;
                         var diff_width     = target_width - current_width;
                         var diff_height    = target_height - current_height;
-                        
+
                         var img_offset_left = parseInt(img.offsetLeft);
                         var img_offset_top  = parseInt(img.offsetTop);
-                        
+
                         // Global vars on purpose so the timers can access them
                         __zoomed_div_style__ = div.style;
                         __zoomed_img_style__ = img.style;
-                    
+
                         setTimeout("__zoomed_div_style__.left = parseInt(__zoomed_div_style__.left) - " + (diff_width * 0.1) + " + 'px'", 50);
                         setTimeout("__zoomed_div_style__.left = parseInt(__zoomed_div_style__.left) - " + (diff_width * 0.1) + " + 'px'", 100);
                         setTimeout("__zoomed_div_style__.left = parseInt(__zoomed_div_style__.left) - " + (diff_width * 0.1) + " + 'px'", 150);
                         setTimeout("__zoomed_div_style__.left = parseInt(__zoomed_div_style__.left) - " + (diff_width * 0.1) + " + 'px'", 200);
                         setTimeout("__zoomed_div_style__.left = parseInt(__zoomed_div_style__.left) - " + (diff_width * 0.1) + " + 'px'", 250);
-                    
+
                         setTimeout("__zoomed_div_style__.top = parseInt(__zoomed_div_style__.top) - " + (diff_height * 0.1) + " + 'px'", 50);
                         setTimeout("__zoomed_div_style__.top = parseInt(__zoomed_div_style__.top) - " + (diff_height * 0.1) + " + 'px'", 100);
                         setTimeout("__zoomed_div_style__.top = parseInt(__zoomed_div_style__.top) - " + (diff_height * 0.1) + " + 'px'", 150);
                         setTimeout("__zoomed_div_style__.top = parseInt(__zoomed_div_style__.top) - " + (diff_height * 0.1) + " + 'px'", 200);
                         setTimeout("__zoomed_div_style__.top = parseInt(__zoomed_div_style__.top) - " + (diff_height * 0.1) + " + 'px'", 250);
-                    
+
                         setTimeout("__zoomed_div_style__.width = parseInt(__zoomed_div_style__.width) + " + (diff_width * 0.2) + " + 'px'", 50);
                         setTimeout("__zoomed_div_style__.width = parseInt(__zoomed_div_style__.width) + " + (diff_width * 0.2) + " + 'px'", 100);
                         setTimeout("__zoomed_div_style__.width = parseInt(__zoomed_div_style__.width) + " + (diff_width * 0.2) + " + 'px'", 150);
                         setTimeout("__zoomed_div_style__.width = parseInt(__zoomed_div_style__.width) + " + (diff_width * 0.2) + " + 'px'", 200);
                         setTimeout("__zoomed_div_style__.width = parseInt(__zoomed_div_style__.width) + " + (diff_width * 0.2) + " + 'px'", 250);
-                        
+
                         setTimeout("__zoomed_div_style__.height = parseInt(__zoomed_div_style__.height) + " + (diff_height * 0.2) + " + 'px'", 50);
                         setTimeout("__zoomed_div_style__.height = parseInt(__zoomed_div_style__.height) + " + (diff_height * 0.2) + " + 'px'", 100);
                         setTimeout("__zoomed_div_style__.height = parseInt(__zoomed_div_style__.height) + " + (diff_height * 0.2) + " + 'px'", 150);
                         setTimeout("__zoomed_div_style__.height = parseInt(__zoomed_div_style__.height) + " + (diff_height * 0.2) + " + 'px'", 200);
                         setTimeout("__zoomed_div_style__.height = parseInt(__zoomed_div_style__.height) + " + (diff_height * 0.2) + " + 'px'", 250);
-                    
+
                         // Move the image within the div
                         setTimeout("__zoomed_img_style__.left = " + (img_offset_left * 0.8) + " + 'px'", 50);
                         setTimeout("__zoomed_img_style__.left = " + (img_offset_left * 0.6) + " + 'px'", 100);
                         setTimeout("__zoomed_img_style__.left = " + (img_offset_left * 0.4) + " + 'px'", 150);
                         setTimeout("__zoomed_img_style__.left = " + (img_offset_left * 0.2) + " + 'px'", 200);
                         setTimeout("__zoomed_img_style__.left = 0", 250);
-                        
+
                         setTimeout("__zoomed_img_style__.top = " + (img_offset_top * 0.8) + " + 'px'", 50);
                         setTimeout("__zoomed_img_style__.top = " + (img_offset_top * 0.6) + " + 'px'", 100);
                         setTimeout("__zoomed_img_style__.top = " + (img_offset_top * 0.4) + " + 'px'", 150);
                         setTimeout("__zoomed_img_style__.top = " + (img_offset_top * 0.2) + " + 'px'", 200);
                         setTimeout("__zoomed_img_style__.top = 0", 250);
-                        
+
                         div.ondblclick = null;
                     }
                     /**
@@ -294,29 +294,29 @@
                     div.onmousedown = function (e)
                     {
                         e = RGraph.FixEventObject(e);
-                            
+
                         var div = e.target.parentNode;
                         var img = div.childNodes[0];
-                        
+
                         if (e.button == 0 || e.button == 1  ) {
-                        
+
                             div.__offsetx__       = e.offsetX + img.offsetLeft;
                             div.__offsety__       = e.offsetY + img.offsetTop;
-                        
+
                             RGraph.Registry.Set('chart.mousedown', div);
                             RGraph.Registry.Set('chart.button', 0);
-                        
+
                         } else {
-                        
+
                             img.__startx__ = e.pageX;
                             img.__starty__ = e.pageY;
-                            
+
                             img.__originalx__ = img.offsetLeft;
                             img.__originaly__ = img.offsetTop;
 
                             RGraph.Registry.Set('chart.mousedown', img);
                             RGraph.Registry.Set('chart.button', 2);
-                            
+
                             /**
                             * Don't show a context menu when the zoomed area is right-clicked on
                             */
@@ -325,13 +325,13 @@
                                 e = RGraph.FixEventObject(e);
 
                                 e.stopPropagation();
-                                
+
                                 // [18th July 2010] Is this reallly necessary?
                                 window.oncontextmenu = function (e)
                                 {
                                     return true;
                                 }
-                            
+
 
                                 return false;
                             }
@@ -341,31 +341,31 @@
 
                         return false;
                     }
-                    
+
                     window.onmouseup = function (e)
                     {
                         RGraph.Registry.Set('chart.mousedown', false);
                     }
-                    
+
                     window.onmousemove = function (e)
                     {
                         if (RGraph.Registry.Get('chart.mousedown') && RGraph.Registry.Get('chart.button') == 0) {
-                            
+
                             var div = RGraph.Registry.Get('chart.mousedown');
-                    
+
                             var x = e.pageX - div.__offsetx__;
                             var y = e.pageY - div.__offsety__;
-                    
+
                             div.style.left = x + 'px';
                             div.style.top = y + 'px';
 
                         } else if (RGraph.Registry.Get('chart.mousedown') && RGraph.Registry.Get('chart.button') == 2) {
-                            
+
                             var img = RGraph.Registry.Get('chart.mousedown');
-                    
+
                             var x = img.__originalx__ + e.pageX - img.__startx__;
                             var y = img.__originaly__ + e.pageY - img.__starty__;
-                    
+
                             img.style.left = x + 'px';
                             img.style.top  = y + 'px';
                         }
@@ -379,7 +379,7 @@
                     } else {
                         RGraph.Registry.Set('chart.zoomed.area.divs', [div])
                     }
-                    
+
                     // Create the background
                     var bg = document.createElement('DIV');
                     bg.style.position        = 'fixed'
@@ -391,7 +391,7 @@
                     bg.style.width           = (screen.width + 100) + 'px';
                     bg.style.height          = (screen.height + 100) + 'px';
                     document.body.appendChild(bg);
-                    
+
                     bg.onclick = function (e)
                     {
                         div.style.display = 'none';
@@ -399,14 +399,14 @@
                         div = null;
                         bg  = null;
                     }
-                    
+
 
                     setTimeout(function (){div.style.opacity = 0.2;}, 50);
                     setTimeout(function (){div.style.opacity = 0.4;}, 100);
                     setTimeout(function (){div.style.opacity = 0.6;}, 150);
                     setTimeout(function (){div.style.opacity = 0.8;}, 200);
                     setTimeout(function (){div.style.opacity = 1.0;}, 250);
-                    
+
                     setTimeout(function () {div.style.left = canvasCoords[0] + startx - (width * factor * 0.1) + 'px'}, 50);
                     setTimeout(function () {div.style.left = canvasCoords[0] + startx - (width * factor * 0.2) + 'px'}, 100);
                     setTimeout(function () {div.style.left = canvasCoords[0] + startx - (width * factor * 0.3) + 'px'}, 150);
@@ -424,7 +424,7 @@
                     setTimeout(function () {div.style.width = width + (width * factor * 0.6) + 'px'}, 150);
                     setTimeout(function () {div.style.width = width + (width * factor * 0.8) + 'px'}, 200);
                     setTimeout(function () {div.style.width = width + (width * factor * 1.0) + 'px'}, 250);
-                    
+
                     setTimeout(function () {div.style.height = height + (height * factor * 0.2) + 'px'}, 50);
                     setTimeout(function () {div.style.height = height + (height * factor * 0.4) + 'px'}, 100);
                     setTimeout(function () {div.style.height = height + (height * factor * 0.6) + 'px'}, 150);
@@ -448,7 +448,7 @@
                 */
                 RGraph.FireCustomEvent(obj, 'onzoom');
             }
-            
+
             canvas.onmouseout = function (e)
             {
                 RGraph.Registry.Set('chart.zoomed.area.areadiv', null);
@@ -461,7 +461,7 @@
 
     /**
     * This function sets up the zoom window if requested
-    * 
+    *
     * @param obj object The graph object
     */
     RGraph.ShowZoomWindow = function (obj)
@@ -491,7 +491,7 @@
             var canvas  = obj.canvas;
             var context = obj.context;
             var coords  = RGraph.getMouseXY(e);
-            
+
             /**
             * Create the DIV
             */
@@ -505,7 +505,7 @@
                 div.style.position = 'absolute';
                 div.style.overflow = 'hidden';
                 div.style.backgroundColor = 'white';
-                
+
                 // Initially the zoomed layer should be off-screen
                 div.style.left = '-1000px';
                 div.style.top = '-1000px';
@@ -524,7 +524,7 @@
                 //div.style.opacity = 0.2;
                 div.__object__ = obj;
                 document.body.appendChild(div);
-        
+
                 /**
                 * Get the canvas as an image
                 */
@@ -539,7 +539,7 @@
 
                 RGraph.Registry.Set('chart.zoomed.div', div);
                 RGraph.Registry.Set('chart.zoomed.img', img);
-                
+
                 // Fade the zoom in
                 setTimeout("RGraph.Registry.Get('chart.zoomed.div').__object__.canvas.onmouseover()", 5);
 
@@ -551,7 +551,7 @@
 
             // Make sure the image is up-to-date
             img.src = canvas.toDataURL();
-            
+
             /**
             * Ensure the div is visible
             */
@@ -573,27 +573,27 @@
 
             div.style.left = (e.pageX - obj.Get('chart.zoom.thumbnail.width') - offset) + 'px';
             div.style.top = (e.pageY -  obj.Get('chart.zoom.thumbnail.height') - offset) + 'px';
-            
+
             var l = (obj.Get('chart.zoom.thumbnail.width') / 2) - (coords[0] * obj.Get('chart.zoom.factor'));
             var t = (obj.Get('chart.zoom.thumbnail.height') / 2) - (coords[1] * obj.Get('chart.zoom.factor'));
 
             // More positioning
             img.style.left = (l + ((obj.Get('chart.zoom.thumbnail.width') / 2) * obj.Get('chart.zoom.factor'))) + 'px';
             img.style.top = (t + ((obj.Get('chart.zoom.thumbnail.height') / 2) * obj.Get('chart.zoom.factor'))) + 'px';
-            
+
             /**
             * Fire the onzoom event
             */
             RGraph.FireCustomEvent(obj, 'onzoom');
         }
-        
+
         /**
         * The onmouseover event. Evidently. Fades the zoom window in
         */
         canvas.onmouseover = function (e)
         {
             var div = RGraph.Registry.Get('chart.zoomed.div');
-            
+
             // ???
             if (!div) return;
 
@@ -607,7 +607,7 @@
             div.style.height = 0;
 
             if (obj.Get('chart.zoom.fade.in')) {
-                
+
                 RGraph.Registry.Get('chart.zoomed.div').style.opacity = 0.2;
                 setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.opacity = 0.4", 100);
                 setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.opacity = 0.6", 200);
@@ -625,14 +625,14 @@
             setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.width = '" + (targetWidth * (3/5) ) + "px'", 225);
             setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.width = '" + (targetWidth * (4/5) ) + "px'", 300);
             setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.width = '" + (targetWidth * (5/5) ) + "px'", 325);
-            
+
             setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.height = '" + (targetHeight * (1/5) ) + "px'", 75);
             setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.height = '" + (targetHeight * (2/5) ) + "px'", 150);
             setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.height = '" + (targetHeight * (3/5) ) + "px'", 225);
             setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.height = '" + (targetHeight * (4/5) ) + "px'", 300);
             setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.height = '" + (targetHeight * (5/5) ) + "px'", 375);
         }
-        
+
         canvas.onmouseout = function (e)
         {
             if (RGraph.Registry.Get('chart.zoomed.div') && RGraph.Registry.Get('chart.zoomed.div').__object__.Get('chart.zoom.fade.out')) {
@@ -646,7 +646,7 @@
                 // Get rid of the zoom window
                 setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.left = '-400px'", 400);
                 setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.top = '-400px'", 400);
-            
+
             } else {
                 // Get rid of the zoom window
                 if (RGraph.Registry.Get('chart.zoomed.div')) {
@@ -659,7 +659,7 @@
 
     /**
     * A zoom in function
-    * 
+    *
     * @param e object The event object
     */
     RGraph.Zoom = function (e)
@@ -702,7 +702,7 @@
         // Store the zoomed image in a global var - NOT the registry
         __zoomedimage__ = img;
         __zoomedimage__.obj = obj;
-        
+
         // Image onclick should not hide the image
         img.onclick = function (e)
         {
@@ -712,7 +712,7 @@
         }
 
         setTimeout(function () {window.onclick = RGraph.HideZoomedCanvas;}, 1);
-        
+
         var width = parseInt(canvas.width);
         var height = parseInt(canvas.height);
         var frames = obj.Get('chart.zoom.frames');
@@ -738,7 +738,7 @@
 
                 setTimeout("__zoomedimage__.style.width = '" + String(newWidth) + "px'; __zoomedimage__.style.left = '" + newLeft + "px'", i * delay);
             }
-            
+
         // Right (default)
         } else {
             for (var i=1; i<=frames; ++i) {
@@ -753,10 +753,10 @@
                 var newHeight  = (height * factor * (i/frames)) + height;
                 var bottomEdge = y + canvas.height;
                 var newTop       = bottomEdge - newHeight;
-        
+
                 setTimeout("__zoomedimage__.style.height = '" + String(newHeight) + "px'; __zoomedimage__.style.top = '" + newTop + "px'", i * delay);
             }
-        
+
         // center
         } else if (obj.Get('chart.zoom.vdir') == 'center') {
             for (var i=1; i<=frames; ++i) {
@@ -766,7 +766,7 @@
 
                 setTimeout("__zoomedimage__.style.height = '" + String(newHeight) + "px'; __zoomedimage__.style.top = '" + newTop + "px'", i * delay);
             }
-        
+
         // Down (default
         } else {
             for (var i=1; i<=frames; ++i) {
@@ -806,7 +806,7 @@
                 // Get rid of the zoom window
                 setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.left = '-400px'", 400);
                 setTimeout("RGraph.Registry.Get('chart.zoomed.div').style.top = '-400px'", 400);
-            
+
             } else {
 
                 // Get rid of the zoom window
@@ -842,13 +842,13 @@
             //    //  MSIE doesn't support zoom
             //    //setTimeout('__zoomedbackground__.style.filter = "progid:DXImageTransform.Microsoft.Shadow(color=#aaaaaa,direction=135); Alpha(opacity=10)"', 50);
             //}
-            
+
             div.origHeight = div.style.height;
-            
+
             document.body.appendChild(div);
 
             __zoomedbackground__ = div;
-            
+
             // If the window is resized, hide the zoom
             //window.onresize = RGraph.HideZoomedCanvas;
 
@@ -856,7 +856,7 @@
                 setTimeout("__zoomedbackground__.style.opacity = " + (Number(i / frames) * 0.5), i * delay);
             }
         }
-        
+
         /**
         * Fire the onzoom event
         */

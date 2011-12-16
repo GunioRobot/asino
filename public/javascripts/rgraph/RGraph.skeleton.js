@@ -21,7 +21,7 @@
 
 
 
-    
+
     /**
     * Having this here means that the RGraph libraries can be included in any order, instead of you having
     * to include the common core library first.
@@ -34,7 +34,7 @@
     /**
     * The chart constructor. This function sets up the object. It takes the ID (the HTML attribute) of the canvas as the
     * first argument and the data as the second. If you need to change this, you can.
-    * 
+    *
     * @param string id    The canvas tag ID
     * @param array  data  The chart data
     */
@@ -162,7 +162,7 @@
             alert('[BAR] No canvas support');
             return;
         }
-        
+
         /**
         * Check that the common library has been included
         */
@@ -174,7 +174,7 @@
         * Store the data that was passed to this constructor
         */
         this.data = data;
-        
+
         /**
         * This can be used to store the coordinates of shapes on the graph
         */
@@ -186,7 +186,7 @@
 
     /**
     * A setter method for setting graph properties. It can be used like this: obj.Set('chart.background.grid', false);
-    * 
+    *
     * @param name  string The name of the property to set
     * @param value mixed  The value of the property
     */
@@ -201,7 +201,7 @@
     /**
     * A getter method for retrieving graph properties. It can be used like this: obj.Get('chart.background.grid');
     * This can be used inside your methods that draw the graph.
-    * 
+    *
     * @param name  string The name of the property to get
     */
     RGraph.Skeleton.prototype.Get = function (name)
@@ -255,21 +255,21 @@
         if (this.Get('chart.labels.ingraph')) {
             RGraph.DrawInGraphLabels(this);
         }
-        
+
         /**
         * Draw crosschairs
         */
         if (this.Get('chart.crosshairs')) {
             RGraph.DrawCrosshairs(this);
         }
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -277,7 +277,7 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */

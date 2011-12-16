@@ -24,7 +24,7 @@
   </p>
   <p>
     <%= f.label :category, 'In Überkategorie' %><br />
-    <%= f.collection_select(:category_id, 
+    <%= f.collection_select(:category_id,
                             Category.where('category_id is NULL').order('name'), :id, :name, {:include_blank => true}) %>
   </p>
   <p>

@@ -11,12 +11,12 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
 
     /**
     * The pie chart constructor
-    * 
+    *
     * @param data array The data to be represented on the pie chart
     */
     RGraph.Pie = function (id, data)
@@ -89,14 +89,14 @@
             'chart.resizable':              false,
             'chart.variant':                'pie'
         }
-        
+
         /**
         * Calculate the total
         */
         for (var i=0,len=data.length; i<len; i++) {
             this.total += data[i];
         }
-        
+
         // Check the common library has been included
         if (typeof(RGraph) == 'undefined') {
             alert('[PIE] Fatal error: The common library does not appear to have been included');
@@ -145,16 +145,16 @@
         this.centery     = this.canvas.height / 2;
         this.subTotal    = 0;
         this.angles      = [];
-        
+
         /**
         * Alignment (Pie is center aligned by default) Only if centerx is not defined - donut defines the centerx
         */
         if (this.Get('chart.align') == 'left') {
             this.centerx = this.radius + this.Get('chart.gutter');
-        
+
         } else if (this.Get('chart.align') == 'right') {
             this.centerx = this.canvas.width - (this.radius + this.Get('chart.gutter'));
-        
+
         } else {
             this.centerx = this.canvas.width / 2;
         }
@@ -163,7 +163,7 @@
         * Draw the shadow if required
         */
         if (this.Get('chart.shadow')) {
-        
+
             var offsetx = document.all ? this.Get('chart.shadow.offsetx') : 0;
             var offsety = document.all ? this.Get('chart.shadow.offsety') : 0;
 
@@ -174,11 +174,11 @@
             this.context.shadowBlur    = this.Get('chart.shadow.blur');
             this.context.shadowOffsetX = this.Get('chart.shadow.offsetx');
             this.context.shadowOffsetY = this.Get('chart.shadow.offsety');
-            
+
             this.context.arc(this.centerx + offsetx, this.centery + offsety, this.radius, 0, 6.28, 0);
-            
+
             this.context.fill();
-            
+
             // Now turn off the shadow
             RGraph.NoShadow(this);
         }
@@ -190,7 +190,7 @@
 
         for (var i=0,len=this.data.length; i<len; i++) {
             var angle = (this.data[i] / this.total) * 360;
-    
+
             this.DrawSegment(angle,
                              this.Get('chart.colors')[i],
                              i == (this.data.length - 1));
@@ -208,9 +208,9 @@
                 this.context.moveTo(this.centerx, this.centery);
                 this.context.arc(this.centerx, this.centery, this.radius, this.angles[i][0] / 57.3, (this.angles[i][0] + 0.01) / 57.3, 0);
             }
-            
+
             this.context.stroke();
-            
+
             /**
             * And finally redraw the border
             */
@@ -225,7 +225,7 @@
         */
         if (this.Get('chart.labels.sticks')) {
             this.DrawSticks();
-            
+
             // Redraw the border going around the Pie chart if the stroke style is NOT white
             if (
                    this.Get('chart.strokestyle') != 'white'
@@ -262,8 +262,8 @@
         }
 
         RGraph.DrawTitle(this.canvas, this.Get('chart.title'), this.Get('chart.gutter'), centerx, this.Get('chart.text.size') + 2);
-        
-        
+
+
         /**
         * Setup the context menu if required
         */
@@ -280,7 +280,7 @@
             * Register this object for redrawing
             */
             RGraph.Register(this);
-        
+
             /**
             * The onclick event
             */
@@ -324,7 +324,7 @@
 
                 if (segment) {
                     if (isDonut || hStyle == '2d') {
-                        
+
                         context.beginPath();
 
                         context.fillStyle = 'rgba(255,255,255,0.5)';
@@ -333,7 +333,7 @@
                         context.arc(obj.centerx, obj.centery, obj.radius, RGraph.degrees2Radians(obj.angles[segment[5]][0]), RGraph.degrees2Radians(obj.angles[segment[5]][1]), 0);
                         context.lineTo(obj.centerx, obj.centery);
                         context.closePath();
-                        
+
                         context.fill();
                         context.stroke();
 
@@ -351,7 +351,7 @@
                         context.arc(obj.centerx, obj.centery, obj.radius, obj.angles[segment[5]][0] / 57.3, obj.angles[segment[5]][1] / 57.3, 0);
                         context.stroke();
                         context.fill();
-                        
+
                         context.lineWidth = 1;
 
                         context.shadowColor   = '#666';
@@ -367,13 +367,13 @@
                             context.arc(obj.centerx - 3, obj.centery - 3, obj.radius, RGraph.degrees2Radians(obj.angles[segment[5]][0]), RGraph.degrees2Radians(obj.angles[segment[5]][1]), 0);
                             context.lineTo(obj.centerx - 3, obj.centery - 3);
                         context.closePath();
-                        
+
                         context.stroke();
                         context.fill();
-                        
+
                         // Turn off the shadow
                         RGraph.NoShadow(obj);
-                        
+
                         /**
                         * If a border is defined, redraw that
                         */
@@ -385,7 +385,7 @@
                             context.stroke();
                         }
                     }
-                        
+
                     /**
                     * If a tooltip is defined, show it
                     */
@@ -398,7 +398,7 @@
 
                     } else if (typeof(obj.Get('chart.tooltips')) == 'object' && typeof(obj.Get('chart.tooltips')[segment[5]]) == 'function') {
                         var text = String(obj.Get('chart.tooltips')[segment[5]](segment[5]));
-                    
+
                     } else if (typeof(obj.Get('chart.tooltips')) == 'object') {
                         var text = String(obj.Get('chart.tooltips')[segment[5]]);
 
@@ -441,7 +441,7 @@
                 RGraph.HideZoomedCanvas();
 
                 e = RGraph.FixEventObject(e);
-                
+
                 var segment = RGraph.getSegment(e);
 
                 if (segment) {
@@ -477,7 +477,7 @@
 
             this.context.stroke();
         }
-        
+
         /**
         * Draw the kay if desired
         */
@@ -498,16 +498,16 @@
             this.context.stroke();
             this.context.fill();
         }
-        
+
         RGraph.NoShadow(this);
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -515,14 +515,14 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
         if (this.Get('chart.resizable')) {
             RGraph.AllowResizing(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
@@ -532,7 +532,7 @@
 
     /**
     * Draws a single segment of the pie chart
-    * 
+    *
     * @param int degrees The number of degrees for this segment
     */
     RGraph.Pie.prototype.DrawSegment = function (degrees, color, last)
@@ -553,15 +553,15 @@
                         subTotal / 57.3,
                         (last ? 360 : subTotal + degrees) / 57.3,
                         0);
-    
+
             context.lineTo(this.centerx, this.centery);
-            
+
             // Keep hold of the angles
             this.angles.push([subTotal, subTotal + degrees])
         this.context.closePath();
 
         this.context.fill();
-    
+
         /**
         * Calculate the segment angle
         */
@@ -583,7 +583,7 @@
         * Turn the shadow off
         */
         RGraph.NoShadow(this);
-        
+
         context.fillStyle = 'black';
         context.beginPath();
 
@@ -595,7 +595,7 @@
             var text_size = this.Get('chart.text.size');
 
             for (i=0; i<labels.length; ++i) {
-            
+
                 /**
                 * T|his ensures that if we're given too many labels, that we don't get an error
                 */
@@ -605,7 +605,7 @@
 
                 // Move to the centre
                 context.moveTo(this.centerx,this.centery);
-                
+
                 var a = this.Get('chart.segments')[i][0] + ((this.Get('chart.segments')[i][1] - this.Get('chart.segments')[i][0]) / 2);
 
                 /**
@@ -636,7 +636,7 @@
                             vAlignment,
                             hAlignment);
             }
-            
+
             context.fill();
         }
     }
@@ -667,8 +667,8 @@
                         midpoint,
                         midpoint + 0.01,
                         0);
-            
-            
+
+
             context.arc(this.centerx,
                         this.centery,
                         this.radius - offset,

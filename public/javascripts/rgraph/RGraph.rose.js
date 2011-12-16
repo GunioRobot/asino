@@ -11,12 +11,12 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
-    
+
     /**
     * The rose chart constuctor
-    * 
+    *
     * @param object canvas
     * @param array data
     */
@@ -42,7 +42,7 @@
         this.radius  = 0;
 
         this.max     = 0;
-        
+
         this.properties = {
             'chart.colors':                 ['rgb(255,0,0)', 'rgb(0,255,255)', 'rgb(0,255,0)', 'rgb(127,127,127)', 'rgb(0,0,255)', 'rgb(255,128,255)'],
             'chart.colors.alpha':           null,
@@ -91,7 +91,7 @@
             'chart.ymin':                   0,
             'chart.scale.decimals':         null
         }
-        
+
         // Check the common library has been included
         if (typeof(RGraph) == 'undefined') {
             alert('[ROSE] Fatal error: The common library does not appear to have been included');
@@ -101,7 +101,7 @@
 
     /**
     * A simple setter
-    * 
+    *
     * @param string name  The name of the property to set
     * @param string value The value of the property
     */
@@ -109,11 +109,11 @@
     {
         this.properties[name.toLowerCase()] = value;
     }
-    
-    
+
+
     /**
     * A simple getter
-    * 
+    *
     * @param string name The name of the property to get
     */
     RGraph.Rose.prototype.Get = function (name)
@@ -121,7 +121,7 @@
         return this.properties[name.toLowerCase()];
     }
 
-    
+
     /**
     * This method draws the rose chart
     */
@@ -131,7 +131,7 @@
         * Fire the onbeforedraw event
         */
         RGraph.FireCustomEvent(this, 'onbeforedraw');
-        
+
         /**
         * Clear all of this canvases event handlers (the ones installed by RGraph)
         */
@@ -144,7 +144,7 @@
         this.angles       = [];
         this.total        = 0;
         this.startRadians = 0;
-        
+
         /**
         * Change the centerx marginally if the key is defined
         */
@@ -172,7 +172,7 @@
             * Register this object for redrawing
             */
             RGraph.Register(this);
-        
+
             /**
             * The onclick event
             */
@@ -185,7 +185,7 @@
                 e = RGraph.FixEventObject(e);
 
                 RGraph.Redraw();
-                
+
                 var segment = RGraph.getSegment(e);
                 if (segment && obj.Get('chart.tooltips')[segment[5]]) {
                     context.beginPath();
@@ -196,10 +196,10 @@
                     context.closePath();
                     context.fill();
                     context.stroke();
-                    
+
                     context.strokeStyle = 'rgba(0,0,0,0)';
                     obj.DrawLabels();
-                    
+
                     /**
                     * Show the tooltip
                     */
@@ -224,7 +224,7 @@
                 var context = canvas.getContext('2d');
 
                 e = RGraph.FixEventObject(e);
-                
+
                 var segment = RGraph.getSegment(e);
 
                 if (segment && obj.Get('chart.tooltips')[segment[5]]) {
@@ -237,14 +237,14 @@
             this.canvas.addEventListener('mousemove', canvas_onmousemove_func, false);
             RGraph.AddEventListener(this.id, 'mousemove', canvas_onmousemove_func);
         }
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -252,7 +252,7 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
@@ -260,14 +260,14 @@
             RGraph.AllowResizing(this);
         }
 
-        
+
         /**
         * This function enables adjusting
         */
         if (this.Get('chart.adjustable')) {
             RGraph.AllowAdjusting(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
@@ -280,12 +280,12 @@
     RGraph.Rose.prototype.DrawBackground = function ()
     {
         this.context.lineWidth = 1;
-    
+
         // Draw the background grey circles
         this.context.strokeStyle = '#ccc';
         for (var i=15; i<this.radius - this.Get('chart.gutter') - (document.all ? 5 : 0); i+=15) {// Radius must be greater than 0 for Opera to work
             //this.context.moveTo(this.centerx + i, this.centery);
-    
+
             // Radius must be greater than 0 for Opera to work
             this.context.arc(this.centerx, this.centery, i, 0, (2 * Math.PI), 0);
         }
@@ -294,50 +294,50 @@
         // Draw the background lines that go from the center outwards
         this.context.beginPath();
         for (var i=15; i<360; i+=15) {
-        
+
             // Radius must be greater than 0 for Opera to work
             this.context.arc(this.centerx, this.centery, this.radius - this.Get('chart.gutter'), i / 57.3, (i + 0.1) / 57.3, 0); // The 0.01 avoids a bug in Chrome 6
-        
+
             this.context.lineTo(this.centerx, this.centery);
         }
         this.context.stroke();
-        
+
         this.context.beginPath();
         this.context.strokeStyle = 'black';
-    
+
         // Draw the X axis
         this.context.moveTo(this.centerx - this.radius + this.Get('chart.gutter'), this.centery);
         this.context.lineTo(this.centerx + this.radius - this.Get('chart.gutter'), this.centery);
-    
+
         // Draw the X ends
         this.context.moveTo(this.centerx - this.radius + this.Get('chart.gutter'), this.centery - 5);
         this.context.lineTo(this.centerx - this.radius + this.Get('chart.gutter'), this.centery + 5);
         this.context.moveTo(this.centerx + this.radius - this.Get('chart.gutter'), this.centery - 5);
         this.context.lineTo(this.centerx + this.radius - this.Get('chart.gutter'), this.centery + 5);
-        
+
         // Draw the X check marks
         for (var i=(this.centerx - this.radius + this.Get('chart.gutter')); i<(this.centerx + this.radius - this.Get('chart.gutter')); i+=20) {
             this.context.moveTo(i,  this.centery - 3);
             this.context.lineTo(i,  this.centery + 3);
         }
-        
+
         // Draw the Y check marks
         for (var i=(this.centery - this.radius + this.Get('chart.gutter')); i<(this.centery + this.radius - this.Get('chart.gutter')); i+=20) {
             this.context.moveTo(this.centerx - 3, i);
             this.context.lineTo(this.centerx + 3, i);
         }
-    
+
         // Draw the Y axis
         this.context.moveTo(this.centerx, this.centery - this.radius + this.Get('chart.gutter'));
         this.context.lineTo(this.centerx, this.centery + this.radius - this.Get('chart.gutter'));
-    
+
         // Draw the Y ends
         this.context.moveTo(this.centerx - 5, this.centery - this.radius + this.Get('chart.gutter'));
         this.context.lineTo(this.centerx + 5, this.centery - this.radius + this.Get('chart.gutter'));
-    
+
         this.context.moveTo(this.centerx - 5, this.centery + this.radius - this.Get('chart.gutter'));
         this.context.lineTo(this.centerx + 5, this.centery + this.radius - this.Get('chart.gutter'));
-        
+
         // Stroke it
         this.context.closePath();
         this.context.stroke();
@@ -356,7 +356,7 @@
             alert('[ROSE] Must be at least two data points! [' + data + ']');
             return;
         }
-    
+
         // Work out the maximum value and the sum
         if (!this.Get('chart.ymax')) {
             this.scale = RGraph.getScale(RGraph.array_max(data), this);
@@ -374,14 +374,14 @@
                          ];
             this.max = this.scale[4];
         }
-        
+
         this.sum = RGraph.array_sum(data);
-        
+
         // Move to the centre
         this.context.moveTo(this.centerx, this.centery);
-    
+
         this.context.stroke(); // Stroke the background so it stays grey
-    
+
         // Transparency
         if (this.Get('chart.colors.alpha')) {
             this.context.globalAlpha = this.Get('chart.colors.alpha');
@@ -391,14 +391,14 @@
         for (var i=0; i<this.data.length; ++i) {
 
             this.context.strokeStyle = this.Get('chart.strokestyle');
-            
+
             if (this.Get('chart.colors')[i]) {
                 this.context.fillStyle = this.Get('chart.colors')[i];
             }
-    
+
             var segmentRadians = (1 / this.data.length) * (2 * Math.PI);
-    
-            this.context.beginPath(); // Begin the segment   
+
+            this.context.beginPath(); // Begin the segment
 
                 var radius = ((this.data[i] - this.Get('chart.ymin')) / (this.max - this.Get('chart.ymin'))) * (this.radius - this.Get('chart.gutter') - 10);
 
@@ -406,7 +406,7 @@
                 this.context.lineTo(this.centerx, this.centery);
                 this.context.fill();
             this.context.closePath(); // End the segment
-            
+
             // Store the start and end angles
             this.angles.push([
                               ((this.startRadians - (Math.PI / 2)) * 57.3) + 90,
@@ -441,11 +441,11 @@
         if (key && key.length) {
             RGraph.DrawKey(this, key, this.Get('chart.colors'));
         }
-        
+
         // Set the color to black
         this.context.fillStyle = 'black';
         this.context.strokeStyle = 'black';
-        
+
         var r         = this.radius - 10;
         var font_face = this.Get('chart.text.font');
         var font_size = this.Get('chart.text.size');
@@ -478,7 +478,7 @@
             RGraph.Text(context, font_face, font_size, this.centerx, this.centery + ((r - this.Get('chart.gutter')) * 0.8), String(Number(this.scale[3]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
             RGraph.Text(context, font_face, font_size, this.centerx, this.centery + r - this.Get('chart.gutter'), String(Number(this.scale[4]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
         }
-        
+
         // The "East" axis labels
         if (axes.indexOf('e') > -1) {
             RGraph.Text(context, font_face, font_size, this.centerx + ((r - this.Get('chart.gutter')) * 0.2), this.centery, String(Number(this.scale[0]).toFixed(this.Get('chart.scale.decimals'))), 'center', 'center', true, false, color);
@@ -503,7 +503,7 @@
 
     /**
     * Draws the circular labels that go around the charts
-    * 
+    *
     * @param labels array The labels that go around the chart
     */
     RGraph.Rose.prototype.DrawCircularLabels = function (context, labels, font_face, font_size, r)

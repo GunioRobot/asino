@@ -2,27 +2,27 @@
 class AccountsController < ApplicationController
   # GET /accounts
   # GET /accounts.xml
-  
+
   before_filter :get_accounts, :check_login
   before_filter :load_account, :only => [:show, :edit, :update, :destroy, :overview, :course]
-  
-  
+
+
   def index
     render :action => 'no_accounts' and return if @accounts.empty?
-    
+
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
 
     @sum = Item.until_date(@enddate).sum(:amount)
-                           
+
     @items = Item.for_date(@enddate)
     @income = Item.income.for_date(@enddate).sum(:amount)
     @expenses = Item.expenses.for_date(@enddate).sum(:amount)
-    
+
     sort_items #sort items according to order param
-    
-    @last_month_income = Item.income.for_current_date(@lastmonth).sum(:amount)    
+
+    @last_month_income = Item.income.for_current_date(@lastmonth).sum(:amount)
     @last_month_expenses = Item.expenses.for_current_date(@lastmonth).sum(:amount)
 
     render :action => 'show'
@@ -34,30 +34,30 @@ class AccountsController < ApplicationController
     @enddate = (Time.now + @month.to_i.months).at_end_of_month
     @startdate = @enddate.at_beginning_of_month
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
-    
+
     @items = Item.for_account(@account.id).for_date(@enddate)
     if @account
-       @sum = Item.for_account(@account.id).until_date(@enddate).sum(:amount) 
+       @sum = Item.for_account(@account.id).until_date(@enddate).sum(:amount)
     else
       @sum = Item.until_date(@enddate).sum(:amount)
     end
     @income = Item.income.for_account(@account.id).for_date(@enddate).sum(:amount)
     @expenses = Item.expenses.for_account(@account.id).for_date(@enddate).sum(:amount)
-    
-    @last_month_income = Item.income.for_account(@account.id).for_current_date(@lastmonth).sum(:amount)    
+
+    @last_month_income = Item.income.for_account(@account.id).for_current_date(@lastmonth).sum(:amount)
     @last_month_expenses = Item.expenses.for_account(@account.id).for_current_date(@lastmonth).sum(:amount)
-    
+
     sort_items #sort items according to order param
   end
-  
-  
+
+
   # show graph of monthly saldo, expenses, income development
   def course
     @include_graph_scripts = true
     Account.all.each do |account|
       Monthreport.find_or_create(account, Time.now)
     end
-    
+
     if !@account
       @items = Item.without_transfers
       @expenses = Monthreport.grouped_by_date.collect{|m| [m.date, Monthreport.for_date(m.date).sum(:expenses)] }
@@ -70,8 +70,8 @@ class AccountsController < ApplicationController
       @saldo =    Monthreport.grouped_by_date.collect{|m| [m.date, Monthreport.for_account(@account.id).for_date(m.date).sum(:saldo  )] }
     end
   end
-  
-  
+
+
   def overview
     @include_graph_scripts = true
 
@@ -79,7 +79,7 @@ class AccountsController < ApplicationController
     @startdate = @enddate.at_beginning_of_month
     @lastmonth = (Time.now.at_end_of_month == @enddate) ? Time.now - 1.month :  @enddate - 1.month
 
-    if @account 
+    if @account
       @items = Item.for_account(@account.id).for_date(@enddate).without_transfers
       @sum = Item.for_account(@account.id).sum(:amount)
       @income = Item.income.for_account(@account.id).for_date(@enddate).without_transfers.sum(:amount)
@@ -93,29 +93,29 @@ class AccountsController < ApplicationController
 
     @expense_categories = categorized_items(@items, 'expenses', @expenses, @lastmonth)
     @income_categories  = categorized_items(@items, 'income', @income, @lastmonth)
-  end 
-  
+  end
+
   def search
     @sum = Item.sum(:amount)
-    
+
     unless params[:account_id].blank?
-      @items = Item.for_account(params[:account_id]).find(:all, 
-                  :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"], 
+      @items = Item.for_account(params[:account_id]).find(:all,
+                  :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"],
                   :order => 'created_at desc')
-      @result_saldo = Item.for_account(params[:account_id]).find(:all, 
+      @result_saldo = Item.for_account(params[:account_id]).find(:all,
                   :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"]).sum(&:amount) #todo not nice!
     else
-      @items = Item.find(:all, 
-                  :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"], 
+      @items = Item.find(:all,
+                  :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"],
                   :order => 'created_at desc')
-      @result_saldo = Item.find(:all, 
+      @result_saldo = Item.find(:all,
                   :conditions => ["description LIKE ? or payee LIKE ?", "%#{params[:term]}%","%#{params[:term]}%"]).sum(&:amount) #todo not nice!
     end
-    
+
     render :template => 'accounts/show'
   end
-  
-  
+
+
   def new
     @account = Account.new
   end
@@ -134,7 +134,7 @@ class AccountsController < ApplicationController
         format.html { redirect_to(@account, :notice => 'Konto wurde erfolgreich angelegt.') }
         format.xml  { render :xml => @account, :status => :created, :location => @account }
       else
-        format.html { 
+        format.html {
                       flash[:alert] = 'Konto wurde nicht angelegt!'
                       render :action => 'new'
                      }
@@ -165,17 +165,17 @@ class AccountsController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
-  
+
+
   protected
-  
-  
+
+
   # retrieve all accounts, they are needed for the sidebar display
   def get_accounts
     @accounts = Account.all
   end
-  
-  
+
+
   # sort items according to sort params in url
   def sort_items
     @items = @items.sort_by(&:created_at) if params[:order] == 'date'
@@ -189,7 +189,7 @@ class AccountsController < ApplicationController
     @items = @items.sort_by(&:category_id) if params[:order] == 'cat'
     @items = @items.sort_by(&:category_id).reverse if params[:order] == 'cat desc'
   end
-  
+
   private
 
   def load_account

@@ -11,12 +11,12 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
 
     /**
     * The bar chart constructor
-    * 
+    *
     * @param object canvas The canvas object
     * @param array  data   The chart data
     */
@@ -140,7 +140,7 @@
             alert('[BAR] No canvas support');
             return;
         }
-        
+
         // Check the common library has been included
         if (typeof(RGraph) == 'undefined') {
             alert('[BAR] Fatal error: The common library does not appear to have been included');
@@ -157,7 +157,7 @@
 
         // Store the data
         this.data = data;
-        
+
         // Used to store the coords of the bars
         this.coords = [];
     }
@@ -165,7 +165,7 @@
 
     /**
     * A setter
-    * 
+    *
     * @param name  string The name of the property to set
     * @param value mixed  The value of the property
     */
@@ -181,7 +181,7 @@
 
     /**
     * A getter
-    * 
+    *
     * @param name  string The name of the property to get
     */
     RGraph.Bar.prototype.Get = function (name)
@@ -258,8 +258,8 @@
         if (this.Get('chart.key').length) {
             RGraph.DrawKey(this, this.Get('chart.key'), this.Get('chart.colors'));
         }
-        
-        
+
+
         /**
         * Setup the context menu if required
         */
@@ -274,12 +274,12 @@
         var line = this.Get('chart.line');
 
         if (line) {
-            
+
             // Check the length of the data(s)
             if (line.original_data[0].length != this.data.length) {
                 alert("[BAR] You're adding a line with a differing amount of data points to the bar chart - this is not permitted");
             }
-            
+
             // Check the X axis positions
             if (this.Get('chart.xaxispos') != line.Get('chart.xaxispos')) {
                 alert("[BAR] Using different X axis positions when combining the Bar and Line is not advised");
@@ -292,7 +292,7 @@
             line.Set('chart.background.grid', false);
             line.Set('chart.ylabels', false);
             line.Set('chart.hmargin', (this.canvas.width - (2 * this.gutter)) / (line.original_data[0].length * 2));
-            
+
             // If a custom yMax is set, use that
             if (this.Get('chart.ymax')) {
                 line.Set('chart.ymax', this.Get('chart.ymax'));
@@ -308,21 +308,21 @@
         if (this.Get('chart.labels.ingraph')) {
             RGraph.DrawInGraphLabels(this);
         }
-        
+
         /**
         * Draw crosschairs
         */
         if (this.Get('chart.crosshairs')) {
             RGraph.DrawCrosshairs(this);
         }
-        
+
         /**
         * If the canvas is annotatable, do install the event handlers
         */
         if (this.Get('chart.annotatable')) {
             RGraph.Annotate(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -330,7 +330,7 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
@@ -345,14 +345,14 @@
         if (this.Get('chart.adjustable')) {
             RGraph.AllowAdjusting(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
     }
 
-    
+
     /**
     * Draws the charts axes
     */
@@ -374,7 +374,7 @@
             this.context.moveTo(gutter, gutter);
             this.context.lineTo(gutter, this.canvas.height - gutter);
         }
-        
+
         // Draw the X axis
         this.context.moveTo(gutter, (xaxispos == 'center' ? this.canvas.height / 2 : this.canvas.height - gutter));
         this.context.lineTo(this.canvas.width - gutter, xaxispos == 'center' ? this.canvas.height / 2 : this.canvas.height - gutter);
@@ -390,7 +390,7 @@
              y += yTickGap) {
 
             if (xaxispos == 'center' && y == (this.canvas.height / 2)) continue;
-            
+
             this.context.moveTo(xpos, y);
             this.context.lineTo(xpos + (yaxispos == 'left' ? -3 : 3), y);
         }
@@ -399,7 +399,7 @@
         xTickGap = (this.canvas.width - (2 * gutter) ) / this.data.length;
         yStart   = this.canvas.height - gutter;
         yEnd     = (this.canvas.height - gutter) + 3;
-        
+
         //////////////// X TICKS ////////////////
 
         // Now move the Y start end positions down if the axis is set to center
@@ -479,7 +479,7 @@
         }
 
         var variant = this.Get('chart.variant');
-        
+
         /**
         * Draw the 3D axes is necessary
         */
@@ -490,7 +490,7 @@
         /**
         * Get the variant once, and draw the bars, be they regular, stacked or grouped
         */
-        
+
         // Get these variables outside of the loop
         var xaxispos      = this.Get('chart.xaxispos');
         var width         = (this.canvas.width - (2 * gutter) ) / this.data.length;
@@ -517,7 +517,7 @@
 
             var x = (i * width) + gutter;
             var y = xaxispos == 'center' ? (this.canvas.height / 2) - height : this.canvas.height - height - gutter;
-            
+
 
             // Account for negative lengths - Some browsers (eg Chrome) don't like a negative value
             if (height < 0) {
@@ -540,9 +540,9 @@
             */
             this.context.beginPath();
                 if (typeof(this.data[i]) == 'number') {
-                    
+
                     var barWidth = width - (2 * hmargin);
-                    
+
                     // Set the fill color
                     this.context.strokeStyle = strokeStyle;
                     this.context.fillStyle = colors[0];
@@ -550,7 +550,7 @@
                     if (variant == 'sketch') {
 
                         this.context.lineCap = 'round';
-                        
+
                         var sketchOffset = 3;
 
                         this.context.beginPath();
@@ -579,11 +579,11 @@
 
                     // Regular bar
                     } else if (variant == 'bar' || variant == '3d' || variant == 'glass') {
-                    
+
                         if (document.all && shadow) {
                             this.DrawIEShadow([x + hmargin, y, barWidth, height]);
                         }
-                        
+
                         if (variant == 'glass') {
                             RGraph.filledCurvyRect(this.context, x + hmargin, y, barWidth, height, 3, this.data[i] > 0, this.data[i] > 0, this.data[i] < 0, this.data[i] < 0);
                             RGraph.strokedCurvyRect(this.context, x + hmargin, y, barWidth, height, 3, this.data[i] > 0, this.data[i] > 0, this.data[i] < 0, this.data[i] < 0);
@@ -592,7 +592,7 @@
                             this.context.fillRect(x + hmargin, y, barWidth, height);
                         }
 
-                        
+
                         // This bit draws the text labels that appear above the bars if requested
                         if (this.Get('chart.labels.above')) {
 
@@ -636,8 +636,8 @@
                                 this.context.lineTo(x + hmargin + barWidth + 10, y + height - 5);
                                 this.context.lineTo(x + hmargin + barWidth, y + height);
                             this.context.closePath();
-    
-                            this.context.stroke();                        
+
+                            this.context.stroke();
                             this.context.fill();
 
                             // Draw the darker top section
@@ -649,7 +649,7 @@
                                 this.context.lineTo(x + hmargin + barWidth, y);
                                 this.context.lineTo(x + hmargin, y);
                             this.context.closePath();
-    
+
                             this.context.stroke();
                             this.context.fill();
 
@@ -668,10 +668,10 @@
 
                             this.context.strokeStyle = prevStrokeStyle;
                             this.context.fillStyle   = prevFillStyle;
-                        
+
                         // Glass variant
                         } else if (variant == 'glass') {
- 
+
                             var grad = this.context.createLinearGradient(
                                                                          x + hmargin,
                                                                          y,
@@ -686,7 +686,7 @@
                             this.context.fillRect(x + hmargin + 2,y + (this.data[i] > 0 ? 2 : 0),(barWidth / 2) - 2,height - 2);
                             this.context.fill();
                         }
-                    
+
                     // Dot chart
                     } else if (variant == 'dot') {
 
@@ -694,35 +694,35 @@
                         this.context.moveTo(x + (width / 2), y);
                         this.context.lineTo(x + (width / 2), y + height);
                         this.context.stroke();
-                        
+
                         this.context.beginPath();
                         this.context.fillStyle = this.Get('chart.colors')[i];
                         this.context.arc(x + (width / 2), y + (this.data[i] > 0 ? 0 : height), 2, 0, 6.28, 0);
-                        
+
                         // Set the colour for the dots
                         this.context.fillStyle = this.Get('chart.colors')[0];
 
                         this.context.stroke();
                         this.context.fill();
-                    
+
                     // Pyramid chart
                     } else if (variant == 'pyramid') {
 
                         this.context.beginPath();
                             var startY = (this.Get('chart.xaxispos') == 'center' ? (this.canvas.height / 2) : (this.canvas.height - this.Get('chart.gutter')));
-                        
+
                             this.context.moveTo(x + hmargin, startY);
                             this.context.lineTo(
                                                 x + hmargin + (barWidth / 2),
                                                 y + (this.Get('chart.xaxispos') == 'center' && (this.data[i] < 0) ? height : 0)
                                                );
                             this.context.lineTo(x + hmargin + barWidth, startY);
-                        
+
                         this.context.closePath();
-                        
+
                         this.context.stroke();
                         this.context.fill();
-                    
+
                     // Arrow chart
                     } else if (variant == 'arrow') {
                         var startY = (this.Get('chart.xaxispos') == 'center' ? (this.canvas.height / 2) : (this.canvas.height - this.gutter));
@@ -750,7 +750,7 @@
                                              this.data[i] < 0);
 
                         this.context.stroke();
-                        
+
                         this.context.lineWidth = 1;
 
                     // Unknown variant type
@@ -765,13 +765,13 @@
                 * Stacked bar
                 */
                 } else if (typeof(this.data[i]) == 'object' && this.Get('chart.grouping') == 'stacked') {
-                    
+
                     var barWidth     = width - (2 * hmargin);
                     var redrawCoords = [];// Necessary to draw if the shadow is enabled
                     var startY       = 0;
 
                     for (j=0; j<this.data[i].length; ++j) {
-                    
+
                         // Stacked bar chart and X axis pos in the middle - poitless since negative values are not permitted
                         if (xaxispos == 'center') {
                             alert("[BAR] It's fruitless having the X axis position at the center on a stacked bar chart.");
@@ -810,7 +810,7 @@
                         this.context.strokeRect(x + hmargin, y, width - (2 * hmargin), height);
                         this.context.fillRect(x + hmargin, y, width - (2 * hmargin), height);
 
-                        
+
                         if (j == 0) {
                             var startY = y;
                             var startX = x;
@@ -831,7 +831,7 @@
                             var prevFillStyle = this.context.fillStyle;
                             var prevStrokeStyle = this.context.strokeStyle;
 
-    
+
                             // Draw the top side
                             if (j == 0) {
                                 this.context.beginPath();
@@ -840,7 +840,7 @@
                                     this.context.lineTo(startX + 10 + barWidth + hmargin, y - 5);
                                     this.context.lineTo(startX + barWidth + hmargin, y);
                                 this.context.closePath();
-                                
+
                                 this.context.fill();
                                 this.context.stroke();
                             }
@@ -852,7 +852,7 @@
                                 this.context.lineTo(startX + barWidth + + hmargin + 10, y - 5 + height);
                                 this.context.lineTo(startX + barWidth + hmargin , y + height);
                             this.context.closePath();
-                            
+
                             this.context.fill();
                             this.context.stroke();
 
@@ -865,7 +865,7 @@
                                     this.context.lineTo(startX + 10 + barWidth + hmargin, y - 5);
                                     this.context.lineTo(startX + barWidth + hmargin, y);
                                 this.context.closePath();
-                                
+
                                 this.context.fill();
                                 this.context.stroke();
                             }
@@ -878,7 +878,7 @@
                                 this.context.lineTo(startX + barWidth + + hmargin + 10, y - 5 + height);
                                 this.context.lineTo(startX + barWidth + hmargin , y + height);
                             this.context.closePath();
-                            
+
                             this.context.fill();
                             this.context.stroke();
 
@@ -897,7 +897,7 @@
 
                         this.context.fillStyle = this.Get('chart.text.color');
                         RGraph.Text(this.context,this.Get('chart.text.font'),typeof(this.Get('chart.labels.above.size')) == 'number' ? this.Get('chart.labels.above.size') : this.Get('chart.text.size') - 3,startX + (barWidth / 2) + this.Get('chart.hmargin'),startY - (this.Get('chart.shadow') && this.Get('chart.shadow.offsety') < 0 ? 7 : 4),String(this.Get('chart.units.pre') + RGraph.array_sum(this.data[i]).toFixed(this.Get('chart.labels.above.decimals')) + this.Get('chart.units.post')),null,'center');
-                      
+
                         // Turn any shadow back on
                         if (shadow) {
                             this.context.shadowColor   = shadowColor;
@@ -906,7 +906,7 @@
                             this.context.shadowOffsetY = shadowOffsetY;
                         }
                     }
-                    
+
 
                     /**
                     * Redraw the bars if the shadow is enabled due to hem being drawn from the bottom up, and the
@@ -925,7 +925,7 @@
                             this.context.stroke();
                             this.context.fill();
                         }
-                        
+
                         // Reset the redraw coords to be empty
                         redrawCoords = [];
                     }
@@ -972,7 +972,7 @@
 
                         // This bit draws the text labels that appear above the bars if requested
                         if (this.Get('chart.labels.above')) {
-                        
+
                             this.context.strokeStyle = 'rgba(0,0,0,0)';
 
                             // Turn off any shadow
@@ -989,7 +989,7 @@
 
                             this.context.fillStyle = this.Get('chart.text.color');
                             RGraph.Text(this.context,this.Get('chart.text.font'),typeof(this.Get('chart.labels.above.size')) == 'number' ? this.Get('chart.labels.above.size') : this.Get('chart.text.size') - 3,startX + (individualBarWidth / 2),startY - 2,RGraph.number_format(this, this.data[i][j].toFixed(this.Get('chart.labels.above.decimals'))),null,'center');
-                          
+
                             // Turn any shadow back on
                             if (shadow) {
                                 this.context.shadowColor   = shadowColor;
@@ -1005,7 +1005,7 @@
                         if (variant == '3d') {
                             var prevFillStyle = this.context.fillStyle;
                             var prevStrokeStyle = this.context.strokeStyle;
-                            
+
                             // Draw the top side
                             this.context.beginPath();
                                 this.context.moveTo(startX, startY);
@@ -1013,10 +1013,10 @@
                                 this.context.lineTo(startX + 10 + individualBarWidth, startY - 5);
                                 this.context.lineTo(startX + individualBarWidth, startY);
                             this.context.closePath();
-                            
+
                             this.context.fill();
                             this.context.stroke();
-                            
+
                             // Draw the side section
                             this.context.beginPath();
                                 this.context.moveTo(startX + individualBarWidth, startY);
@@ -1024,7 +1024,7 @@
                                 this.context.lineTo(startX + individualBarWidth + 10, startY - 5 + height);
                                 this.context.lineTo(startX + individualBarWidth , startY + height);
                             this.context.closePath();
-                            
+
                             this.context.fill();
                             this.context.stroke();
 
@@ -1037,10 +1037,10 @@
                                 this.context.lineTo(startX + 10 + individualBarWidth, startY - 5);
                                 this.context.lineTo(startX + individualBarWidth, startY);
                             this.context.closePath();
-                            
+
                             this.context.fill();
                             this.context.stroke();
-                            
+
                             // Draw the darker side section
                             this.context.fillStyle = 'rgba(0,0,0,0.4)';
                             this.context.beginPath();
@@ -1049,7 +1049,7 @@
                                 this.context.lineTo(startX + individualBarWidth + 10, startY - 5 + height);
                                 this.context.lineTo(startX + individualBarWidth , startY + height);
                             this.context.closePath();
-                            
+
                             this.context.fill();
                             this.context.stroke();
 
@@ -1064,14 +1064,14 @@
                             redrawCoords.push([startX, startY, individualBarWidth, height]);
                         }
                     }
-                    
+
                     /**
                     * Redraw the bar if shadows are going to the left
                     */
                     if (redrawCoords.length) {
 
                         RGraph.NoShadow(this);
-                        
+
                         this.context.lineWidth = this.Get('chart.linewidth');
 
                         this.context.beginPath();
@@ -1103,7 +1103,7 @@
         * Install the onclick event handler
         */
         if (this.Get('chart.tooltips')) {
-        
+
             // Need to register this object for redrawing
             RGraph.Register(this);
 
@@ -1129,19 +1129,19 @@
                 var barCoords = obj.getBar(e);
 
                 if (barCoords) {
-                    
+
                     /**
                     * Get the tooltip text
                     */
                     if (typeof(obj.Get('chart.tooltips')) == 'function') {
                         var text = String(obj.Get('chart.tooltips')(barCoords[5]));
-                    
+
                     } else if (typeof(obj.Get('chart.tooltips')) == 'object' && typeof(obj.Get('chart.tooltips')[barCoords[5]]) == 'function') {
                         var text = String(obj.Get('chart.tooltips')[barCoords[5]](barCoords[5]));
-                    
+
                     } else if (typeof(obj.Get('chart.tooltips')) == 'object' && (typeof(obj.Get('chart.tooltips')[barCoords[5]]) == 'string' || typeof(obj.Get('chart.tooltips')[barCoords[5]]) == 'number')) {
                         var text = String(obj.Get('chart.tooltips')[barCoords[5]]);
-                
+
                     } else {
                         var text = null;
                     }
@@ -1149,7 +1149,7 @@
                     if (text) {
                         canvas.style.cursor = 'pointer';
                     }
-                    
+
                     /**
                     * Hide the currently displayed tooltip if the index is the same
                     */
@@ -1181,7 +1181,7 @@
                         obj.context.fillStyle   = 'rgba(255,255,255,0.5)';
                         obj.context.strokeRect(barCoords[1], barCoords[2], barCoords[3], barCoords[4]);
                         obj.context.fillRect(barCoords[1], barCoords[2], barCoords[3], barCoords[4]);
-                
+
                         obj.context.stroke();
                         obj.context.fill();
 
@@ -1203,16 +1203,16 @@
                 canvas_onclick = function (e)
                 {
                     var e = RGraph.FixEventObject(e);
-    
+
                     // If the button pressed isn't the left, we're not interested
                     if (e.button != 0) return;
-    
+
                     e = RGraph.FixEventObject(e);
-    
+
                     var canvas    = document.getElementById(this.id);
                     var obj       = canvas.__object__;
                     var barCoords = obj.getBar(e);
-    
+
                     /**
                     * Redraw the graph first, in effect resetting the graph to as it was when it was first drawn
                     * This "deselects" any already selected bar
@@ -1229,10 +1229,10 @@
                         */
                         if (typeof(obj.Get('chart.tooltips')) == 'function') {
                             var text = String(obj.Get('chart.tooltips')(barCoords[5]));
-                        
+
                         } else if (typeof(obj.Get('chart.tooltips')) == 'object' && typeof(obj.Get('chart.tooltips')[barCoords[5]]) == 'function') {
                             var text = String(obj.Get('chart.tooltips')[barCoords[5]](barCoords[5]));
-                        
+
                         } else if (typeof(obj.Get('chart.tooltips')) == 'object') {
                             var text = String(obj.Get('chart.tooltips')[barCoords[5]]);
 
@@ -1249,14 +1249,14 @@
                             obj.context.fillStyle   = 'rgba(255,255,255,0.5)';
                             obj.context.strokeRect(barCoords[1], barCoords[2], barCoords[3], barCoords[4]);
                             obj.context.fillRect(barCoords[1], barCoords[2], barCoords[3], barCoords[4]);
-        
+
                             obj.context.stroke();
                             obj.context.fill();
 
                             RGraph.Tooltip(canvas, text, e.pageX, e.pageY, barCoords[5]);
                         }
                     }
-    
+
                     /**
                     * Stop the event bubbling
                     */
@@ -1315,10 +1315,10 @@
 
             // Draw the X axis labels
             context.fillStyle = this.Get('chart.text.color');
-            
+
             // How wide is each bar
             var barWidth = (this.canvas.width - (2 * gutter) ) / labels.length;
-            
+
             // Reset the xTickGap
             xTickGap = (this.canvas.width - (2 * gutter)) / labels.length
 
@@ -1381,12 +1381,12 @@
 
             if (numYLabels == 3 || numYLabels == 5) {
                 RGraph.Text(context, font, text_size, xpos, gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[4], units_pre, units_post), null, align, boxed);
-    
+
                 if (numYLabels == 5) {
                     RGraph.Text(context, font, text_size, xpos, (1*interval) + gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[3], units_pre, units_post), null, align, boxed);
                     RGraph.Text(context, font, text_size, xpos, (3*interval) + gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[1], units_pre, units_post), null, align, boxed);
                 }
-                
+
                 if (numYLabels == 3 || numYLabels == 5) {
                     RGraph.Text(context, font, text_size, xpos, (4*interval) + gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[0], units_pre, units_post), null, align, boxed);
                     RGraph.Text(context, font, text_size, xpos, (2*interval) + gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[2], units_pre, units_post), null, align, boxed);
@@ -1394,7 +1394,7 @@
             } else if (numYLabels == 10) {
                 // 10Y labels
                 interval = (this.grapharea / numYLabels) / 2;
-            
+
                 for (var i=0; i<numYLabels; ++i) {
                     RGraph.Text(context, font, text_size, xpos,gutter + ((this.grapharea / (numYLabels * 2)) * i),RGraph.number_format(this, ((this.scale[4] / numYLabels) * (numYLabels - i)).toFixed((this.Get('chart.scale.decimals'))), units_pre, units_post), 'center', align, boxed);
                 }
@@ -1411,19 +1411,19 @@
                     RGraph.Text(context, font, text_size, xpos, (this.grapharea + gutter + this.halfTextHeight) - (4 * interval), '-' + RGraph.number_format(this, this.scale[0], units_pre, units_post), null, align, boxed);
                     RGraph.Text(context, font, text_size, xpos, (this.grapharea + gutter + this.halfTextHeight) - (2 * interval), '-' + RGraph.number_format(this, this.scale[2], units_pre, units_post), null, align, boxed);
                 }
-    
+
                 if (numYLabels == 5) {
                     RGraph.Text(context, font, text_size, xpos, (this.grapharea + gutter + this.halfTextHeight) - (3 * interval), '-' + RGraph.number_format(this, this.scale[1], units_pre, units_post), null, align, boxed);
                     RGraph.Text(context, font, text_size, xpos, (this.grapharea + gutter + this.halfTextHeight) - interval, '-' + RGraph.number_format(this, this.scale[3], units_pre, units_post), null, align, boxed);
                 }
-    
+
                 RGraph.Text(context, font, text_size, xpos,  this.grapharea + gutter + this.halfTextHeight, '-' + RGraph.number_format(this, this.scale[4], units_pre, units_post), null, align, boxed);
 
             } else if (numYLabels == 10) {
 
                 // Arbitrary number of Y labels
                 interval = (this.grapharea / numYLabels) / 2;
-            
+
                 for (var i=0; i<numYLabels; ++i) {
                     RGraph.Text(context, font, text_size, xpos,this.Get('chart.gutter') + (this.grapharea / 2) + ((this.grapharea / (numYLabels * 2)) * i) + (this.grapharea / (numYLabels * 2)),RGraph.number_format(this, ((this.scale[4] / numYLabels) * (i+1)).toFixed((this.Get('chart.scale.decimals'))), '-' + units_pre, units_post),'center', align, boxed);
                 }
@@ -1444,7 +1444,7 @@
         this.context.strokeStyle = 'black';
 
         if (this.Get('chart.xaxispos') != 'center') {
-            
+
             var interval   = (this.grapharea * (1/5) );
             var text_size  = this.Get('chart.text.size');
             var units_pre  = this.Get('chart.units.pre');
@@ -1467,21 +1467,21 @@
             // 1 label
             if (numYLabels == 3 || numYLabels == 5) {
                 RGraph.Text(context, font, text_size, xpos, gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[4], units_pre, units_post), null, align, boxed);
-    
+
                 // 5 labels
                 if (numYLabels == 5) {
                     RGraph.Text(context, font, text_size, xpos, (1*interval) + gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[3], units_pre, units_post), null, align, boxed);
                     RGraph.Text(context, font, text_size, xpos, (3*interval) + gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[1], units_pre, units_post), null, align, boxed);
-                
+
                 }
-                
+
                 // 3 labels
                 if (numYLabels == 3 || numYLabels == 5) {
                     RGraph.Text(context, font, text_size, xpos, (2*interval) + gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[2], units_pre, units_post), null, align, boxed);
                     RGraph.Text(context, font, text_size, xpos, (4*interval) + gutter + this.halfTextHeight, RGraph.number_format(this, this.scale[0], units_pre, units_post), null, align, boxed);
                 }
             }
-            
+
             // 10 Y labels
             if (numYLabels == 10) {
 
@@ -1492,7 +1492,7 @@
                 }
             }
         }
-        
+
         this.context.fill();
         this.context.stroke();
     }
@@ -1500,7 +1500,7 @@
 
     /**
     * This function is used by MSIE only to manually draw the shadow
-    * 
+    *
     * @param array coords The coords for the bar
     */
     RGraph.Bar.prototype.DrawIEShadow = function (coords)
@@ -1508,16 +1508,16 @@
         var prevFillStyle = this.context.fillStyle;
         var offsetx       = this.Get('chart.shadow.offsetx');
         var offsety       = this.Get('chart.shadow.offsety');
-        
+
         this.context.lineWidth = this.Get('chart.linewidth');
         this.context.fillStyle = this.Get('chart.shadow.color');
         this.context.beginPath();
-        
+
         // Draw shadow here
         this.context.fillRect(coords[0] + offsetx, coords[1] + offsety, coords[2], coords[3]);
 
         this.context.fill();
-        
+
         // Change the fillstyle back to what it was
         this.context.fillStyle = prevFillStyle;
     }
@@ -1550,10 +1550,10 @@
                 && mouseX <= (left + width+ obj.Get('chart.tooltips.coords.adjust')[0])
                 && mouseY >= (top + obj.Get('chart.tooltips.coords.adjust')[1])
                 && mouseY <= (top + height + obj.Get('chart.tooltips.coords.adjust')[1]) ) {
-                
+
                 return [obj, left, top, width, height, i];
             }
         }
-        
+
         return null;
     }

@@ -11,12 +11,12 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
 
     /**
     * The traditional radar chart constructor
-    * 
+    *
     * @param string id   The ID of the canvas
     * @param array  data An array of data to represent
     */
@@ -39,7 +39,7 @@
         */
         RGraph.OldBrowserCompat(this.context);
 
-        
+
         this.properties = {
             'chart.gutter':                25,
             'chart.linewidth':             1,
@@ -90,13 +90,13 @@
             'chart.labels.axes':            'nsew',
             'chart.ymax':                   null
         }
-        
+
         // Must have at least 3 points
         if (this.data.length < 3) {
             alert('[TRADAR] You must specify at least 3 data points');
             return;
         }
-        
+
         // Check the common library has been included
         if (typeof(RGraph) == 'undefined') {
             alert('[TRADAR] Fatal error: The RGraph common library does not appear to have been included');
@@ -106,7 +106,7 @@
 
     /**
     * A simple setter
-    * 
+    *
     * @param string name  The name of the property to set
     * @param string value The value of the property
     */
@@ -125,7 +125,7 @@
 
     /**
     * A simple hetter
-    * 
+    *
     * @param string name  The name of the property to get
     */
     RGraph.Tradar.prototype.Get = function (name)
@@ -152,7 +152,7 @@
         this.centerx  = this.canvas.width / 2;
         this.centery  = this.canvas.height / 2;
         this.size     = Math.min(this.canvas.width, this.canvas.height) - (2 * this.Get('chart.gutter'));
-    
+
         // Work out the maximum value and the sum
         if (!this.Get('chart.ymax')) {
             this.scale = RGraph.getScale(RGraph.array_max(this.data), this);
@@ -176,7 +176,7 @@
         this.DrawAxisLabels();
         this.DrawChart();
         this.DrawLabels();
-        
+
         // Draw the title
         if (this.Get('chart.title')) {
             RGraph.DrawTitle(this.canvas, this.Get('chart.title'), this.Get('chart.gutter'))
@@ -209,7 +209,7 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
@@ -224,7 +224,7 @@
         if (this.Get('chart.adjustable')) {
             RGraph.AllowAdjusting(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
@@ -252,11 +252,11 @@
                 this.context.moveTo(this.centerx, this.centery);
                 this.context.arc(this.centerx, this.centery,r, 0, 6.28, 0);
             }
-            
+
             this.context.stroke();
         }
-        
-        
+
+
         /**
         * Draw diagonals
         */
@@ -286,14 +286,14 @@
         */
             this.context.moveTo(this.centerx, this.centery + halfsize);
             this.context.lineTo(this.centerx, this.centery - halfsize);
-            
-    
+
+
             // Draw the bits at either end of the Y axis
             this.context.moveTo(this.centerx - 5, this.centery + halfsize);
             this.context.lineTo(this.centerx + 5, this.centery + halfsize);
             this.context.moveTo(this.centerx - 5, this.centery - halfsize);
             this.context.lineTo(this.centerx + 5, this.centery - halfsize);
-            
+
             // Draw X axis tick marks
             for (var y=(this.centery - halfsize); y<(this.centery + halfsize); y+=15) {
                 this.context.moveTo(this.centerx - 3, y);
@@ -305,7 +305,7 @@
         */
             this.context.moveTo(this.centerx - halfsize, this.centery);
             this.context.lineTo(this.centerx + halfsize, this.centery);
-    
+
             // Draw the bits at the end of the X axis
             this.context.moveTo(this.centerx - halfsize, this.centery - 5);
             this.context.lineTo(this.centerx - halfsize, this.centery + 5);
@@ -349,23 +349,23 @@
                 this.context.lineTo(this.coords[i][0], this.coords[i][1]);
             }
         }
-        
+
         this.context.closePath();
 
         this.context.fill();
         this.context.stroke();
-        
+
         /**
         * Can now handletooltips
         */
         if (this.Get('chart.tooltips')) {
-            
+
             RGraph.Register(this);
-            
+
             var canvas_onmousemove_func = function (e)
             {
                 e = RGraph.FixEventObject(e);
-                
+
                 var canvas      = document.getElementById(this.id);
                 var obj         = canvas.__object__;
                 var x           = e.offsetX;
@@ -373,7 +373,7 @@
                 var overHotspot = false;
 
                 for (var i=0; i<obj.coords.length; ++i) {
-                
+
                     var xCoord   = obj.coords[i][0];
                     var yCoord   = obj.coords[i][1];
                     var tooltips = obj.Get('chart.tooltips');
@@ -397,7 +397,7 @@
 
                             } else if (typeof(obj.Get('chart.tooltips')) == 'object' && typeof(obj.Get('chart.tooltips')[i]) == 'function') {
                                 var text = String(obj.Get('chart.tooltips')[i](i));
-                            
+
                             } else if (typeof(obj.Get('chart.tooltips')) == 'object' && typeof(obj.Get('chart.tooltips')[i]) == 'string') {
                                 var text = String(obj.Get('chart.tooltips')[i]);
 
@@ -406,13 +406,13 @@
                             }
 
                             if (typeof(text) == 'string' && text.length) {
-                       
+
                                 overHotspot = true;
                                 obj.canvas.style.cursor = 'pointer';
 
                                 RGraph.Clear(obj.canvas);
                                 obj.Draw();
-                                
+
                                 if (obj.Get('chart.tooltips.highlight')) {
                                     obj.context.beginPath();
                                     obj.context.strokeStyle = 'gray';
@@ -421,7 +421,7 @@
                                     obj.context.fill();
                                     obj.context.stroke();
                                 }
-                                
+
                                 RGraph.Tooltip(obj.canvas, text, e.pageX, e.pageY, idx);
                             }
                         } else if (RGraph.Registry.Get('chart.tooltip') && RGraph.Registry.Get('chart.tooltip').__index__ == idx) {
@@ -443,7 +443,7 @@
 
     /**
     * Gets the coordinates for a particular mark
-    * 
+    *
     * @param  number i The index of the data (ie which one it is)
     * @return array    A two element array of the coordinates
     */
@@ -471,11 +471,11 @@
         */
         x = this.centerx + x;
         y = this.centery + (i == 0 ? 0 : y);
-        
+
         return [x,y];
     }
-    
-    
+
+
     /**
     * This function adds the labels to the chart
     */
@@ -487,7 +487,7 @@
 
             this.context.lineWidth = 1;
             this.context.fillStyle = this.Get('chart.text.color');
-            
+
             var offsetx = this.Get('chart.labels.offsetx'); // Not used yet
             var offsety = this.Get('chart.labels.offsety'); // Not used yet
 
@@ -514,7 +514,7 @@
                     vAlign = (y < this.centery) ? 'bottom' : 'top';
                     x     += (x < this.centerx) ? (-1 * offsetx) : offsetx;
                     y     += (y < this.centery) ? (-1 * offsety) : offsety;
-                    
+
                     if (i / this.data.length == 0.25) { x -= offsetx; hAlign = 'center';
                     } else if (i / this.data.length == 0.5) { y -= offsety; vAlign = 'center';
                     } else if (i / this.data.length == 0.75) { x += offsetx; hAlign = 'center'; }
@@ -540,7 +540,7 @@
         if (circle.limit) {
 
             var r = (circle.limit / this.max) * (this.size / 2);
-            
+
             this.context.fillStyle = circle.fill;
             this.context.strokeStyle = circle.stroke;
 
@@ -558,7 +558,7 @@
     RGraph.Tradar.prototype.DrawAxisLabels = function ()
     {
         this.context.lineWidth = 1;
-        
+
         // Set the color to black
         this.context.fillStyle = 'black';
         this.context.strokeStyle = 'black';
@@ -587,7 +587,7 @@
             RGraph.Text(context, font_face, font_size, this.centerx, this.centery + (r * 0.8), String(this.scale[3]), 'center', 'center', true, false, color);
             RGraph.Text(context, font_face, font_size, this.centerx, this.centery + r, String(this.scale[4]), 'center', 'center', true, false, color);
         }
-        
+
         // The "East" axis labels
         if (axes.indexOf('e') > -1) {
             RGraph.Text(context, font_face, font_size, this.centerx + (r * 0.2), this.centery, String(this.scale[0]), 'center', 'center', true, false, color);

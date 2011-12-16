@@ -11,7 +11,7 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     ModalDialog = {}
     ModalDialog.dialog     = null;
     ModalDialog.background = null;
@@ -20,7 +20,7 @@
 
     /**
     * Shows the dialog with the supplied DIV acting as the contents
-    * 
+    *
     * @param string id    The ID of the DIV to use as the dialogs contents
     * @param int    width The width of the dialog
     */
@@ -35,14 +35,14 @@
         // Install the event handlers
         window.onresize = ModalDialog.Resize;
 
-        
+
         // Call them initially
         ModalDialog.Resize();
-        
+
         ModalDialog.FireCustomEvent('onmodaldialog');
     }
-    
-    
+
+
     /**
     * Shows the background semi-transparent darkened DIV
     */
@@ -56,11 +56,11 @@
         ModalDialog.background.style.left     = 0;
         ModalDialog.background.style.width    = (screen.width + 100) + 'px';
         ModalDialog.background.style.height   = (screen.height + 100) + 'px';
-        ModalDialog.background.style.backgroundColor = 'rgb(204,204,204)';        
+        ModalDialog.background.style.backgroundColor = 'rgb(204,204,204)';
         ModalDialog.background.style.opacity = 0;
         ModalDialog.background.style.zIndex = 3276;
         ModalDialog.background.style.filter = "Alpha(opacity=50)";
-            
+
         document.body.appendChild(ModalDialog.background);
 
         ModalDialog.background.style.visibility = 'visible';
@@ -75,7 +75,7 @@
         // Create the DIV if necessary
         if (!ModalDialog.dialog) {
             ModalDialog.dialog = document.createElement('DIV');
-    
+
             ModalDialog.dialog.id                    = 'ModalDialog_dialog';
             ModalDialog.dialog.className             = 'ModalDialog_dialog';
 
@@ -97,7 +97,7 @@
             ModalDialog.dialog.style.padding         = '5px';
             ModalDialog.dialog.style.paddingTop      = '25px';
             ModalDialog.dialog.style.opacity       = 0;
-            
+
             if (document.all) {
                 ModalDialog.dialog.style.zIndex = 32767;
             }
@@ -137,7 +137,7 @@
                 bar.style.borderTopRightRadius = borderRadius;
                 bar.style.borderTopLeftRadius = borderRadius;
             ModalDialog.dialog.appendChild(bar);
-            
+
             // Add the content div
             var content = document.createElement('DIV');
                 //content.style.paddingTop = '20px';
@@ -151,10 +151,10 @@
             ModalDialog.dialog.style.left = (document.body.offsetWidth / 2) - (ModalDialog.dialog.offsetWidth / 2) + 'px';
             ModalDialog.dialog.style.top  = '30%';
         }
-        
+
         // Show the dialog
         ModalDialog.dialog.style.visibility = 'visible';
-        
+
         // A simple fade-in effect
         setTimeout('ModalDialog.dialog.style.opacity = 0.2', 50);
         setTimeout('ModalDialog.dialog.style.opacity = 0.4', 100);
@@ -169,7 +169,7 @@
         setTimeout('ModalDialog.background.style.opacity = 0.5', 250);
     }
 
-    
+
     /**
     * Hides everything
     */
@@ -183,13 +183,13 @@
         if (ModalDialog.background) {
             ModalDialog.background.style.visibility = 'hidden';
             ModalDialog.background.style.opacity = 0;
-        }        
+        }
     }
-    
+
     // An alias
     ModalDialog.Hide = ModalDialog.Close
-    
-    
+
+
     /**
     * Accommodate the window being resized
     */
@@ -206,7 +206,7 @@
 
     /**
     * Returns the page height
-    * 
+    *
     * @return int The page height
     */
     ModalDialog.AddCustomEventListener = function (name, func)
@@ -221,7 +221,7 @@
 
     /**
     * Used to fire the ModalDialog custom event
-    * 
+    *
     * @param object obj   The graph object that fires the event
     * @param string event The name of the event to fire
     */

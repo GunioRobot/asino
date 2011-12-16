@@ -17,7 +17,7 @@
 
     /**
     * The function which controls the annotate feature
-    * 
+    *
     * @param object obj The graph object
     */
     RGraph.Annotate = function (obj)
@@ -29,7 +29,7 @@
 
             var canvas  = obj.canvas;
             var context = obj.context;
-            
+
             /**
             * Capture the mouse events so we can set whther the mouse is down or not
             */
@@ -50,28 +50,28 @@
                         var coords = RGraph.getMouseXY(e);
                         var x      = coords[0];
                         var y      = coords[1];
-                        
+
                         // Clear the annotation recording
                         RGraph.Registry.Set('annotate.actions', [obj.Get('chart.annotate.color')]);
 
                         context.strokeStyle = obj.Get('chart.annotate.color');
 
                         context.moveTo(x, y);
-                    
+
                         // Set the lineWidth
                         context.lineWidth = 1;
-                        
+
                         RGraph.Registry.Set('started.annotating', false);
-                        
+
                         /**
                         * Fire the onannotatestart event
                         */
                         RGraph.FireCustomEvent(obj, 'onannotatestart');
                     }
-                    
+
                     return false;
                 }
-                
+
                 /**
                 * This cancels annotating for ALL canvases
                 */
@@ -95,14 +95,14 @@
                         // Store the annotations information in HTML5 browser storage here
                         window.localStorage[id] = annotations;
                     }
-                    
+
                     // Clear the recorded annotations
                     RGraph.Registry.Set('annotate.actions', []);
                 }
-                
+
                 canvas.onmouseup = function (e)
                 {
-                    
+
                     /**
                     * Fire the annotate event
                     */
@@ -134,9 +134,9 @@
                     x > gutter && x < (width - gutter)
                     && y > gutter && y < (height - gutter)
                    ) {
-                
+
                     canvas.style.cursor = 'crosshair';
-                
+
                     if (obj.Get('chart.mousedown')) {
 
                         // Don't allow annotating in the gutter
@@ -144,7 +144,7 @@
                             x > gutter && x < (width - gutter)
                             && y > gutter && y < (height - gutter)
                            ) {
-                           
+
                            // Special case for HBars and Gantts with their extra wide left gutter
                            if ( (obj.type != 'hbar' && obj.type != 'gantt') || x > (3 * gutter)) {
 
@@ -186,7 +186,7 @@
 
     /**
     * Shows the mini palette used for annotations
-    * 
+    *
     * @param object e The event object
     */
     RGraph.Showpalette = function (e)
@@ -200,7 +200,7 @@
         var obj     = canvas.__object__;
         var div     = document.createElement('DIV');
         var coords  = RGraph.getMouseXY(e);
-        
+
         div.__object__               = obj; // The graph object
         div.className                = 'RGraph_palette';
         div.style.position           = 'absolute';
@@ -216,7 +216,7 @@
         div.style.WebkitBoxShadow    = 'rgba(96,96,96,0.5) 3px 3px 3px';
         div.style.MozBoxShadow       = 'rgba(96,96,96,0.5) 3px 3px 3px';
         div.style.filter             = 'progid:DXImageTransform.Microsoft.Shadow(color=#666666,direction=135)';
-        
+
         var common_css       = 'padding: 1px; display: inline; display: inline-block; width: 15px; height: 15px; margin-right: 3px; cursor: pointer;' + (isSafari ? 'margin-bottom: 3px' : '');
         var common_mouseover = ' onmouseover="this.style.border = \'1px black solid\'; this.style.padding = 0"';
         var common_mouseout  = ' onmouseout="this.style.border = 0; this.style.padding = \'1px\'" ';
@@ -227,7 +227,7 @@
 
         for (i=0; i<colors.length; ++i) {
             str = str + '<span ' + common_mouseover + common_mouseout + ' style="background-color: ' + colors[i] + '; ' + common_css  + '" onclick="this.parentNode.__object__.Set(\'chart.annotate.color\', this.style.backgroundColor); this.parentNode.style.display = \'none\'">&nbsp;</span>';
-            
+
             // This makes the colours go across two levels
             if (i == 5) {
                 str += '<br />';
@@ -236,7 +236,7 @@
 
         div.innerHTML = str;
         document.body.appendChild(div);
-        
+
         /**
         * Now the div has been added to the document, move it up and left and set the width and height
         */
@@ -249,7 +249,7 @@
         * Store the palette div in the registry
         */
         RGraph.Registry.Set('palette', div);
-        
+
         setTimeout("RGraph.Registry.Get('palette').style.opacity = 0.2", 50);
         setTimeout("RGraph.Registry.Get('palette').style.opacity = 0.4", 100);
         setTimeout("RGraph.Registry.Get('palette').style.opacity = 0.6", 150);
@@ -267,11 +267,11 @@
         e.stopPropagation();
         return false;
     }
-    
-    
+
+
     /**
     * Clears any annotation data from global storage
-    * 
+    *
     * @param string id The ID of the canvas
     */
     RGraph.ClearAnnotations = function (id)
@@ -284,7 +284,7 @@
 
     /**
     * Replays stored annotations
-    * 
+    *
     * @param object obj The graph object
     */
     RGraph.ReplayAnnotations = function (obj)
@@ -315,7 +315,7 @@
                 move = true;
                 continue;
             }
-            
+
             coords = annotations[i].split(',');
 
             if (move) {
@@ -325,6 +325,6 @@
                 context.lineTo(coords[0], coords[1]);
             }
         }
-        
+
         context.stroke();
     }

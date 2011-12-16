@@ -11,7 +11,7 @@ class RulesetsController < ApplicationController
   def new
     @ruleset = Ruleset.new({:account_id => params[:account_id]})
   end
-  
+
   def create
     @ruleset = Ruleset.new(params[:ruleset])
 
@@ -30,7 +30,7 @@ class RulesetsController < ApplicationController
   def edit
     @ruleset.action_parameter = @ruleset.action_parameter.to_i
   end
-  
+
 
   def update
     respond_to do |format|
@@ -43,7 +43,7 @@ class RulesetsController < ApplicationController
       end
     end
   end
-  
+
   def destroy
     @ruleset.destroy
 
@@ -57,10 +57,10 @@ class RulesetsController < ApplicationController
   def load_ruleset
     @ruleset = Ruleset.find(params[:id]) if params[:id]
   end
-  
+
   def load_accounts
     @accounts = Account.all
     @account = Account.find(params[:account_id]) unless params[:account_id].blank?
   end
-  
+
 end

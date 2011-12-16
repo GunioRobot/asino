@@ -11,12 +11,12 @@
     * |                      http://www.rgraph.net/LICENSE.txt                       |
     * o------------------------------------------------------------------------------o
     */
-    
+
     if (typeof(RGraph) == 'undefined') RGraph = {};
 
     /**
     * The LED lights constructor
-    * 
+    *
     * @param object canvas The canvas object
     * @param array  data   The chart data
     */
@@ -41,7 +41,7 @@
         * Set the string that is to be displayed
         */
         this.text = text;
-        
+
         /**
         * The letters and numbers
         */
@@ -108,7 +108,7 @@
             alert('[LED] No canvas support');
             return;
         }
-        
+
         // Check the canvasText library has been included
         if (typeof(RGraph) == 'undefined') {
             alert('[LED] Fatal error: The common library does not appear to have been included');
@@ -118,7 +118,7 @@
 
     /**
     * A setter
-    * 
+    *
     * @param name  string The name of the property to set
     * @param value mixed  The value of the property
     */
@@ -130,7 +130,7 @@
 
     /**
     * A getter
-    * 
+    *
     * @param name  string The name of the property to get
     */
     RGraph.LED.prototype.Get = function (name)
@@ -152,11 +152,11 @@
 
         // First clear the canvas, using the background colour
         RGraph.Clear(this.canvas, this.Get('chart.background'));
-        
+
         for (var l=0; l<this.text.length; l++) {
             this.DrawLetter(this.text.charAt(l), l);
         }
-        
+
         /**
         * Set the title attribute on the canvas
         */
@@ -168,7 +168,7 @@
         if (this.Get('chart.contextmenu')) {
             RGraph.ShowContext(this);
         }
-        
+
         /**
         * This bit shows the mini zoom window if requested
         */
@@ -176,14 +176,14 @@
             RGraph.ShowZoomWindow(this);
         }
 
-        
+
         /**
         * This function enables resizing
         */
         if (this.Get('chart.resizable')) {
             RGraph.AllowResizing(this);
         }
-        
+
         /**
         * Fire the RGraph ondraw event
         */
@@ -193,7 +193,7 @@
 
     /**
     * Draws a single letter
-    * 
+    *
     * @param string lights The lights to draw to draw
     * @param int    index  The position of the letter
     */
